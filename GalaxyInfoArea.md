@@ -7,7 +7,7 @@ SceneNo: This obj arg indicates which entry in the `ChangeSceneListInfo` should 
 ## Banners
 This area only has one obj arg, which references the `ChangeSceneListInfo`. There is other information that this area uses, however.<br/>
 This area will only display a galaxy if it is displayed in the AllStarList as well. (Though, secret galaxies are ignored in this situation)<br/>
-For more information, please visit the [AllStarList](LINK) page.
+For more information, please visit the [AllStarList](/AllStarList.md) page.
 
 ### Galaxy Banners
 Galaxy banners are stored inside `/ObjectData/GalaxyInfoTexture.arc`, and they are stored in the [BTI](https://luma.aurumsmods.com/wiki/BTI) file format.<br/>
