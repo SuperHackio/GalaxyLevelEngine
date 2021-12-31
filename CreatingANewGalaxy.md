@@ -2,7 +2,7 @@
 
 Creating a new galaxy for the GLE is really easy.
 
-[Click Here](<TODO>) to download a pre-made set of files. This guide will teach you how to customize them to your liking.
+[Click Here](https://github.com/SuperHackio/GalaxyLevelEngine/files/7795435/TemplateGalaxy.zip) to download a pre-made set of files. This guide will teach you how to customize them to your liking.
 
 
 ### Giving your galaxy a name
