@@ -11,8 +11,8 @@ Each row in the Scenario Select now has 4 stars each. In the future, you will be
 
 ### Bubbles
 The Scenario Select now comes equipped with 24 bubbles - 8 "NEW", 8 Comet, and 8\* hidden. (see note at bottom of page)<br/>
-This effectively allows you to have multiple stars open at once, and you can control this with the [GalaxyInfo.bcsv](LINK).
-> *Note: If no power stars appear, please check to make sure that the conditions inside [GalaxyInfo.bcsv](LINK) are valid.*
+This effectively allows you to have multiple stars open at once, and you can control this with the [GalaxyInfo.bcsv](/ScenarioChecking.md).
+> *Note: If no power stars appear, please check to make sure that the conditions inside [GalaxyInfo.bcsv](/ScenarioChecking.md) are valid.*
 
 ### Power Star Colour
 The colours of Power Stars in the Scenario Select automatically are synced with the `PowerStarColor` field in the scenario.
