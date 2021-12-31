@@ -6,19 +6,19 @@ This bcsv existed in all files in the original SMG2, but the GLE replaces the fi
 ## Fields
 
 #### SceneNo
-Use this field to connect the entry to the area in the level. Sync the number here with Obj_Arg0 of the [SceneChangeArea](LINK). Be sure to give each entry a unique number!
+Use this field to connect the entry to the area in the level. Sync the number here with Obj_Arg0 of the [SceneChangeArea](../../SceneChangeArea.md). Be sure to give each entry a unique number!
 
 #### SceneList
 The name of the Gakaxy that you will be sent to when you enter the area.
 
 #### ZoneName
-The name of the Zone that you'll be sent to. Only applies if you're not sent to the [Scenario Select](LINK).
+The name of the Zone that you'll be sent to. Only applies if you're not sent to the [Scenario Select](../../ScenarioSelect.md).
 
 #### ScenarioNo
-The scenario that you will be sent to when you enter the area. If you want to be sent to the [Scenario Select](LINK), set this field to **-1**.
+The scenario that you will be sent to when you enter the area. If you want to be sent to the [Scenario Select](../../ScenarioSelect.md), set this field to **-1**.
 
 #### MarioNo
-The StartID that mario will be spawned at. Only applies if you're not sent to the [Scenario Select](LINK).
+The StartID that mario will be spawned at. Only applies if you're not sent to the [Scenario Select](../../ScenarioSelect.md).
 
 #### ResultStage
 The name of the Galaxy that you will be sent to upon completing any star. Usually, you will set this to be your Hubworld galaxy.
@@ -37,7 +37,7 @@ The Start ID that mario will be spawned at upon completing any star. Usually thi
 The Start ID that mario will be spawned at upon BACKing out of the Scenario Select, or selecting Return to Map on the pause menu.
 
 #### ResultPathId
-This path ID field is used to determine a path that the [Power Star Return](LINK) sequences can reference - thus allowing a single setup to cover many or all levels. To use this value, simply set the `StarReturnDemoStarter`'s Camera to **-2**.
+This path ID field is used to determine a path that the [Power Star Return](../../Hubworld.md#star-return-sequences) sequences can reference - thus allowing a single setup to cover many or all levels. To use this value, simply set the `StarReturnDemoStarter`'s Camera to **-2**.
 
 ## Other Information
 A template BCSV can be downloaded [by clicking here](LINK).
