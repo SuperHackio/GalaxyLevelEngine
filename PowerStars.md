@@ -5,7 +5,8 @@ In order to use Power Star Colours, you'll need to add a field to your ScenarioD
 
 > *Note: The game will not crash if you do not add this field. The powerstars in the level will simply all be the default colour - Yellow*
 
-If you have not made your scenario file yet, you can download [This file](LINK) that already has the field added for you.
+If you have not made your scenario file yet, you can download [This File](https://github.com/SuperHackio/GalaxyLevelEngine/files/7795489/ScenarioData.zip)
+ that already has the field added for you.
 
 The value that goes into this additional field, is simply a number which indicates a frame in `PowerStarColor.btp`. In the normal SMG2, the values are:
 - 0 = Yellow
