@@ -2,7 +2,7 @@
 Inside `/ObjectData/SystemData.arc`, is a BCSV under the name `ScenarioSettings.bcsv`. This BCSV contains vital settings for specific galaxy scenarios to allow for certain activities or functions.
 
 #### GalaxyName
-A special string consisting of `<GalaxyName>_<ScenarioNo>` (*Example: TamakoroSliderGalaxy_2*). The underscore is important here, so do not get confused with the BCSV from [ScenarioSwitch](LINK).
+A special string consisting of `<GalaxyName>_<ScenarioNo>` (*Example: TamakoroSliderGalaxy_2*). The underscore is important here, so do not get confused with the BCSV from [ScenarioSwitch](/ScenarioChecking.md).
 
 
 After defining the Galaxy Name and Scenario, we can define flags and values for each entry.
@@ -21,7 +21,7 @@ Available values:
 - **0** = Off
 - **1** = On
 
-> *Note: To work properly, requires an entry for a High and Low score inside the [GameEventValueTable](LINK)*
+> *Note: To work properly, requires an entry for a High and Low score inside the [GameEventValueTable](/GameEventValueTable.md)*
 
 #### Score Attack
 This field is required if you are using the Score Attack Chimp, or the Bowling Chimp.<br/>
@@ -35,7 +35,7 @@ Available values:
 - **0** = No Fluzzard
 - Any above 0 = ID of Race (for best time keeping)
 
-> *Note: To work properly, requires an entry for a High and Low score inside the [GameEventValueTable](LINK)*
+> *Note: To work properly, requires an entry for a High and Low score inside the [GameEventValueTable](/GameEventValueTable.md)*
 
 #### Tutorial
 This field activates certain things needed for the Fluzzard Tutorial to work properly.<br/>
