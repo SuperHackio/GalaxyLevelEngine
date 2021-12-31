@@ -14,4 +14,4 @@ Wipe Type: -1 = Fade to White, 0 = Fade to Black, 1 = Mario Head, 2 = Bowser Hea
 Wipe Time: In frames, the time that the wipe will play for. Does not affect Bowser Head, or Game Over. (This will be fixed in an update)
 
 #### Obj_Arg5
-Game State: 0 = InStage State, 1 = NoStage State, 2 = Hubworld State. For more information on Game States, please visit the [Game State](LINK) page.
+Game State: 0 = InStage State, 1 = NoStage State, 2 = Hubworld State. For more information on Game States, please visit the [Game State](/GameState.md) page.
