@@ -24,7 +24,7 @@ It is **VERY** important that you format the string like so: `GalaxyName X`, whe
 ### ScenarioSwitch Only
 #### WatchedEventNo
 Similar to RequireScenarioName, in the sense that it's incremental. (`WatchedEventNo1`, `WatchedEventNo2`, `WatchedEventNo3`, etc.)<br/>
-These fields check to see if you have watched a specific [Hubworld Event](LINK). This is useful in hubworlds when unlocking new areas or levels, because the ScenarioSwitch won't activate too early.<br/>
+These fields check to see if you have watched a specific [Hubworld Event](/Hubworld.md#hubworld-events). This is useful in hubworlds when unlocking new areas or levels, because the ScenarioSwitch won't activate too early.<br/>
 If you do not want to check an event, leave these fields set to **-1**.
 
 ## Tricks
