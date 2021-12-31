@@ -23,7 +23,7 @@ This guide will teach you how to setup the GLE for your project.
 ## Initial Setup
 
 If you simply put all the GLE files into the same directory as your fresh SMG2 files, the game will not work properly, there is more setup that needs to be done.<br/>
-In order to get started, please create a new galaxy. Read [Creating a New Galaxy](<TODO>) for instructions and template galaxy files.
+In order to get started, please create a new galaxy. Read [Creating a New Galaxy](/CreatingANewGalaxy.md) for instructions and template galaxy files.
 
 
 After you have your new galaxy map files placed in the correct location, it is time to register it.
@@ -67,4 +67,4 @@ What you need to do here, is add a new entry. Now do the following:
 - !! Set the MarioNo to 0 !!
 - !! Set the **GameState** field to 2 (Custom field, hash is **0xB2754F9F**)
 
-With the initial sequence value set, you should be able to load your game and successfully load the hubworld
+With the initial sequence value set, you should be able to load your game and successfully load the hubworld. From here, what you do is up to you!
