@@ -1,6 +1,5 @@
 # NOTICE:
-# GLE-V2 has not yet released. Please look forward to the release on March 31st. This notice is here to say that some information is currently not correct, but will be soon. This message will be removed at that time.
-...assuming I don't have to delay it
+if you're reading this, GLE-V2 has been delayed indefinitely.
 
 
 # Galaxy Level Engine
