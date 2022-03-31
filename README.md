@@ -1,5 +1,8 @@
 # NOTICE:
-if you're reading this, GLE-V2 has been delayed indefinitely.
+## PLEASE READ:
+https://www.youtube.com/c/SuperHackio/community
+
+GLE-V2 will be coming soon, and is not cancelled.
 
 
 # Galaxy Level Engine
