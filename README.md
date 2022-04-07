@@ -11,7 +11,7 @@ Welcome to the future of Super Mario Galaxy 2 hacking, the Galaxy Level Engine!
 ## What is it?
 The Galaxy Level Engine is a low level engine for making SMG2 mods with. It provides a ton of functionality that you would otherwise not have.
 
-The latest version is GLE-V2 (Released March 31st 2022)
+The latest version is GLE-V2
 
 ### Primary features
 - Up to 8 Power Stars
