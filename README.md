@@ -1,9 +1,7 @@
-# NOTICE:
-https://www.youtube.com/watch?v=wyFxaiIbbZE
-
-
 # Galaxy Level Engine
 Welcome to the future of Super Mario Galaxy 2 hacking, the Galaxy Level Engine!
+
+https://www.youtube.com/watch?v=wyFxaiIbbZE
 
 ## What is it?
 The Galaxy Level Engine is a low level engine for making SMG2 mods with. It provides a ton of functionality that you would otherwise not have.
