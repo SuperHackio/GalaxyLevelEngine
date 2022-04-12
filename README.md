@@ -32,3 +32,8 @@ If you would like to suggest a feature, please open a [Feature Request](https://
 Alternatively, if you discover a bug, experience a Crash, or experience a Freeze, report it by opening a [Bug Report](https://github.com/SuperHackio/GalaxyLevelEngine/issues/new?assignees=SuperHackio&labels=bug&template=bug_report.md&title=)
 
 > *Note: The difference between a Crash and a Freeze is that with a Crash you will have the Crash Debugger appear (it's a black box with a bunch of numbers and text on it). Freezes do not have this, and are often caused when the game cannot find a certain file on the disk or your SD Card.*
+
+## Need help?
+Make sure you read the [Wiki](https://github.com/SuperHackio/GalaxyLevelEngine/wiki) first, as you will be able to find most information there.
+
+If that still doesn't help, feel free to ask for help in the [Discussions](https://github.com/SuperHackio/GalaxyLevelEngine/discussions), just make sure you use the Q&A category. I'll answer as soon as I can.
