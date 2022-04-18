@@ -208,8 +208,9 @@ mr        r3, r31
 bl startStarPointerModeChooseYesNo__2MRFPv
 
 .loc_8045D738:
-li        r0, 1
-stw       r0, 0x38(r31)
+#New! You can now set what the page is set to by default
+bl .GetStartAllStarListPageNo
+stw       r3, 0x38(r31)
 
 lwz       r3, 0x2C(r31)
 bl forceToHide__20ButtonPaneControllerFv
@@ -245,6 +246,7 @@ lwz       r31, 0x0C(r1)
 mtlr      r0
 addi      r1, r1, 0x10
 blr
+#.GLE ASSERT 0x8045D7D0
 .GLE ENDADDRESS
 
 
@@ -297,6 +299,39 @@ lis r3, MaxPages@ha
 addi r3, r3, MaxPages@l
 li r4, 0
 b .MR_GetGameSetting
+
+
+#This is set inside the Galaxy's GalaxyInfo
+.GetStartAllStarListPageNo:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+
+bl makeCurrentGalaxyStatusAccessor__2MRFv
+stw r3, 0x08(r1)
+addi r3, r1, 0x08
+bl getWorldNo__20GalaxyStatusAccessorCFv
+lis r4, PageNumber@ha
+addi r4, r4, PageNumber@l
+li r5, 1
+li r6, 0
+bl .getActiveEntryFromGalaxyInfo
+cmpwi r3, 0
+bgt .PageIsSet
+li        r3, 1 #default page is page 1
+.PageIsSet:
+stw r3, 0x08(r1)
+bl .GetMaxAllStarListPageNo
+mr r4, r3
+lwz r3, 0x08(r1)
+cmpw r3, r4
+ble .ReturnPage
+mr r3, r4
+.ReturnPage:
+lwz       r0, 0x14(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
 .GLE ASSERT isOnGameEventFlagWorld1Entered__16GameDataFunctionFv
 .GLE ENDADDRESS
 
