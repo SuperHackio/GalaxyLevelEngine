@@ -173,6 +173,15 @@ lis r3, PeachStarGet@ha
 addi r3, r3, PeachStarGet@l
 li r4, 0
 b .MR_GetCurrentScenarioSetting
+
+.IsScenarioNoBootOut:
+#Unlike other situations, this function has a scenario passed into it
+mr r4, r3
+lis r3, NoBootOut@ha
+addi r3, r3, NoBootOut@l
+li r5, 0
+b .MR_GetScenarioSetting
+.GLE ASSERT isStageKoopaVs__2MRFv
 .GLE ENDADDRESS
 
 

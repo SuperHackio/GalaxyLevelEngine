@@ -1093,6 +1093,7 @@ addi      r1, r1, 0x20
 blr
 
 #May as well use this space...
+#From GameScene.s
 .GameScene_Extra:
 bl isStageFileSelect__2MRFv
 cmpwi r3, 0
@@ -1119,6 +1120,7 @@ b loc_8045186C
 bl .MR_IsGameStateHubworld
 cmpwi r3, 0
 bne .NoBgm2
+bl .EndScenarioSelectBgm
 bl getCurrentScenarioNo__2MRFv
 b .GameScene_Extra3_Return
 

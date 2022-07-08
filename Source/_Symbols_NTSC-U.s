@@ -285,6 +285,20 @@
 
 .set sub_8045DB80, 0x8045DB80
 
+#BootOut.s
+.set sub_804E53B0, 0x804E53B0
+.set sub_804E5870, 0x804E5870
+.set PowerStar_DataStart, 0x806A83B8
+.set sub_802E0AD0, 0x802E0AD0
+.set YoshiPowerStarGet, 0x806A8474
+.set YoshiGrandStarGet, 0x806A8460
+.set startStarPointerModeGame__17GameSceneFunctionFv, 0x80452DA0
+.set setNerveAtStageStart__9GameSceneFv, 0x80451B20
+.set sInstance__Q212NrvPowerStar27PowerStarNrvWaitStartAppear, 0x807D40E0
+.set startStage__17GameSceneFunctionFv, 0x80452D70
+.set startLastStageBGM__2MRFv, 0x8001B080
+
+#============================
 
 .set unk_807D2AB4, 0x807D2AB4
 

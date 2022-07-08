@@ -1337,6 +1337,8 @@ stw       r0, 0x64(r1)
 addi      r11, r1, 0x60
 bl _savegpr_25
 
+bl sub_8001BB90
+
 bl .MR_GetExitOverrideIndex
 cmpwi r3, -1
 #If this function returns -1, then there is no death override
@@ -1402,43 +1404,11 @@ bl _savegpr_25
 #Need to split this into the level transition and star mask because they now belong to separate BCSVs
 #Deal with the mask first, then the stage change
 
-bl makeCurrentGalaxyStatusAccessor__2MRFv
-stw r3, 0x0C(r1)
+#Moved to BootOut.s
+bl .MR_ApplyStarMask
 
 bl getClearedPowerStarId__20GameSequenceFunctionFv
 mr r30, r3
-mr r6, r3
-
-addi r3, r1, 0x0C
-#Doesn't use any register other than r3
-bl getWorldNo__20GalaxyStatusAccessorCFv
-lis r4, StarMask@ha
-addi r4, r4, StarMask@l
-li r5, 2
-bl .getActiveEntryFromGalaxyInfo
-
-cmpwi r3, 0
-beq .ChangeStageAfterStageClear
-
-lis r4, GalaxyScenario_Format@ha
-addi r4, r4, GalaxyScenario_Format@l
-addi r5, r1, 0x0C
-addi r6, r1, 0x08
-crclr     4*cr1+eq
-bl sscanf
-
-#We got the values... hopefully the user added a space between the galaxy name and scenario...
-bl getScenePlayingResult__2MRFv
-addi      r4, r1, 0x0C
-bl setStageName__18ScenePlayingResultFPCc
-
-lwz r3, 0x08(r1)
-bl setScenePlayingResultStarId__2MRFl
-#Should be it...
-
-
-
-.ChangeStageAfterStageClear:
 #Jump here if we don't have a mask
 #Like the Mode setting, OnStarGet can only be applied to the Main galaxy, so none of the zones can have this set.
 li r3, 0
@@ -1501,7 +1471,31 @@ addi      r1, r1, 0x120
 blr
 
 .GLE ADDRESS requestChangeStageAfterStageClear__2MRFv
-b .MR_ChangeStageOnStarGet
+#2022-06-13
+#Getting ready for No-boot-out code
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+
+bl getClearedPowerStarId__20GameSequenceFunctionFv
+bl .IsScenarioNoBootOut  #We want to check based on what star you got, not which scenario you're on
+cmpwi r3, 0
+bgt .ChangeStageAfterStageClear_Dont
+
+.ChangeStageAfterStageClear_Force:
+bl forceCloseSystemWipeCircle__2MRFv
+bl .MR_ChangeStageOnStarGet
+b .ChangeStageAfterStageClear_Return
+
+.ChangeStageAfterStageClear_Dont:
+bl .MR_NoBootOut_OnRequestChangeStage
+
+.ChangeStageAfterStageClear_Return:
+lwz       r0, 0x14(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
+.GLE ASSERT requestChangeStageAfterMiss__2MRFv
 .GLE ENDADDRESS
 
 

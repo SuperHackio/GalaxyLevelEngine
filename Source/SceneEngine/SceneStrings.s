@@ -92,6 +92,9 @@ NoWelcome:
     
 PeachStarGet:
     .string "PeachStarGet"
+    
+NoBootOut:
+    .string "NoBootOut"
 
 id:
     .string "id"

@@ -321,6 +321,7 @@ blr
 .GLE ENDADDRESS
 
 .GLE ADDRESS start__9GameSceneFv
+#GameScene::start((void))
 stwu      r1, -0x20(r1)
 mflr      r0
 stw       r0, 0x24(r1)
@@ -330,7 +331,6 @@ mr        r31, r3
 #stb       r3, 0x2A(r31)
 bl        getSceneMgr__7AudWrapFv
 bl        startScene__11AudSceneMgrFv
-bl sub_8001BB90
 
 bl        isAwaitPadMovement__20GameSequenceFunctionFv
 cmpwi     r3, 0
@@ -349,6 +349,7 @@ loc_8045183C:
 
 
 #needed some more space...
+#Located inside HubworldState.s
 b .GameScene_Extra
 .GameScene_Extra_Return:
 mr        r3, r31
@@ -378,7 +379,7 @@ blr
 .GLE ASSERT update__9GameSceneFv
 .GLE ENDADDRESS
 
-
+#Located inside HubworldState.s
 .GLE ADDRESS startStageBgm__9GameSceneFv +0x70
 b .GameScene_Extra3
 .GameScene_Extra3_Return:
@@ -393,6 +394,9 @@ loc_80452684:
 #Check SceneUtility.s
 b .RequestChangeStageAfterMiss
 
+#Called from HubworldState.s
+.EndScenarioSelectBgm:
+b sub_8001BB90 #Needed to end the Scenario Select music
 
 
 #Fixes for making sure you respawn at the correct location
@@ -412,6 +416,7 @@ b .requestGalaxyMove_Ex_Return
 
 
 .exePowerStarGetDemo_Ex:
+b requestChangeStageAfterStageClear__2MRFv
 stwu      r1, -0x10(r1)
 mflr      r0
 stw       r0, 0x14(r1)
@@ -421,6 +426,7 @@ lwz       r0, 0x14(r1)
 mtlr      r0
 addi      r1, r1, 0x10
 blr
+
 .GLE ENDADDRESS
 
 .GLE ADDRESS exeGrandStarGetDemo__22GameStageClearSequenceFv +0x98
@@ -492,6 +498,3 @@ bl .exePowerStarGetDemo_Ex
 .GLE ADDRESS exeGrandStarGetDemo__22GameStageClearSequenceFv +0x11C
 bl .exePowerStarGetDemo_Ex
 .GLE ENDADDRESS
-
-
-
