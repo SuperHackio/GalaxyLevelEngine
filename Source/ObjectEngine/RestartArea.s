@@ -36,7 +36,7 @@ blr
 
 .GLE ENDADDRESS
 
-.GLE ADDRESS __ct__28SoundEmitterCubeWorldMapSyncFPCc
+.GLE ADDRESS __ct__28SoundEmitterCubeWorldMapSyncFiPCc
 .RestartArea_Ctor:
 stwu      r1, -0x10(r1)
 mflr      r0
