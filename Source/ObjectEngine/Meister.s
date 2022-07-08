@@ -121,7 +121,7 @@ mr        r3, r29
 addi      r5, r31, 0
 li        r4, 4
 li        r6, 0
-bl        initSound__9LiveActorFlPCcbRCQ29JGeometry8TVec3<f>
+bl        initSound__9LiveActorFlPCcPCQ29JGeometry8TVec3<f>RCQ29JGeometry8TVec3<f>
 
 
 addi      r11, r1, 0x150
@@ -134,8 +134,9 @@ blr
 
 
 
-.END_OF_MEISTER:
+.END_OF_MEISTER_CODE:
 #This indicator is here so the compiler knows where to place code. We have a lot of extra room here, which was the goal.
+
 
 
 .GLE ASSERT __sinit_\Meister_cpp
@@ -201,5 +202,6 @@ blr
 .int isReactionNerve__8NPCActorCFv
 .int isSensorSpinCloudBlock__8NPCActorCFPC9HitSensor
 
-
+#Got a lot of space here
+.END_OF_MEISTER_DATA:
 .GLE ENDADDRESS
