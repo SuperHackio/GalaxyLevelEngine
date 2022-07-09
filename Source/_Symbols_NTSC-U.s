@@ -70,6 +70,8 @@
 .set startScene__11AudSceneMgrFv, 0x800856B0
 .set isValidScenarioOpeningCamera__9GameSceneCFv, 0x804525A0
 .set startStageBgm__9GameSceneFv, 0x804525F0
+.set exeScenarioOpeningCamera__9GameSceneFv, 0x80451D50
+.set sub_80451CA0, 0x80451CA0
 
 .set requestChangeStageAfterMiss__2MRFv, 0x804D6780
 .set startScene__20GameSequenceFunctionFv, 0x804D85D0

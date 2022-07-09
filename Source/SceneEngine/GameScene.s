@@ -394,9 +394,50 @@ loc_80452684:
 #Check SceneUtility.s
 b .RequestChangeStageAfterMiss
 
+
+
+
+
+
+
 #Called from HubworldState.s
 .EndScenarioSelectBgm:
 b sub_8001BB90 #Needed to end the Scenario Select music
+
+
+
+
+
+#Thanks I hate it
+.EndScenarioSelectBgmWithForceToBlank:
+bl sub_8001BB90
+mr        r3, r31
+b .EndScenarioSelectBgmWithForceToBlank_Return
+
+.GLE ADDRESS exeScenarioOpeningCamera__9GameSceneFv +0x74
+b .EndScenarioSelectBgmWithForceToBlank
+.EndScenarioSelectBgmWithForceToBlank_Return:
+.GLE ENDADDRESS
+
+
+#Thanks I hate it 2: electric bugaloo
+.EndScenarioSelectBgmWithForceToBlank2:
+bl sub_8001BB90
+mr        r3, r31
+b .EndScenarioSelectBgmWithForceToBlank2_Return
+
+.GLE ADDRESS sub_80451CA0 +0x44
+b .EndScenarioSelectBgmWithForceToBlank2
+.EndScenarioSelectBgmWithForceToBlank2_Return:
+.GLE ENDADDRESS
+
+
+
+
+
+
+
+
 
 
 #Fixes for making sure you respawn at the correct location
