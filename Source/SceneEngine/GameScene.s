@@ -432,14 +432,6 @@ b .EndScenarioSelectBgmWithForceToBlank2
 .GLE ENDADDRESS
 
 
-
-
-
-
-
-
-
-
 #Fixes for making sure you respawn at the correct location
 .GetSceneStartID:
 lwz       r3, sInstance__29SingletonHolder_10GameSystem_ - STATIC_R13(r13)

@@ -500,4 +500,7 @@
 #弱
 .set Weak_JP_Str, 0x807D027C
 
+
+#NPC global event function
+.set branchFuncGameProgress__2MRFi, 0x8004A040
 .GLE REGION END

@@ -16,6 +16,28 @@ beqlr
 li r3, 1
 blr
 
+
+#Faster wipe to avoid wasting peoples time....
+.NBO_DecideWipe:
+bl .MR_IsNoBootActive
+cmpwi r3, 0
+bgt .NBO_WIPE_FAST
+
+.NBO_WIPE_DEFAULT:
+li        r3, 0x6E
+b .NBO_DECIDE_WIPE_RETURN
+
+.NBO_WIPE_FAST:
+li r3, 0x30
+b .NBO_DECIDE_WIPE_RETURN
+
+.GLE ADDRESS exePowerStarGetDemo__22GameStageClearSequenceFv +0x8C
+b .NBO_DecideWipe
+.NBO_DECIDE_WIPE_RETURN:
+.GLE ENDADDRESS
+
+
+
 #First lets edit the PowerStar object to let us get the pointer to the star
 .GLE ADDRESS receiveOtherMsg__9PowerStarFUlP9HitSensorP9HitSensor +0xA4
 b .PowerStar_ReceiveOtherMessage_Ex
