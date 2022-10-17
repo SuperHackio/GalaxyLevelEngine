@@ -96,6 +96,11 @@ PeachStarGet:
 NoBootOut:
     .string "NoBootOut"
 
+#Allows users to tell levels to not pause the music when pausing the game.
+#The value used here is passed to MoveVolume
+PauseVol:
+    .string "PauseVol"
+
 id:
     .string "id"
     

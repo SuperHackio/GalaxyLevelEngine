@@ -181,6 +181,15 @@ lis r3, NoBootOut@ha
 addi r3, r3, NoBootOut@l
 li r5, 0
 b .MR_GetScenarioSetting
+
+.GetPauseVol:
+lis r3, PauseVol@ha
+addi r3, r3, PauseVol@l
+li r4, 0
+li r5, 1
+b .MR_GetCurrentScenarioSetting_Type
+
+
 .GLE ASSERT isStageKoopaVs__2MRFv
 .GLE ENDADDRESS
 

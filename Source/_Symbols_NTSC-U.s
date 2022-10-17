@@ -189,6 +189,9 @@
 
 .set isJustGetStar__20GameSequenceFunctionFPCcl, 0x804D5C80
 
+.set updatePauseMenu__9AudSystemFv, 0x80079910
+.set pause__9AudSystemFv, 0x800794E0
+
 #Unknown symbols
 .set sub_804E31A0, 0x804E31A0
 .set sub_8048EE60, 0x8048EE60

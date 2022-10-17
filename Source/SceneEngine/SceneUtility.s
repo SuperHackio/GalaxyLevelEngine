@@ -521,8 +521,12 @@ blr
 #Especially because all options are just bytes lol
 
 .MR_GetCurrentScenarioSetting:
+li r5, 0 #default to byte
+
+.MR_GetCurrentScenarioSetting_Type:
 #r3 = Setting Name
 #r4 = Reverse
+#r5 = Type. See .MR_GetScenarioSetting_Type
 stwu      r1, -0x10(r1)
 mflr      r0
 stw       r0, 0x14(r1)
@@ -531,11 +535,12 @@ stw       r30, 0x08(r1)
 
 mr r31, r3
 mr r30, r4
+mr r6, r5
 bl getCurrentScenarioNo__2MRFv
 mr r4, r3
 mr r3, r31
 mr r5, r30
-bl .MR_GetScenarioSetting
+bl .MR_GetScenarioSetting_Type
 
 lwz       r31, 0x0C(r1)
 lwz       r30, 0x08(r1)
@@ -545,19 +550,29 @@ addi      r1, r1, 0x10
 blr
 
 .MR_GetScenarioSetting:
+li r6, 0 #default to byte
+
+.MR_GetScenarioSetting_Type:
 #r3 = Setting Name
 #r4 = Scenario ID
 #r5 = Reverse
-stwu      r1, -0x80(r1)
+#r6 = Type, 0 = Byte, 1 = Float
+stwu      r1, -0x100(r1)
 mflr      r0
-stw       r0, 0x84(r1)
-addi      r11, r1, 0x80
-bl _savegpr_22
+stw       r0, 0x104(r1)
+addi      r11, r1, 0x100
+bl _savegpr_21
+
+#reset f1 to 0.0f
+li r0, 0
+stw r0, 0x08(r1)
+lfs f1, 0x08(r1)
 
 mr r31, r3
 mr r30, r5
 mr r29, r4
 li r26, 0 #function flag
+mr r21, r6
 
 bl .MR_GetStartZoneID
 bl .StageDataHolder_GetScenarioSettings
@@ -567,6 +582,12 @@ cmpwi r3, 0
 #since r3 is already 0, we can just branch. It will still get inverted if requested.
 beq .MR_GetScenarioSetting_Return
 mr r28, r3
+
+#make sure the field exists...
+mr r4, r31
+bl isExistItemInfo__8JMapInfoFPCc
+cmpwi r3, 0
+beq .MR_GetScenarioSetting_Return
 
 .GetScenario:
 li r22, 0
@@ -626,38 +647,39 @@ addi r3, r1, 0x08
 mr r4, r28
 mr r5, r31
 mr r6, r22
+
+cmpwi r21, 0
+beq .__readByte
+
+#keeping this label here in case I need to add another data type...
+.__readFloat:
+bl getCsvDataF32__2MRFPfPC8JMapInfoPCcl
+lfs f1, 0x08(r1)
+b .MR_GetScenarioSetting_Return
+
+.__readByte:
 bl getCsvDataU8__2MRFPUcPC8JMapInfoPCcl
 lbz r3, 0x08(r1)
 
 .MR_GetScenarioSetting_Return:
+cmpwi r21, 0
+bne .NoInvert #can't invert anything but bytes
+
 cmpwi r30, 0
 beq .NoInvert
 xori r3, r3, 1 #Flip the bit so 0 becomes 1 and 1 becomes 0
 .NoInvert:
 
-addi      r11, r1, 0x80
-bl _restgpr_22
-lwz       r0, 0x84(r1)
+addi      r11, r1, 0x100
+bl _restgpr_21
+lwz       r0, 0x104(r1)
 mtlr      r0
-addi      r1, r1, 0x80
+addi      r1, r1, 0x100
 blr
-
-.StageDataHolder_GetScenarioSettings:
-#StageDataHolder::getScenarioSettings
-lis r4, ScenarioSettings@ha
-addi r4, r4, ScenarioSettings@l
-b .StageDataHolder_GetListJMapInfo
-
-.MR_GetGameSequenceProgress:
-lwz       r3, sInstance__29SingletonHolder_10GameSystem_ - STATIC_R13(r13)
-lwz       r3, 0xC(r3)
-lwz       r3, 0(r3)
-blr
-
 
 .GLE PRINTADDRESS
 #Can't go past here
-.GLE ASSERT sub_804E73B0
+.GLE ASSERT sub_804E6820
 .GLE ENDADDRESS
 
 #There are some functions that will need to be altered to use this new warp system
@@ -692,6 +714,16 @@ blr
 .GLE ENDADDRESS
 #======================================================
 .GLE ADDRESS sub_804E73B0
+blr
+.StageDataHolder_GetScenarioSettings:
+#StageDataHolder::getScenarioSettings
+lis r4, ScenarioSettings@ha
+addi r4, r4, ScenarioSettings@l
+b .StageDataHolder_GetListJMapInfo
+.MR_GetGameSequenceProgress:
+lwz       r3, sInstance__29SingletonHolder_10GameSystem_ - STATIC_R13(r13)
+lwz       r3, 0xC(r3)
+lwz       r3, 0(r3)
 blr
 .MR_UpdateStageMode:
 #re-written twice now... this game sucks
