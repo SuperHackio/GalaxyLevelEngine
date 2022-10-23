@@ -350,7 +350,9 @@ addi      r1, r1, 0x10
 blr
 
 #NrvLoadingIcon::LoadingIconAppear::execute(const(Spine *))
+
 .GLE PRINTADDRESS
+
 .LoadingIcon_Appear:
 stwu      r1, -0x10(r1)
 mflr      r0
@@ -365,8 +367,19 @@ bl isStageFileSelect__2MRFv
 cmpwi r3, 1
 beq .LoadIcon_SkipWipe
 
-bl isSystemWipeBlank__2MRFv
+li r3, 37
+bl isExistSceneObj__2MRFi
 cmpwi r3, 0
+beq .SkipSceneWipe
+
+bl isWipeBlank__2MRFv
+.SkipSceneWipe:
+stw r3, 0x08(r1)
+
+bl isSystemWipeBlank__2MRFv
+#r3 already set
+lwz r4, 0x08(r1)
+cmpw r3, r4
 beq .exeAppear_Return
 
 .LoadIcon_SkipWipe:
