@@ -192,6 +192,27 @@
 .set updatePauseMenu__9AudSystemFv, 0x80079910
 .set pause__9AudSystemFv, 0x800794E0
 
+
+.set getPlayerLife__2MRFv, 0x8004FE10
+.set branchFunc__7KinopioFUl, 0x8034DD50
+
+
+.set branchFunc__15CaretakerHunterFUl, 0x80346940
+.set eventFunc__15CaretakerHunterFUl, 0x803469C0
+
+.set branchFunc__11KinopioBankFUl, 0x8034EBC0
+.set eventFunc__11KinopioBankFUl, 0x8034ECF0
+
+.set eventFunc__16LuigiIntrusivelyFUl, 0x80351710
+
+.set branchFunc__6PichanFUl, 0x80359380
+.set eventFunc__6PichanFUl, 0x803593F0
+
+.set branchFunc__11PichanRacerFUl, 0x8035A270
+.set eventFunc__11PichanRacerFUl, 0x8035A2E0
+
+.set eventFunc__4TicoFUl, 0x80366740
+
 #Unknown symbols
 .set sub_804E31A0, 0x804E31A0
 .set sub_8048EE60, 0x8048EE60
@@ -307,7 +328,11 @@
 
 .set unk_807D2AB4, 0x807D2AB4
 
+#GlobalAnimeFunc
+.set animeFunc__19MameMuimuiAttackManFUl, 0x80351F60
+
 #Symbols that point to strings already in the dol
+.set AnimName, 0x8067EC78
 .set CometLimitTimer, 0x806FF320
 .set PowerStarColor, 0x80699EEC
 .set GrandStar_StringLoc, 0x806FC348
@@ -506,4 +531,48 @@
 
 #NPC global event function
 .set branchFuncGameProgress__2MRFi, 0x8004A040
+.set __vt__11TakeOutStar, 0x8065EBF8
+.set takeOut__11TakeOutStarFv, 0x8004A220
+.set getCurrentScore__2MRFv, 0x80376FD0
+.set requestStageRestart__2MRFv, 0x804D6840
+
+#Caretaker
+.set CaretakerData, 0x806B7BD0
+
+#Nerves
+.set sInstance__Q212NrvCaretaker16CaretakerNrvWait, 0x807D482C
+.set unk_807D4828, 0x807D4828
+.set unk_807D4824, 0x807D4824
+.set unk_807D4820, 0x807D4820
+
+.set Caretaker_Str, 0x806B7C30
+.set Caretaker_BodyColor_Str, 0x806B7C3C
+.set Caretaker_Bspinhit_Str, 0x806B7C54
+.set Caretaker_Bwaitstand_Str, 0x806B7C6C
+.set Caretaker_Btrampled_Str, 0x806B7C48
+.set Caretaker_Btalkhelp_Str, 0x806B7C60
+.set Caretaker_Bruntalk_Str, 0x806B7C78
+.set Caretaker_Bwaitrun_Str, 0x806B7C84
+.set Caretaker_Dirt_Str, 0x806B7C90
+.set Caretaker_Wait_Str, 0x806B7C98
+.set Caretaker_TakeOutStarCaretakerFreeHand_Str, 0x806B7CA0
+.set Caretaker_TakeOutStarCaretaker_Str, 0x806B7CC0
+.set Caretaker_SpinHit_Str, 0x806B7CD8
+.set Caretaker_TalkNormal_Str, 0x806B7CF8
+.set Caretaker_WaitRun_Str, 0x806B7D08
+.set Caretaker_Trampled_Str, 0x806B7CE0
+.set Caretaker_TalkAngry_Str, 0x806B7CEC
+.set Caretaker_GarbageManagement, 0x806B7D10
+
+.set Caretaker_flt_0, 0x807DF044
+.set Caretaker_flt_3, 0x807DF044
+.set Caretaker_flt_2, 0x807DF044
+.set Caretaker_flt_0_1, 0x807DF044
+.set Caretaker_flt_0_05, 0x807DF044
+.set Caretaker_flt_350, 0x807DF048
+
+.set CareTaker_BranchFuncComet, 0x806B7C00
+.set CareTaker_EventFuncComet, 0x806B7C0C
+.set CareTaker_BranchFuncStar, 0x806B7C18
+.set CareTaker_AnimeFunc, 0x806B7C24
 .GLE REGION END
