@@ -185,7 +185,12 @@ blr
 
 ScenarioSwitch_ObjName:
 ScenarioSwitch_BcsvName:
-    .string "ScenarioSwitch" AUTO
+    .string "ScenarioSwitch"
+    
+#This is here because yes
+.set NPC_AnimTable_BCSVNamePtr, NPC_AnimTable_BcsvName
+NPC_AnimTable_BcsvName:
+    .string "NPCAnimeFunc" AUTO
 
 ScenarioSwitch_VTable:
 .int 0

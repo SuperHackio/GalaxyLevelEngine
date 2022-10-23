@@ -2,15 +2,13 @@
 #That lets us use MapObjActorInitInfo::setupProjmapMtx((bool,bool)) on any object
 #with "ProjMap" in the name.
 
-.GLE ADDRESS __sinit_\MarioFacePlanet_cpp
-blr
-
+.GLE ADDRESS .NPC_Utility_End
 .CheckForProjMapObj:
 li r5, 1
 bl isExistString__2MRFPCcPCPCcUl
 b .CheckForProjMapObj_Return
-
 .GLE ENDADDRESS
+
 
 .GLE ADDRESS setupInitInfoTypical__15MapObjActorUtilFP19MapObjActorInitInfoPCc +0x4C
 mr        r3, r30
@@ -19,6 +17,7 @@ b .CheckForProjMapObj
 .CheckForProjMapObj_Return:
 #Here is a cmpwi r3, 0
 .GLE ENDADDRESS
+
 
 .GLE ADDRESS BombZoneGravityDisplayPanel
 #Replace the string

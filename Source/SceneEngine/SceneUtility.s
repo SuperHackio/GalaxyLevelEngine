@@ -1661,6 +1661,28 @@ slwi r4, r4, 1
 lhzx r4, r5, r4
 blr
 
+#============== TOTALLY UNRELATED POWERUP FUNCTION =============
+#no sus here. Totally not just copied from SMG1........(spoiler: it was copied from SMG1)
+#r3 = Powerup to check for
+.MR_isPlayerElementMode:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+stw       r31, 0xC(r1)
+
+mr        r31, r3
+bl        getPlayerActor__11MarioAccessFv
+lhz       r0, 0x6F8(r3) #except this. This wasn't copied
+subf      r0, r31, r0
+cntlzw    r0, r0
+srwi      r3, r0, 5
+
+lwz       r31, 0xC(r1)
+lwz       r0, 0x14(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
+
 .GLE ADDRESS getRailInfo__2MRFP12JMapInfoIterPPC8JMapInfoRC12JMapInfoIter +0x40
 b .MR_getRailInfo_Ext
 .MR_getRailInfo_Ext_Return:
@@ -1692,5 +1714,5 @@ b .ExeNoStage_StartBgm
 .ExeNoStage_StartBgm_Return:
 .GLE ENDADDRESS
 
-#.GLE ASSERT 0x804E7BC0
+.GLE ASSERT __ct__14WorldMapHolderFv
 .GLE ENDADDRESS

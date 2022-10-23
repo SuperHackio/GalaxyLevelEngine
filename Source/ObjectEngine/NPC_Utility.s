@@ -5,15 +5,56 @@
 #=========== Flow Checkers ===========
 #Got some nice stuff here, mostly more options for MSBF
 
-#Dead for now, don't have enough development time to add this in GLE-V2
+.GLE ADDRESS branchFuncGameProgress__2MRFi -0x0C
+
+#MR::GlobalEventFunc(NPCActor*, EventData)
+#r3 = NPCActor* Caller
+#r4 = Event Data Value
+#  0xF000 = Event Type
+#  0x0FFF = Parameter Value
+#returns 0 if the event type is 0, returns 1 otherwise. If 0, then execute the vanilla function of the NPC (like Taking out a star)
+.MR_GlobalEventFunc:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+stw       r31, 0x0C(r1)
+stw       r30, 0x08(r1)
+
+srawi r31, r4, 0x0C #Get the event type
+rlwinm r30, r4, 0, 20, 31 #Get the parameter value
+
+
+#== Event Types ==
+#0 = NoEvent
+#1 = MR::getCoinNum((void)) (param ignored, sets the message number argument)
+#2 = MR::getPurpleCoinNum((void)) (param ignored, sets the message number argument)
+#3 = MR::getStarPieceNum((void)) (param ignored, sets the message number argument)
+#4 = MR::getStockedCoin((void)) (param ignored, sets the message number argument)
+#5 = GameDataFunction::getStockedStarPieceNum((void)) (param ignored, sets the message number argument)
+#6 = MR::forceKillPlayerByGroundRace((void)) (param ignored)
+#7 = 
+#8 = 
+#9 = 
+#A = 
+#B = 
+#C = 
+#D = 
+#E = 
+#F = 
 
 
 
 
 
+lwz       r31, 0x0C(r1)
+lwz       r30, 0x08(r1)
+lwz       r0, 0x14(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
 
-
-
+.GLE ASSERT branchFuncGameProgress__2MRFi +0x11C
+.GLE ENDADDRESS
 
 
 
@@ -277,9 +318,8 @@ blr
 #.GLE ADDRESS 0x8062E02C
 #b .DEBUG
 #.DEBUGRETURN:
-
+.GLE ASSERT makeActorDead__23MarioFacePlanetPreviousFv
 .GLE ENDADDRESS
-
 #============================
 .GLE ASSERT __sinit_\MarioFacePlanetPrevious_cpp
 .GLE ENDADDRESS
