@@ -207,6 +207,7 @@ cmpwi r3, 0
 ble .QuickWarpArea_NoLoadIcon
 bl .MR_StartLoadingIcon
 
+.GLE PRINTADDRESS
 .QuickWarpArea_NoLoadIcon:
 #ok finally
 #First lets make the name of our target
@@ -214,7 +215,7 @@ addi      r3, r1, 0x08
 li        r4, 0x40
 lis r5, .QuickWarpArea_PositionNameFormat@ha
 addi r5, r5, .QuickWarpArea_PositionNameFormat@l
-mr        r6, r28
+lwz r6, 0x20(r31) #Load the Wipe Time
 crclr     4*cr1+eq
 bl        snprintf
 
