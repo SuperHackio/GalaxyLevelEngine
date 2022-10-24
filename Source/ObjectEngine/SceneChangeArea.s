@@ -192,6 +192,7 @@ bne .SkipForceCloseCircle
 
 .ForceCloseCircle:
 bl forceCloseSystemWipeCircle__2MRFv
+bl .MR_SystemCircleWipeToCenter
 
 .SkipForceCloseCircle:
 

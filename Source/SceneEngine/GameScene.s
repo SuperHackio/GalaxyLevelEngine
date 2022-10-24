@@ -454,6 +454,7 @@ stwu      r1, -0x10(r1)
 mflr      r0
 stw       r0, 0x14(r1)
 bl forceCloseSystemWipeCircle__2MRFv
+bl .MR_SystemCircleWipeToCenter
 bl requestChangeStageAfterStageClear__2MRFv
 lwz       r0, 0x14(r1)
 mtlr      r0

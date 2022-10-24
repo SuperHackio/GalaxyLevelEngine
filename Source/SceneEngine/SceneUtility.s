@@ -1270,6 +1270,7 @@ mr r5, r28
 addi r6, r1, 0x08
 bl changeSceneStage__20GameSequenceFunctionFPCcllP10JMapIdInfo
 bl forceCloseSystemWipeCircle__2MRFv
+bl .MR_SystemCircleWipeToCenter
 b requestChangeStageAfterMiss_Return
 
 
@@ -1516,6 +1517,7 @@ bgt .ChangeStageAfterStageClear_Dont
 
 .ChangeStageAfterStageClear_Force:
 bl forceCloseSystemWipeCircle__2MRFv
+bl .MR_SystemCircleWipeToCenter
 bl .MR_ChangeStageOnStarGet
 b .ChangeStageAfterStageClear_Return
 
