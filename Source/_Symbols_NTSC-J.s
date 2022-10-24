@@ -1,4 +1,5 @@
 .GLE REGION NTSC-J
+.set sub_80495E20, 0x80495E20
 .set sub_804D5DF0, 0x804D5DF0
 .set Ctor_MiniMeister, 0x804E3880
 .set Sinit_MiniMeister, 0x804E4390
