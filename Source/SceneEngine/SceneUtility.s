@@ -1323,10 +1323,6 @@ stw       r0, 0x64(r1)
 addi      r11, r1, 0x60
 bl _savegpr_25
 
-b .ResetForGameOver
-.GameOverReturn:
-
-
 bl calcCurrentPowerStarNum__16GameDataFunctionFv
 cmpwi r3, 0
 ble .SkipGameOverDemoFlag

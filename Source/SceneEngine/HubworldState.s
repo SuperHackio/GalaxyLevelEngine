@@ -1127,7 +1127,17 @@ b .GameScene_Extra3_Return
 .NoBgm2:
 b loc_80452684
 
+
+
+
+
 #Needed to put this here 'cause I couldn't fit inside SceneUtility.s
+.GLE ADDRESS sub_804D5DF0 +0x14
+b .ResetForGameOver
+nop
+.GameOverReturn:
+.GLE ENDADDRESS
+
 .ResetForGameOver:
 
 bl forceCloseSystemWipeFade__2MRFv
@@ -1140,6 +1150,8 @@ bl .MR_GetGameSetting
 bl addPlayerLeft__16GameDataFunctionFi
 b .GameOverReturn
 .GLE ENDADDRESS
+
+
 
 .GLE ADDRESS HubworldState_Strings
 #String table

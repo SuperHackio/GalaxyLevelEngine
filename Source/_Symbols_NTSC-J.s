@@ -1,4 +1,5 @@
 .GLE REGION NTSC-J
+.set sub_804D5DF0, 0x804D5DF0
 .set Ctor_MiniMeister, 0x804E3880
 .set Sinit_MiniMeister, 0x804E4390
 .set Sinit_MiniPlayerRocket, 0x804E5300

@@ -310,6 +310,7 @@
 .set sub_802C9700, 0x802C9700
 
 .set sub_8045DB80, 0x8045DB80
+.set sub_804D5DF0, 0x804D5DF0
 
 #BootOut.s
 .set sub_804E53B0, 0x804E53B0
