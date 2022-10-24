@@ -14,6 +14,8 @@ mr r29, r3 #Scene*
 
 #Calls to a blr. Omitting.
 #bl createHioBasicNode__13SceneFunctionFP5Scene
+li r3, 0
+bl stopSubBGM__2MRFUl
 bl startStageFileLoad__13SceneFunctionFv
 
 #Reset the loading icon
