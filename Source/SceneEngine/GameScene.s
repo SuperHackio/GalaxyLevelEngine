@@ -14,8 +14,6 @@ mr r29, r3 #Scene*
 
 #Calls to a blr. Omitting.
 #bl createHioBasicNode__13SceneFunctionFP5Scene
-li r3, 0
-bl stopSubBGM__2MRFUl
 bl startStageFileLoad__13SceneFunctionFv
 
 #Reset the loading icon
@@ -462,6 +460,19 @@ lwz       r0, 0x14(r1)
 mtlr      r0
 addi      r1, r1, 0x10
 blr
+
+
+
+.GLE ADDRESS exeConfirm__9PauseMenuFv +0x88
+b .StopSubBGM
+.StopSubBGM_Return:
+.GLE ENDADDRESS
+
+.StopSubBGM:
+li r3, 0x00
+bl stopSubBGM__2MRFUl
+li        r3, 0x5A
+b .StopSubBGM_Return
 
 .GLE ENDADDRESS
 
