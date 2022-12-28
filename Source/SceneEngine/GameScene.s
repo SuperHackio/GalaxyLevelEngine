@@ -197,6 +197,12 @@ bl createSceneObj__2MRFi
 li r3, 0x81      # InformationObserver
 bl createSceneObj__2MRFi
 
+.GLE PRINTMESSAGE == GameScene::init Binding position ==
+.GLE PRINTADDRESS
+#=== BINDING ===
+nop
+#If you need access to GameScene::init (with Syati related code), you can hook here.
+
 #If the selected scenario needs the ScoreAttackAccessor, create it
 #This function was overridden in ScoreAttackMan.s
 bl isStageScoreAttack__2MRFv
