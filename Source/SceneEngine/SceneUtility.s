@@ -1,8 +1,6 @@
 #Scene Utility for the GLE
 
-.GLE ADDRESS sub_804E6190
-#Take out a static initilizer
-blr
+.GLE ADDRESS .SCENARIO_UTILITY_LINK
 
 #BCSV Get shortcuts
 .StageDataHolder_GetSceneChangeList:
@@ -497,11 +495,6 @@ addi      r1, r1, 0x50
 blr
 
 .GLE PRINTADDRESS
-.GLE ASSERT sub_804E6680
-.GLE ADDRESS sub_804E6680
-#Take out another static initilizer
-blr
-
 .MR_GetStartZoneID:
 stwu      r1, -0x10(r1)
 mflr      r0
@@ -520,6 +513,8 @@ blr
 #This BCSV doesn't even need to exist. All settings will be marked as the default option if so.
 #Especially because all options are just bytes lol
 
+.GLE PRINTMESSAGE == MR::getCurrentScenarioSetting Binding position ==
+.GLE PRINTADDRESS
 .MR_GetCurrentScenarioSetting:
 li r5, 0 #default to byte
 
@@ -677,10 +672,66 @@ mtlr      r0
 addi      r1, r1, 0x100
 blr
 
+
+#===========================================================
+#This function will iterate through all the NameObj's that have the same name, and call a function with the object as a parameter.
+#The function pointer can also be part of the object's class because woo logic.
+#GLE::forEachNameObj((const char *, Function<NameObj*> *))
+.GLE_ForEachNameObj:
+stwu      r1, -0x30(r1)
+mflr      r0
+stw       r0, 0x34(r1)
+addi      r11, r1, 0x30
+bl _savegpr_26
+
+mr r31, r3
+mr r30, r4
+
+bl getSceneNameObjHolder__24@unnamed@SystemUtil_cpp@Fv
+mr r29, r3
+
+li        r28, 0
+li        r27, 0
+b .forEachNameObj_Loop
+
+.forEachNameObj_LoopStart:
+lwz       r3, 0(r29)
+lwzx      r26, r3, r27
+
+#Lets compare the name
+lwz r3, 0x04(r26)
+mr r4, r31
+bl isEqualString__2MRFPCcPCc
+cmpwi r3, 0
+beq .forEachNameObj_LoopContinue
+
+#We have a match!
+mtctr     r30
+mr r3, r26
+bctrl
+#Next obj!
+
+.forEachNameObj_LoopContinue:
+addi      r28, r28, 1
+addi      r27, r27, 4
+.forEachNameObj_Loop:
+lwz       r0, 8(r29)
+cmpw      r28, r0
+blt .forEachNameObj_LoopStart
+
+addi      r11, r1, 0x30
+bl _restgpr_26
+lwz       r0, 0x34(r1)
+mtlr      r0
+addi      r1, r1, 0x30
+blr
+#===========================================================
+
+
+.GLE PRINTMESSAGE EndWorldmapCode
 .GLE PRINTADDRESS
-#Can't go past here
-.GLE ASSERT sub_804E6820
 .GLE ENDADDRESS
+#End of the worldmap code for now
 
 #There are some functions that will need to be altered to use this new warp system
 #Well, they don't *have* to, but I'd like them to for consistency purposes

@@ -137,12 +137,15 @@ mr r3, r31
 lwz       r3, 0x11C(r3)
 bl kill__9LiveActorFv
 
-.GLE PRINTADDRESS
 bl .MR_ApplyStarMask
 bl getClearedPowerStarId__20GameSequenceFunctionFv
 mr r4, r3
 bl getClearedStageName__20GameSequenceFunctionFv
 bl setPowerStar__16GameDataFunctionFPCcl
+
+.GLE PRINTADDRESS
+#Finally fixing this. Reactivate all ScnearioSwitch objects!
+bl .ScenarioSwitch_ReviveAll
 
 #This needs to be the last thing we do
 li r3, 60

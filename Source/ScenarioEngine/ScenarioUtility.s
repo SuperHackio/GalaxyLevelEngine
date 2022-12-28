@@ -1,48 +1,17 @@
-.GLE ADDRESS Ctor_MiniMeister
-#This file contains utilities for loading the star pane information
+#Moving forwards by 4 because of the DEAD_STATIC
 
-#MR::makeStarPaneName(r3 = char const * StringLocation, r4 = int StarID)
-makeStarPaneName:
-mr r6, r4
-lis r5, Star_Format@ha
-addi r5, r5, Star_Format@l
-b makePaneName_Loc
+.GLE ADDRESS WorldmapCodeStart +0x04
+#This file contains utilities relating to Scenarios
+#========================================================================================
 
-#MR::makeNewBubblePaneName(r3 = char const * StringLocation, r4 = int StarID)
-makeNewBubblePaneName:
-mr r6, r4
-lis r5, New_Format@ha
-addi r5, r5, New_Format@l
-b makePaneName_Loc
-
-#MR::makeHiddenBubblePaneName(r3 = char const * StringLocation, r4 = int StarID)
-makeHiddenBubblePaneName:
-mr r6, r4
-lis r5, Hidden_Format@ha
-addi r5, r5, Hidden_Format@l
-b makePaneName_Loc
-
-#MR::makeCometBubblePaneName(r3 = char const * StringLocation, r4 = int StarID)
-makeCometBubblePaneName:
-mr r6, r4
-lis r5, Comet_Format@ha
-addi r5, r5, Comet_Format@l
-#Cheat here and just let the code continue
-
-#Used by the above functions
-makePaneName_Loc:
-li        r4, 0x08
-crclr     4*cr1+eq
-b        snprintf
-
-.GLE PRINTADDRESS
-#=========================
-#MR::isJMapEntryProgressComplete
+#TODO: Add a GLE Binding
+#bool GLE::isJMapEntryProgressComplete(JMapInfo* bcsv, s32 entryid)
 #This function will scan a BCSV Entry to see if all checks pass
 #r3 = JMapInfo
 #r4 = Index
 
 #will retirn true if none of the BCSV fields are present
+.GLE PRINTADDRESS
 isJMapEntryProgressComplete:
 stwu      r1, -0x140(r1)
 mflr      r0
@@ -267,6 +236,56 @@ mr r6, r30
 b getCsvDataStrOrNULL__2MRFPPCcPC8JMapInfoPCcl
 
 
+
+
+
+
+
+
+
+
+
+
+
+#========================================================================================
+
+
+#GLE::makeStarPaneName(r3 = char const * StringLocation, r4 = int StarID)
+makeStarPaneName:
+mr r6, r4
+lis r5, Star_Format@ha
+addi r5, r5, Star_Format@l
+b makePaneName_Loc
+
+#GLE::makeNewBubblePaneName(r3 = char const * StringLocation, r4 = int StarID)
+makeNewBubblePaneName:
+mr r6, r4
+lis r5, New_Format@ha
+addi r5, r5, New_Format@l
+b makePaneName_Loc
+
+#GLE::makeHiddenBubblePaneName(r3 = char const * StringLocation, r4 = int StarID)
+makeHiddenBubblePaneName:
+mr r6, r4
+lis r5, Hidden_Format@ha
+addi r5, r5, Hidden_Format@l
+b makePaneName_Loc
+
+#GLE::makeCometBubblePaneName(r3 = char const * StringLocation, r4 = int StarID)
+makeCometBubblePaneName:
+mr r6, r4
+lis r5, Comet_Format@ha
+addi r5, r5, Comet_Format@l
+#Cheat here and just let the code continue
+
+#Used by the above functions
+makePaneName_Loc:
+li        r4, 0x08
+crclr     4*cr1+eq
+b        snprintf
+
+#========================================================================================
+
 #I can't believe normal SMG2 doesn't have this...
 #GameDataFunction::getGameDataHolder((void))
 getGameDataHolder:
@@ -281,7 +300,7 @@ mtlr      r0
 addi      r1, r1, 0x10
 blr
 
-#=============================================
+#========================================================================================
 #Galaxy Registration
 makeStageRegisterFileName:
 mr        r6, r5
@@ -309,7 +328,7 @@ newMakeScenarioArchiveName_Return:
 .GLE ENDADDRESS
 
 
-#=============================================
+#========================================================================================
 .GLE ADDRESS getWorldNo__20GalaxyStatusAccessorCFv
 #GalaxyStatusAccessor::getWorldNo((void))
 #Replaced with a way to grab the GalaxyInfo BCSV, so returns a BCSV Pointer
@@ -318,14 +337,13 @@ lwz r3,0x0C(r3)
 blr
 .GLE ENDADDRESS
 
-#=============================================
+#========================================================================================
 #GalaxyStatusAccessor::IsStarOpen((long))
 .GLE ADDRESS isOpenScenario__20GalaxyStatusAccessorCFl
 b GalaxyStatusAccessor__isStarOpen
 .GLE ENDADDRESS
 
 
-#=============================================================
 #Custom replacement
 GalaxyStatusAccessor__isStarOpen:
 stwu r1, -0x100(r1)
@@ -425,20 +443,49 @@ mtlr      r0
 addi      r1, r1, 0x100
 blr
 
+#========================================================================================
 
-
-
-.GLE PRINTADDRESS
-.GLE ASSERT Sinit_MiniMeister
-
-.GLE ADDRESS Sinit_MiniMeister
-blr
-
+#TODO: Expand this!
 startScenarioSelectBgm:
+stwu r1, -0x20(r1)
+mflr      r0
+stw       r0, 0x24(r1)
+addi      r11, r1, 0x20
+bl _savegpr_29
+
+
+#Lets get the GalaxyStatusAccessor of this stage
+bl makeCurrentGalaxyStatusAccessor__2MRFv
+stw r3, 0x08(r1)
+addi r3, r1, 0x08
+bl getWorldNo__20GalaxyStatusAccessorCFv
+lis r4, SelectBgm@ha
+addi r4, r4, SelectBgm@l
+li r5, 2
+li r6, 0  #Always 0
+bl .getActiveEntryFromGalaxyInfo
+.GLE PRINTADDRESS
+cmpwi r3, 0
+bne .CustomSelectMusic
+
 lis r3, BGM_SMG2_COURSESELECT02@ha
 addi      r3, r3, BGM_SMG2_COURSESELECT02@l
+.CustomSelectMusic:
 li        r4, 0
-b        startStageBGM__2MRFPCcb
+bl        startStageBGM__2MRFPCcb
+
+
+addi      r11, r1, 0x20
+bl _restgpr_29
+lwz r0, 0x24(r1)
+mtlr      r0
+addi      r1, r1, 0x20
+blr
+#SelectBgm
+
+
+#========================================================================================
+
 
 #Used by ScenarioSelect
 Return_0x40_r27:
@@ -449,9 +496,17 @@ mtlr      r0
 addi      r1, r1, 0x40
 blr
 
+
+#========================================================================================
+
+
 #Luigi Comet Timer
 #Fun fact for anyone reading this - This Luigi comet timer was in GLE-V1 despite
 #the fact that there's no way to play as Luigi in GLE-V1... Oopsies
+.GLE ADDRESS getCometLimitTimer__20GalaxyStatusAccessorCFl
+b LuigiCometTimer
+.GLE ENDADDRESS
+
 LuigiCometTimer:
 stwu      r1, -0x20(r1)
 mflr      r0
@@ -504,62 +559,12 @@ mtlr      r0
 addi      r1, r1, 0x20
 blr
 
-#Old
 
-# mr r7, r3
-
-# bl isPlayerLuigi__2MRFv
-# cmpwi r3, 1
-# lwz       r3, 0(r7)
-# mr        r5, r4
-# addi      r6, r1, 0x08
-# beq .LuigiCometTimer_Luigi
-# lis       r4, CometLimitTimer@ha
-# addi      r4, r4, CometLimitTimer@l # "CometLimitTimer"
-# b .LuigiCometTimer_Cont
-
-# .LuigiCometTimer_Luigi:
-# lis       r4, LuigiMode@ha
-# addi      r4, r4, LuigiMode@l # "LuigiModeTimer"
-# .LuigiCometTimer_Cont:
-# bl        getValueS32__12ScenarioDataCFPCclPl
-
-# .LuigiCometTimer_CheckTimer:
-# cmpwi     r3, 0
-# li        r3, 0
-# beq       .loc_804D1CA0
-# lwz       r0, 0x08(r1)
-# cmpwi     r0, 0
-# beq       .loc_804D1CA0
-# li        r3, 1
-
-# .loc_804D1CA0:
-# cmpwi     r3, 0
-# beq       .loc_804D1CB0
-# lwz       r3, 0x08(r1)
-# b         .loc_804D1CB4
-
-# .loc_804D1CB0:
-# li        r3, 0
-
-# .loc_804D1CB4:
-# lwz       r0, 0x24(r1)
-# mtlr      r0
-# addi      r1, r1, 0x20
-# blr
-
-.GLE ADDRESS getCometLimitTimer__20GalaxyStatusAccessorCFl
-b LuigiCometTimer
-.GLE ENDADDRESS
-
-.GLE PRINTADDRESS
+#========================================================================================
 #========== Power Star Colours ==========
 
 #PowerStar::getColorInDemo
 #replacement
-.GLE ADDRESS __sinit_\MarioFacePlanetPrevious_cpp
-blr
-
 PowerStar_getColorInDemo:
 li r6, 0
 li r7, 0
@@ -704,7 +709,9 @@ mtlr      r0
 addi      r1, r1, 0x70
 blr
 
-#=========================================
+#========================================================================================
+
+
 #GameDataFunction::isOnGalaxyFlagTicoCoin((char const *))
 #An addition to let users say there's no comet medal and still have the galaxy "completable"
 .GLE ADDRESS isOnGalaxyFlagTicoCoin__16GameDataFunctionFPCc +0x0C
@@ -739,7 +746,7 @@ mtlr      r0
 addi      r1, r1, 0x10
 blr
 
-#=========================================
+#========================================================================================
 #r3 = JMapInfo*
 #r4 = Type to search for
 #r5 = Mode - 0 = return bool | 1 = return Param00int | 2 = return Param00Str
@@ -893,6 +900,7 @@ addi      r1, r1, 0x70
 blr
 
 
+#========================================================================================
 
 
 #GameSequenceFunction::getPowerStarColour((bool *))
@@ -1000,14 +1008,20 @@ lwz       r31, 0x0C(r1)
 mtlr      r0
 addi      r1, r1, 0x10
 blr
-.GLE ASSERT sub_802C8910
+.GLE PRINTMESSAGE EndWorldmapCode
+.GLE PRINTADDRESS
+.SCENARIO_UTILITY_LINK:
 .GLE ENDADDRESS
+#End of the worldmap usage for now
 
 .GLE ADDRESS getBtpFrameCurrentStage__9PowerStarFl
 b GetBTPFrameOverride
 .GLE ENDADDRESS
 
-#===============================
+
+#========================================================================================
+
+
 .GLE ADDRESS makeBeginScenarioDataIter__2MRFP16ScenarioDataIter
 #MR::makeBeginScenarioDataIter((void))
 stwu      r1, -0x10(r1)
@@ -1065,6 +1079,10 @@ blr
 .GLE ADDRESS sub_804D88F0
 blr
 .GLE ENDADDRESS
+
+
+#========================================================================================
+
 
 #===== Grand Stars =====
 .GLE ADDRESS GrandStar_StringLoc
@@ -1156,7 +1174,7 @@ bl .ScenarioData_isPowerStarSeeker
 #GalaxyStatusAccessor::getGreenStarNum(const(void))
 #function removal is above Seeker Star section.
 
-.GLE ADDRESS sub_804D2200
+.GLE ADDRESS getGreenStarNumOwned__20GalaxyStatusAccessorCFv
 li r3, 0
 blr
 
@@ -1225,6 +1243,15 @@ blr
 blr
 .GLE ENDADDRESS
 
+
+
+.GLE ADDRESS sub_804E8E30
+#no idea what this function does but it can crash the AllStarList so away it goes!
+li r3, 1
+blr
+.GLE ENDADDRESS
+
+
 .GLE ADDRESS ScenarioEngineStringTable
 RequireScenarioName_Format:
     .string "RequireScenarioName%d"
@@ -1267,6 +1294,9 @@ Seeker:
     
 StarMask:
     .string "Mask" 
+    
+SelectBgm:
+    .string "SelectBgm" 
     
 CometMedalStatus:
     .string "NoTicoCoin" AUTO

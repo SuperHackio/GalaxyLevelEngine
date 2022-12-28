@@ -325,6 +325,9 @@
 .set sInstance__Q212NrvPowerStar27PowerStarNrvWaitStartAppear, 0x807D40E0
 .set startStage__17GameSceneFunctionFv, 0x80452D70
 .set startLastStageBGM__2MRFv, 0x8001B080
+#-------------------------------------------------------
+
+.set sub_804E8E30, 0x804E8E30
 
 #============================
 
@@ -427,6 +430,7 @@
 .set MameMuimuiScorer_RemapList, 0x8068C040
 
 #Other symbols...
+.set STATIC_INIT_LIST, 0x80643D20
 .set STATIC_R2, 0x807DECA0
 .set STATIC_R13, 0x807D7320
 .set UnknownGameScene_Init_NameObj_Thingy, 0x806EF934
@@ -577,4 +581,20 @@
 .set CareTaker_EventFuncComet, 0x806B7C0C
 .set CareTaker_BranchFuncStar, 0x806B7C18
 .set CareTaker_AnimeFunc, 0x806B7C24
+
+
+
+#TicoFat stuff
+.set TicoFat_ObjName, 0x806B3D78
+.set TicoFat_ObjEntry, 0x80649D80
+
+
+
+
+#New Chunking stuff
+.set WorldmapDataStart, 0x80700960
+.set WorldmapCodeStart, 0x804DFA24
+
+
+
 .GLE REGION END

@@ -5,8 +5,10 @@
 .int .ScenarioSwitch_Create
 .GLE ENDADDRESS
 
+#TODO: Consider moving this?
 .GLE ADDRESS sub_804F46C0
 blr
+#==========================================
 
 .ScenarioSwitch_Create:
 stwu      r1, -0x10(r1)
@@ -29,6 +31,7 @@ mtlr      r0
 addi      r1, r1, 0x10
 blr
 
+#==========================================
 
 .ScenarioSwitch_Ctor:
 stwu      r1, -0x10(r1)
@@ -43,7 +46,8 @@ addi      r3, r3, ScenarioSwitch_VTable@l
 stw       r3, 0(r31)
 li        r4, 0
 stw       r4, 0x90(r31) #bool IsActivate
-stw       r4, 0x94(r31) #bool DoNothingOnFail
+stw       r4, 0x94(r31) #bool DoNothingOnFail (Obj Arg 1)
+stw       r4, 0x98(r31) #int JMap Index (Obj Arg 0)
 
 mr        r3, r31
 lwz       r31, 0x0C(r1)
@@ -51,6 +55,8 @@ lwz       r0, 0x14(r1)
 mtlr      r0
 addi      r1, r1, 0x10
 blr
+
+#==========================================
 
 .ScenarioSwitch_Init:
 stwu      r1, -0x30(r1)
@@ -63,35 +69,12 @@ mr        r30, r3
 
 bl        connectToSceneMapObjMovement__2MRFP7NameObj
 mr        r3, r31
-addi      r4, r1, 0x08
+addi      r4, r30, 0x98
 bl        getJMapInfoArg0NoInit__2MRFRC12JMapInfoIterPl
 mr        r3, r31
 addi      r4, r30, 0x94
 bl        getJMapInfoArg1NoInit__2MRFRC12JMapInfoIterPl
 
-lis r3, ScenarioSwitch_BcsvName@ha
-addi r3, r3, ScenarioSwitch_BcsvName@l
-crclr     4*cr1+eq
-bl tryLoadCsvFromZoneInfo__2MRFPCc
-cmpwi r3, 0
-beq .ScenarioSwitch_ReturnInit #Can't find the file
-
-mr r29, r3
-bl getCsvDataElementNum__2MRFPC8JMapInfo
-mr r28, r3
-
-lwz r4, 0x08(r1)
-cmpw r4, r3
-bge .ScenarioSwitch_ReturnInit #Index ouf of Range
-
-mr r3, r29
-lwz r4, 0x08(r1)
-bl isJMapEntryProgressComplete
-cmpwi r3, 0
-beq .ScenarioSwitch_InitSwitches #Init the switches if no error occours
-
-li r3, 1
-stw r3, 0x90(r30) #Checks succeeded
 
 .ScenarioSwitch_InitSwitches:
 mr        r3, r30
@@ -107,9 +90,9 @@ bl        invalidateClipping__2MRFP9LiveActor
 
 mr        r3, r30
 lwz       r12, 0(r30)
-lwz       r12, 0x30(r12)
+lwz       r12, 0x2C(r12)
 mtctr     r12
-bctrl #MakeActorAppeared
+bctrl #ScenarioSwitch_Appear
 
 #Only jump here if an error occurs
 .ScenarioSwitch_ReturnInit:
@@ -119,7 +102,71 @@ lwz       r0, 0x34(r1)
 mtlr      r0
 addi      r1, r1, 0x30
 blr
+
 #==========================================
+
+.ScenarioSwitch_Appear:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+stw r31, 0x0C(r1)
+mr r31, r3
+
+bl .ScenarioSwitch_ConditionCheck
+
+mr r3, r31
+lwz       r12, 0(r3)
+lwz       r12, 0x30(r12)
+mtctr     r12
+bctrl
+
+lwz r31, 0x0C(r1)
+lwz       r0, 0x14(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
+
+#==========================================
+
+.ScenarioSwitch_ConditionCheck:
+stwu      r1, -0x30(r1)
+mflr      r0
+stw       r0, 0x34(r1)
+addi r11, r1, 0x30
+bl _savegpr_27
+
+mr r30, r3  #this
+
+lis r3, ScenarioSwitch_BcsvName@ha
+addi r3, r3, ScenarioSwitch_BcsvName@l
+crclr     4*cr1+eq
+bl tryLoadCsvFromZoneInfo__2MRFPCc
+cmpwi r3, 0
+beq .ScenarioSwitch_ConditionCheck_Return #Can't find the file
+
+mr r29, r3
+bl getCsvDataElementNum__2MRFPC8JMapInfo
+mr r28, r3
+
+lwz r4, 0x98(r30)
+cmpw r4, r3
+bge .ScenarioSwitch_ConditionCheck_Return #Index ouf of Range
+
+mr r3, r29
+lwz r4, 0x98(r30)
+bl isJMapEntryProgressComplete
+stw r3, 0x90(r30) #Check status
+
+.ScenarioSwitch_ConditionCheck_Return:
+addi r11, r1, 0x30
+bl _restgpr_27
+lwz       r0, 0x34(r1)
+mtlr      r0
+addi      r1, r1, 0x30
+blr
+
+#==========================================
+
 .ScenarioSwitch_Control:
 stwu      r1, -0x10(r1)
 mflr      r0
@@ -183,6 +230,16 @@ addi      r1, r1, 0x10
 blr
 
 
+#Revives all ScenarioSwitches
+.ScenarioSwitch_ReviveAll:
+lis r3, ScenarioSwitch_ObjName@ha
+addi r3, r3, ScenarioSwitch_ObjName@l
+lis r4, ScenarioSwitch_VTable@ha
+addi r4, r4, ScenarioSwitch_VTable@l
+lwz r4, 0x2C(r4)
+b .GLE_ForEachNameObj
+
+
 ScenarioSwitch_ObjName:
 ScenarioSwitch_BcsvName:
     .string "ScenarioSwitch"
@@ -204,7 +261,7 @@ ScenarioSwitch_VTable:
 .int calcViewAndEntry__9LiveActorFv
 .int startMovement__7NameObjFv
 .int endMovement__7NameObjFv
-.int appear__9LiveActorFv
+.int .ScenarioSwitch_Appear
 .int makeActorAppeared__9LiveActorFv
 .int kill__9LiveActorFv
 .int makeActorDead__9LiveActorFv
