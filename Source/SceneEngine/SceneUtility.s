@@ -184,7 +184,7 @@ mr r3, r31
 bl makeGalaxyStatusAccessor__2MRFPCc
 stw r3, 0x08(r1)
 addi r3, r1, 0x08
-mr r4, r30
+mr r4, r29
 bl getZoneId__20GalaxyStatusAccessorCFPCc
 mr r5, r3
 
@@ -727,12 +727,6 @@ addi      r1, r1, 0x30
 blr
 #===========================================================
 
-
-.GLE PRINTMESSAGE EndWorldmapCode
-.GLE PRINTADDRESS
-.GLE ENDADDRESS
-#End of the worldmap code for now
-
 #There are some functions that will need to be altered to use this new warp system
 #Well, they don't *have* to, but I'd like them to for consistency purposes
 
@@ -763,9 +757,9 @@ mtlr      r0
 addi      r1, r1, 0x10
 blr
 .GLE ENDADDRESS
+
 #======================================================
-.GLE ADDRESS sub_804E73B0
-blr
+
 .StageDataHolder_GetScenarioSettings:
 #StageDataHolder::getScenarioSettings
 lis r4, ScenarioSettings@ha
@@ -1763,5 +1757,8 @@ b .ExeNoStage_StartBgm
 .ExeNoStage_StartBgm_Return:
 .GLE ENDADDRESS
 
-.GLE ASSERT __ct__14WorldMapHolderFv
+
+.GLE PRINTMESSAGE EndWorldmapCode
+.GLE PRINTADDRESS
 .GLE ENDADDRESS
+#End of the worldmap code for now
