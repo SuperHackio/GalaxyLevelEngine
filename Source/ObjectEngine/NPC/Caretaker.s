@@ -7,6 +7,7 @@ mflr      r0
 stw       r0, 0x174(r1)
 addi      r11, r1, 0x170
 bl        _savegpr_28
+
 lis r31, CaretakerData@ha
 addi r31, r31, CaretakerData@l
 mr        r30, r4 #JMapInfoIter*

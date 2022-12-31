@@ -190,6 +190,8 @@ blr
 #MR::GlobalEventFunc(NPCActor*, EventData)
 #r3 = NPCActor* Caller
 #r4 = Event Data Value
+#  0xF000 = Event Type
+#  0x0FFF = Parameter Value
 
 .MR_GlobalEventFunc:
 stwu      r1, -0x50(r1)

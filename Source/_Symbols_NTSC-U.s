@@ -571,11 +571,11 @@
 .set Caretaker_GarbageManagement, 0x806B7D10
 
 .set Caretaker_flt_0, 0x807DF044
-.set Caretaker_flt_3, 0x807DF044
-.set Caretaker_flt_2, 0x807DF044
-.set Caretaker_flt_0_1, 0x807DF044
-.set Caretaker_flt_0_05, 0x807DF044
-.set Caretaker_flt_350, 0x807DF048
+.set Caretaker_flt_3, 0x807DF048
+.set Caretaker_flt_2, 0x807DF04C
+.set Caretaker_flt_0_1, 0x807DF050
+.set Caretaker_flt_0_05, 0x807DF054
+.set Caretaker_flt_350, 0x807DF058
 
 .set CareTaker_BranchFuncComet, 0x806B7C00
 .set CareTaker_EventFuncComet, 0x806B7C0C
