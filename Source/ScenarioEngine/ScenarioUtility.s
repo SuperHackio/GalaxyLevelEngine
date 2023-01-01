@@ -172,8 +172,32 @@ lwz r3, 0x08(r1)
 addi r4, r1, 0x0C
 bl .GLE_GetGalaxyAndScenarioFromString
 
+#Github #50
+#Should hopefully make it simpler to require full galaxies
+
 addi      r3, r1, 0x10
 lwz r4, 0x0C(r1)
+cmpwi r4, -1
+bne .RequireScenarioName_CheckForAll
+
+#Check if you have any star from this galaxy
+bl getPowerStarNumOwnedInStage__2MRFPCc
+cmpwi r3, 0
+beq .BCSVCheckReturnFalse
+b .BCSVCheckLoopContinue
+
+.RequireScenarioName_CheckForAll:
+cmpwi r4, 0
+bgt .RequireScenarioName_SingleScenario
+
+#Check if you have all stars from this galaxy
+bl isGalaxyCompletedWithGreen__2MRFPCc
+cmpwi r3, 0
+beq .BCSVCheckReturnFalse
+b .BCSVCheckLoopContinue
+
+
+.RequireScenarioName_SingleScenario:
 bl hasPowerStar__16GameDataFunctionFPCcl
 cmpwi r3, 0
 beq .BCSVCheckReturnFalse
