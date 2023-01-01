@@ -848,7 +848,7 @@ addi r29, r29, 1
 
 .CalcDisplayScenarioNum_ValueLoopStart:
 addi r3, r1, 0x0C
-bl getPowerStarNum__20GalaxyStatusAccessorCFv
+bl .GetPowerStarNumOrMax
 cmpw r29, r3
 ble .CalcDisplayScenarioNum_ValueLoop
 
@@ -1037,7 +1037,7 @@ addi r20, r20, 1
 
 .ScenarioSelectLayout_AppearAllStar_LoopStart:
 addi r3, r1, 0x20
-bl getPowerStarNum__20GalaxyStatusAccessorCFv
+bl .GetPowerStarNumOrMax
 cmpw r20, r3
 ble .ScenarioSelectLayout_AppearAllStar_Loop
 
