@@ -1,8 +1,13 @@
 .GLE ADDRESS createStarString__2MRFPwiPCcbb
 b .CreateStarString
+.GLE ASSERT createStarString__2MRFPwiPCcbb +0x404
+#haha 404
 .GLE ENDADDRESS
-.GLE ADDRESS sub_804F0F40
-blr
+.GLE ADDRESS WorldmapCodeStart +0x04
+
+#Checks to see if the galaxy string has a space - galaxy names won't ever have spaces in them.
+.IsStarStringScenario:
+b hasStringSpace__2MRFPCc
 
 .CreateStarString:
 stwu      r1, -0x40(r1)
@@ -15,14 +20,64 @@ mr        r27, r5
 mr        r26, r3
 mr        r28, r6
 mr        r29, r7
+
 mr        r3, r27
 bl makeGalaxyStatusAccessor__2MRFPCc
 stw       r3, 0x08(r1)
+
 mr        r30, r26
 li        r31, 1
 b         .CreateStarString_Loop_Start
 
 .CreateStarString_Loop:
+
+mr r3, r30
+mr r4, r27
+mr r5, r31
+bl .AddStarToStarString
+mr r30, r3
+
+.CreateStarString_Loop_Continue:
+addi      r31, r31, 1
+
+.CreateStarString_Loop_Start:
+addi      r3, r1, 0x08
+bl getPowerStarNum__20GalaxyStatusAccessorCFv
+cmpw      r31, r3
+ble       .CreateStarString_Loop
+
+subf      r0, r26, r30
+li        r3, 0
+sth       r3, 0(r30)
+srawi     r0, r0, 1
+addze     r3, r0
+
+addi      r11, r1, 0x40
+bl _restgpr_25
+lwz       r0, 0x44(r1)
+mtlr      r0
+addi      r1, r1, 0x40
+blr
+
+#--------------------------------------------------------
+
+#r3 = WChar_T* Destination
+#r4 = Galaxy name
+#r5 = ScenarioNo
+.AddStarToStarString:
+stwu      r1, -0x40(r1)
+mflr      r0
+stw       r0, 0x44(r1)
+addi      r11, r1, 0x40
+bl _savegpr_25
+
+mr r30, r3
+mr r27, r4
+mr r31, r5
+
+mr        r3, r27
+bl makeGalaxyStatusAccessor__2MRFPCc
+stw       r3, 0x08(r1)
 
 #get the colour of the power star.
 li r3, 0
@@ -129,7 +184,8 @@ addi      r3, r1, 0x08
 mr r4, r31
 bl isOpenScenario__20GalaxyStatusAccessorCFl
 cmpwi r3, 0
-beq .CreateStarString_Loop_Continue
+mr r3, r30
+beq .AddStarToStarString_Return
 
 .CreateStarString_StarNotRequireOpenFlag:
 addi      r3, r1, 0x08
@@ -159,22 +215,8 @@ li r4, 0x6E
 .CreateStarString_ApplyPowerStar:
 mr r3, r30
 bl addPictureFontCode__2MRFPwi
-mr        r30, r3
 
-.CreateStarString_Loop_Continue:
-addi      r31, r31, 1
-
-.CreateStarString_Loop_Start:
-addi      r3, r1, 0x08
-bl getPowerStarNum__20GalaxyStatusAccessorCFv
-cmpw      r31, r3
-ble       .CreateStarString_Loop
-
-subf      r0, r26, r30
-li        r3, 0
-sth       r3, 0(r30)
-srawi     r0, r0, 1
-addze     r3, r0
+.AddStarToStarString_Return:
 
 addi      r11, r1, 0x40
 bl _restgpr_25
@@ -182,8 +224,181 @@ lwz       r0, 0x44(r1)
 mtlr      r0
 addi      r1, r1, 0x40
 blr
+
+
+#================================================
+
+
+.GLE PRINTADDRESS
+.ScenarioMode_Extension:
+addi r3, r1, 0x0C
+mr r4, r28
+addi r5, r31, GalaxyPane - AllStarList_NewString
+mr r6, r26
+bl getCsvDataStr__2MRFPPCcPC8JMapInfoPCcl
+
+lwz r3, 0x1C(r1)
+addi      r4, r1, 0xB50
+bl .GLE_GetGalaxyAndScenarioFromString
+#Scenario = 0xB50
+#Galaxy = 0xB54
+
+addi      r3, r1, 0xB54
+mr r25, r3
+bl makeGalaxyStatusAccessor__2MRFPCc
+stw r3, 0x08(r1)
+
+addi r3, r1, 0x08
+lwz r4, 0xB50(r1)
+bl hasPowerStar__20GalaxyStatusAccessorCFl
+cmpwi r3, 0
+bne .ScenarioMode_ShowScenario
+
+#The player doesn't already have a star here, lets see if
+#it should show up or not
+mr r3, r28
+mr r4, r26
+bl isJMapEntryProgressComplete
+cmpwi r3, 0
+beq .ScenarioMode_HideScenario
+
+mr r3, r28
+lis r4, PowerStarNum@ha
+addi r4, r4, PowerStarNum@l
+bl isExistItemInfo__8JMapInfoFPCc
+cmpwi r3, 0
+beq .ScenarioMode_ShowScenario
+
+addi r3, r1, 0x10
+mr r4, r28
+lis r5, PowerStarNum@ha
+addi r5, r5, PowerStarNum@l
+mr r6, r26
+bl getCsvDataS32__2MRFPlPC8JMapInfoPCcl
+
+lwz r3, 0x10(r1)
+cmpwi r3, -1
+beq .ScenarioMode_HideScenario #Secret galaxies
+
+
+.ScenarioMode_ShowScenario:
+addi r3, r1, 0x10
+mr r4, r28
+addi r5, r31, StarPane - AllStarList_NewString
+mr r6, r26
+bl getCsvDataStr__2MRFPPCcPC8JMapInfoPCcl
+addi r3, r1, 0x14
+mr r4, r28
+addi r5, r31, CompletePane - AllStarList_NewString
+mr r6, r26
+bl getCsvDataStrOrNULL__2MRFPPCcPC8JMapInfoPCcl
+addi r3, r1, 0x18
+mr r4, r28
+addi r5, r31, MedalPane - AllStarList_NewString
+mr r6, r26
+bl getCsvDataStrOrNULL__2MRFPPCcPC8JMapInfoPCcl
+
+
+#Alright, all parameters loaded. Lets do this
+
+#First Up: Completion Status
+#Unlike Galaxies, you don't need to have this icon for single scenarios
+lwz r4, 0x14(r1)
+cmpwi r4, 0
+beq .ScenarioMode_SkipCompletion
+
+
+addi r3, r1, 0x08
+bl isCompleteAllScenario__20GalaxyStatusAccessorCFv
+cmpwi r3, 0
+beq .ScenarioMode_NotCompleteAllScenario
+li r4, 0x50
+b .ScenarioMode_AssignCompleteIcon
+
+.ScenarioMode_NotCompleteAllScenario:
+addi r3, r1, 0x08
+lwz r4, 0xB50(r1)
+bl hasPowerStar__20GalaxyStatusAccessorCFl
+cmpwi r3, 0
+beq .ScenarioMode_NotCompleteNormalScenario
+li r4, 0x6B
+b .ScenarioMode_AssignCompleteIcon
+
+.ScenarioMode_NotCompleteNormalScenario:
+li r4, 0x20
+
+.ScenarioMode_AssignCompleteIcon:
+addi r3, r1, 0xC0
+bl addPictureFontCode__2MRFPwi
+
+mr r3, r30
+lwz r4, 0x14(r1)
+addi r5, r1, 0xC0
+bl setTextBoxMessageRecursive__2MRFP11LayoutActorPCcPCw
+
+
+
+#Now lets set the galaxy name
+.ScenarioMode_SkipCompletion:
+mr r3, r25
+lwz r4, 0xB50(r1)
+bl getScenarioNameOnCurrentLanguage__2MRFPCcl
+cmpwi r3, 0
+beq .ScenarioMode_HideScenario
+mr r5, r3
+mr r3, r30
+lwz r4, 0x0C(r1)
+bl setTextBoxMessageRecursive__2MRFP11LayoutActorPCcPCw
+
+#Now lets make the "star string" (It's a single star)
+addi r24, r1, 0x20
+mr r3, r24
+mr r4, r25
+lwz r5, 0xB50(r1)
+bl .AddStarToStarString
+mr r23, r3
+
+subf      r0, r24, r23
+li        r3, 0
+sth       r3, 0(r23)
+srawi     r0, r0, 1
+addze     r3, r0
+
+mr r3, r30
+lwz r4, 0x10(r1)
+addi r5, r1, 0x20
+bl setTextBoxMessageRecursive__2MRFP11LayoutActorPCcPCw
+
+#And Finally, the Comet Medal Status
+mr r3, r25
+bl isOnGalaxyFlagTicoCoin__16GameDataFunctionFPCc
+cmpwi r3, 0
+li r4, 0x6F
+beq .ScenarioMode_NoTicoCoin
+li r4, 0x6A
+.ScenarioMode_NoTicoCoin:
+addi r3, r1, 0x14C
+bl addPictureFontCode__2MRFPwi
+
+mr r3, r30
+lwz r4, 0x18(r1)
+cmpwi r4, 0
+beq .ScenarioMode_Continue #Stage has no comet medal!
+addi r5, r1, 0x14C
+bl setTextBoxMessageRecursive__2MRFP11LayoutActorPCcPCw
+b .ScenarioMode_Continue
+
+.ScenarioMode_HideScenario:
+mr r3, r30
+lwz r4, 0x0C(r1)
+addi r5, r31, HideGalaxyText - AllStarList_NewString
+bl setTextBoxGameMessageRecursive__2MRFP11LayoutActorPCcPCc
+
+.ScenarioMode_Continue:
+b .loadGalaxyNames_Loop_Continue
+
 #.GLE ASSERT createStarString__2MRFPwiPCcbb +0x410
-.GLE ASSERT sub_804F1140
+.ALLSTARLIST_LINK:
 .GLE ENDADDRESS
 
 
@@ -345,11 +560,15 @@ bl .GetMaxAllStarListPageNo
 bl .GetMaxAllStarListPageNo
 .GLE ENDADDRESS
 
+
+#=======================================================================
+
+
 .GLE ADDRESS loadGalaxyNames__11AllStarListFi
-stwu      r1, -0xB50(r1)
+stwu      r1, -0xC50(r1)
 mflr      r0
-stw       r0, 0xB54(r1)
-addi      r11, r1, 0xB50
+stw       r0, 0xC54(r1)
+addi      r11, r1, 0xC50
 bl __save_gpr
 
 lis r31, AllStarList_NewString@ha
@@ -407,6 +626,25 @@ lis r5, GalaxyName@ha
 addi r5, r5, GalaxyName@l
 mr r6, r26
 bl getCsvDataStr__2MRFPPCcPC8JMapInfoPCcl
+
+
+
+
+
+
+#interruption! We need to find out if this is a ScenarioMode string or not
+lwz r3, 0x1C(r1)
+bl .IsStarStringScenario
+cmpwi r3, 0
+beq .NormalGalaxyInAllStarList
+b .ScenarioMode_Extension
+
+
+
+
+
+
+.NormalGalaxyInAllStarList:
 lwz r3, 0x1C(r1)
 mr r25, r3
 bl makeGalaxyStatusAccessor__2MRFPCc
@@ -579,10 +817,10 @@ bl setTextBoxGameMessageRecursive__2MRFP11LayoutActorPCcPCc
 .loadGalaxyNames_NoTitle:
 
 .loadGalaxyNames_Return:
-addi      r11, r1, 0xB50
+addi      r11, r1, 0xC50
 bl __restore_gpr
-lwz       r0, 0xB54(r1)
+lwz       r0, 0xC54(r1)
 mtlr      r0
-addi      r1, r1, 0xB50
+addi      r1, r1, 0xC50
 blr
 .GLE ENDADDRESS
