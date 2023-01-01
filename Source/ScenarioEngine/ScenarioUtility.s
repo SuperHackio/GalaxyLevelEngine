@@ -1,6 +1,6 @@
 #Moving forwards by 4 because of the DEAD_STATIC
 
-.GLE ADDRESS WorldmapCodeStart +0x04
+.GLE ADDRESS .ALLSTARLIST_LINK
 #This file contains utilities relating to Scenarios
 #========================================================================================
 
@@ -167,14 +167,10 @@ lwz r4, 0x08(r1)
 cmpwi r4, 0
 beq .BCSVCheckLoopContinue #Continue if the string is NULL
 
-#Not the first ever sscanf!!
+#Replaced with a function moment
 lwz r3, 0x08(r1)
-lis r4, GalaxyScenario_Format@ha
-addi r4, r4, GalaxyScenario_Format@l
-addi r5, r1, 0x10
-addi r6, r1, 0x0C
-crclr     4*cr1+eq
-bl sscanf
+addi r4, r1, 0x0C
+bl .GLE_GetGalaxyAndScenarioFromString
 
 addi      r3, r1, 0x10
 lwz r4, 0x0C(r1)
@@ -235,7 +231,16 @@ mr r4, r31
 mr r6, r30
 b getCsvDataStrOrNULL__2MRFPPCcPC8JMapInfoPCcl
 
-
+#r3 = const char *
+#r4 = void*
+#Void pointer will be ordered as: Scenario ID, Galaxy Name
+.GLE_GetGalaxyAndScenarioFromString:
+addi r5, r4, 0x04
+addi r6, r4, 0x00
+lis r4, GalaxyScenario_Format@ha
+addi r4, r4, GalaxyScenario_Format@l
+crclr     4*cr1+eq
+b sscanf
 
 
 
@@ -283,6 +288,28 @@ makePaneName_Loc:
 li        r4, 0x08
 crclr     4*cr1+eq
 b        snprintf
+
+
+
+#New addition to lock the ScenarioSelect to a max amount of stars
+
+#r3 = GalaxyStatusAccessor
+.GetPowerStarNumOrMax:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+bl getPowerStarNum__20GalaxyStatusAccessorCFv
+
+cmpwi r3, StarCount
+ble .GetPowerStarNumOrMax_Return
+
+li r3, StarCount
+
+.GetPowerStarNumOrMax_Return:
+lwz       r0, 0x14(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
 
 #========================================================================================
 
@@ -1008,6 +1035,8 @@ lwz       r31, 0x0C(r1)
 mtlr      r0
 addi      r1, r1, 0x10
 blr
+
+
 .GLE PRINTMESSAGE EndWorldmapCode
 .GLE PRINTADDRESS
 .SCENARIO_UTILITY_LINK:
@@ -1018,6 +1047,47 @@ blr
 b GetBTPFrameOverride
 .GLE ENDADDRESS
 
+
+#========================================================================================
+
+.GLE ADDRESS start__13ScenarioTitleFv -0x04
+.ScenarioTitle_Start:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+stw       r31, 0x0C(r1)
+mr        r31, r3
+
+bl .isStageNoScenarioTitle
+cmpwi r3, 0
+bne .ScenarioTitle_Start_Return
+mr r31, r3
+
+lwz       r12, 0(r3)
+lwz       r12, 0x2C(r12)
+mtctr     r12
+bctrl
+mr        r3, r31
+addi      r4, r13, (unk_807D57D8 - STATIC_R13)
+bl        setNerve__11LayoutActorCFPC5Nerve
+
+.ScenarioTitle_Start_Return:
+lwz       r0, 0x14(r1)
+lwz       r31, 0x0C(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
+
+.GLE ASSERT end__13ScenarioTitleFv
+.GLE ENDADDRESS
+
+.GLE ADDRESS exeRailMove__15ScenarioStarterFv +0x158
+bl .ScenarioTitle_Start
+.GLE ENDADDRESS
+
+.GLE ADDRESS exePlay__35GameSceneScenarioOpeningCameraStateFv +0x24
+bl .ScenarioTitle_Start
+.GLE ENDADDRESS
 
 #========================================================================================
 

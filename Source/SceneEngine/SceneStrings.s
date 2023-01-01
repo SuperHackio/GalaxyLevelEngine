@@ -84,11 +84,14 @@ StoryLayout:
     .string "StoryLayout"
     
 #Disables the "Welcome to the Galaxy" text
-#I just found out this disables youd HUD until you die.... probably don't use this.
-#I'll fix this in another update it's April 3rd we don't have time to fix non-crashing features that
-#are primarily useless
+#Update 2023-01-01
+#Finally fixed this dang thing lol
 NoWelcome:
     .string "NoWelcome"
+    
+#Disables the ScenarioTitle from appearing inside the intro cutscene and fly-in
+NoScenarioTitle:
+    .string "NoScenarioTitle"
     
 PeachStarGet:
     .string "PeachStarGet"

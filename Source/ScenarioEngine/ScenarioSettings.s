@@ -102,6 +102,21 @@ li r3, 0
 
 .GLE ADDRESS exeShowWelcomeLayout__15ScenarioStarterFv +0xBC
 bl .isStageNoWelcome
+cmpwi     r3, 0
+beq       loc_80143390
+b ._NoStageWelcome
+
+#May as well use this space for something...
+#5 lines of code availible moment
+
+.isStageNoScenarioTitle:
+lis r3, NoScenarioTitle@ha
+addi r3, r3, NoScenarioTitle@l
+li r4, 0
+b .MR_GetCurrentScenarioSetting
+
+nop  #Leftover nop
+loc_80143390:
 .GLE ENDADDRESS
 
 
@@ -189,6 +204,24 @@ li r4, 0
 li r5, 1
 b .MR_GetCurrentScenarioSetting_Type
 
+
+#Scenario Select BGM is inside ScenarioUtility
+
+
+#Not a ScenarioSetting
+._NoStageWelcome:
+bl forceAppearDefaultGameLayout__2MRFv
+bl sub_8005A350
+lwz       r12, 0(r26)
+mr        r3, r26
+lwz       r12, 0x34(r12)
+mtctr     r12
+bctrl
+b ._NoStageWelcome_Return
+
+.GLE ADDRESS exeShowWelcomeLayout__15ScenarioStarterFv +0x154
+._NoStageWelcome_Return:
+.GLE ENDADDRESS
 
 .GLE ASSERT isStageKoopaVs__2MRFv
 .GLE ENDADDRESS

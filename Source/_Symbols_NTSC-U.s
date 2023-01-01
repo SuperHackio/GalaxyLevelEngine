@@ -329,8 +329,12 @@
 
 .set sub_804E8E30, 0x804E8E30
 
+
+.set sub_8005A350, 0x8005A350
+
 #============================
 
+.set unk_807D57D8, 0x807D57D8
 .set unk_807D2AB4, 0x807D2AB4
 
 #GlobalAnimeFunc
