@@ -1061,7 +1061,7 @@ mr        r31, r3
 bl .isStageNoScenarioTitle
 cmpwi r3, 0
 bne .ScenarioTitle_Start_Return
-mr r31, r3
+mr r3, r31
 
 lwz       r12, 0(r3)
 lwz       r12, 0x2C(r12)
