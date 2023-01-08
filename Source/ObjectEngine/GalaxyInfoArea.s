@@ -12,7 +12,7 @@
 .int 0x00000030
 .GLE ENDADDRESS
 
-.GLE ADDRESS sub_804EA3E0
+.GLE ADDRESS .ALLSTARLIST_LINK
 .CreateGalaxyInfoArea:
 stwu      r1, -0x10(r1)
 mflr      r0
@@ -121,6 +121,7 @@ li r4, 52
 bl getObj__14SceneObjHolderCFi
 mr r29, r3
 
+.NormalGalaxy_GalaxyInfoArea:
 #Re-written from GLE-V1
 mr r3, r30
 lwz r4, 0x20(r31)
@@ -409,7 +410,9 @@ GalaxyInfoArea_VTable:
 .int isInVolume__7AreaObjCFRCQ29JGeometry8TVec3<f>
 .int getAreaPriority__7AreaObjCFv
 .int .GalaxyInfoArea_GetManagerName
-.GLE ASSERT sub_804EE0E0
+
+.GLE PRINTMESSAGE EndWorldmapCode
+.GALAXYINFOAREA_LINK:
 .GLE ENDADDRESS
 
 

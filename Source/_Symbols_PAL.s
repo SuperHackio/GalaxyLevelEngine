@@ -1,6 +1,4 @@
 .GLE REGION PAL
-.set sub_80495E20, 0x80495E20
-.set sub_804D5DF0, 0x804D5DF0
 .set Ctor_MiniMeister, 0x804E3880
 .set Sinit_MiniMeister, 0x804E4390
 .set Sinit_MiniPlayerRocket, 0x804E5300
@@ -164,7 +162,6 @@
 .set sub_80030580, 0x80030580
 .set sub_804D2200, 0x804D2200
 .set sub_804A83A0, 0x804A83A0
-.set sub_804E19F0, 0x804E19F0
 .set sub_804E6820, 0x804E6820
 .set sub_804D88F0, 0x804D88F0
 .set sub_802C8910, 0x802C8910
@@ -234,6 +231,8 @@
 .set sub_804DE190, 0x804DE190
 .set sub_802C9700, 0x802C9700
 .set sub_8045DB80, 0x8045DB80
+.set sub_804D5DF0, 0x804D5DF0
+.set sub_80495E20, 0x80495E20
 .set sub_804E53B0, 0x804E53B0
 .set sub_804E5870, 0x804E5870
 .set PowerStar_DataStart, 0x806ADAB8
@@ -245,6 +244,9 @@
 .set sInstance__Q212NrvPowerStar27PowerStarNrvWaitStartAppear, 0x807D97E0
 .set startStage__17GameSceneFunctionFv, 0x80452D70
 .set startLastStageBGM__2MRFv, 0x8001B080
+.set sub_804E8E30, 0x804E8E30
+.set sub_8005A350, 0x8005A350
+.set unk_807D57D8, 0x807DAED8
 .set unk_807D2AB4, 0x807D81B4
 .set animeFunc__19MameMuimuiAttackManFUl, 0x80351F60
 .set AnimName, 0x80684378
@@ -302,6 +304,7 @@
 .set StationedFileInfo_Strings, 0x80701BF0
 .set HubworldState_Strings, 0x80701108
 .set MameMuimuiScorer_RemapList, 0x80691740
+.set STATIC_INIT_LIST, 0x80643D20
 .set STATIC_R2, 0x807E43A0
 .set STATIC_R13, 0x807DCA20
 .set UnknownGameScene_Init_NameObj_Thingy, 0x806F5034
@@ -395,13 +398,17 @@
 .set Caretaker_TalkAngry_Str, 0x806BD3EC
 .set Caretaker_GarbageManagement, 0x806BD410
 .set Caretaker_flt_0, 0x807E4744
-.set Caretaker_flt_3, 0x807E4744
-.set Caretaker_flt_2, 0x807E4744
-.set Caretaker_flt_0_1, 0x807E4744
-.set Caretaker_flt_0_05, 0x807E4744
-.set Caretaker_flt_350, 0x807E4748
+.set Caretaker_flt_3, 0x807E4748
+.set Caretaker_flt_2, 0x807E474C
+.set Caretaker_flt_0_1, 0x807E4750
+.set Caretaker_flt_0_05, 0x807E4754
+.set Caretaker_flt_350, 0x807E4758
 .set CareTaker_BranchFuncComet, 0x806BD300
 .set CareTaker_EventFuncComet, 0x806BD30C
 .set CareTaker_BranchFuncStar, 0x806BD318
 .set CareTaker_AnimeFunc, 0x806BD324
+.set TicoFat_ObjName, 0x806B9478
+.set TicoFat_ObjEntry, 0x80649D80
+.set WorldmapDataStart, 0x80706060
+.set WorldmapCodeStart, 0x804DFA24
 .GLE REGION END

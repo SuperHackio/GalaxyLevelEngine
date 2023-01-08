@@ -398,6 +398,7 @@ bl setTextBoxGameMessageRecursive__2MRFP11LayoutActorPCcPCc
 b .loadGalaxyNames_Loop_Continue
 
 #.GLE ASSERT createStarString__2MRFPwiPCcbb +0x410
+.GLE PRINTMESSAGE EndWorldmapCode
 .ALLSTARLIST_LINK:
 .GLE ENDADDRESS
 

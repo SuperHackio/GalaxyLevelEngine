@@ -1,6 +1,6 @@
 #Moving forwards by 4 because of the DEAD_STATIC
 
-.GLE ADDRESS .ALLSTARLIST_LINK
+.GLE ADDRESS .GALAXYINFOAREA_LINK
 #This file contains utilities relating to Scenarios
 #========================================================================================
 
@@ -1161,10 +1161,7 @@ addi      r1, r1, 0x10
 blr
 .GLE ENDADDRESS
 
-.GLE ADDRESS sub_804E19F0
-li r3, 0
-blr
-.GLE ENDADDRESS
+
 
 .GLE ADDRESS sub_804E6820
 blr

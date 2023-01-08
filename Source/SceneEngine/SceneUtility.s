@@ -1624,6 +1624,31 @@ addi      r1, r1, 0x10
 blr
 
 
+#================================
+
+#Needed to move this from Hubworld State
+.GLE ADDRESS sub_80495E20 +0x10
+b .NoWC24Message_StageResultInformer
+.YesWC24Message_StageResultInformer:
+.GLE ENDADDRESS
+
+.GLE ADDRESS sub_80495E20 +0x48
+.NoWC24Message_StageResultInformer_SkipPos:
+.GLE ENDADDRESS
+
+.NoWC24Message_StageResultInformer:
+mr r31, r3
+lis r3, AllCompleteMessage@ha
+addi r3, r3, AllCompleteMessage@l
+li r4, 1
+bl .MR_GetGameSetting
+cmpwi r3, 0
+beq .NoWC24Message_StageResultInformer_JumpLoc
+b .YesWC24Message_StageResultInformer:
+
+.NoWC24Message_StageResultInformer_JumpLoc:
+b .NoWC24Message_StageResultInformer_SkipPos
+
 
 #================== GameSettings
 #Strings are in SceneStrings.s
