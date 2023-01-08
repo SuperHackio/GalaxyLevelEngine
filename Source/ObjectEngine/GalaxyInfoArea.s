@@ -204,7 +204,7 @@ li r6, 0
 bl setTextBoxArgNumberRecursive__2MRFP11LayoutActorPCcll
 
 lwz r3, 0x48(r31)
-bl getGalaxyNameOnCurrentLanguage__2MRFPCc
+bl .MR_getGalaxyNameOnCurrentLanguageOrNULL
 cmpwi r3, 0
 beq .GalaxyInfoArea_Movement_DefaultHidden
 

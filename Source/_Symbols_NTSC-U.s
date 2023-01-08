@@ -599,6 +599,6 @@
 .set WorldmapDataStart, 0x80700960
 .set WorldmapCodeStart, 0x804DFA24
 
-
+.set GalaxyName_TextFormat, 0x8065E5A4
 
 .GLE REGION END

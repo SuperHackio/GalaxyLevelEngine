@@ -411,4 +411,5 @@
 .set TicoFat_ObjEntry, 0x80649D80
 .set WorldmapDataStart, 0x80706060
 .set WorldmapCodeStart, 0x804DFA24
+.set GalaxyName_TextFormat, 0x80663CA4
 .GLE REGION END

@@ -1649,6 +1649,50 @@ b .YesWC24Message_StageResultInformer:
 .NoWC24Message_StageResultInformer_JumpLoc:
 b .NoWC24Message_StageResultInformer_SkipPos
 
+#================================
+#This is a copy of getGalaxyNameOnCurrentLanguage and getGameMessageDirect because Project Template screws up GalaxyInfoArea banners due to the fact that PT has a "missing text" handler.
+.MR_getGalaxyNameOnCurrentLanguageOrNULL:
+stwu      r1, -0x110(r1)
+mflr      r0
+stw       r0, 0x114(r1)
+mr        r6, r3
+addi      r3, r1, 0x08
+li        r4, 0x100
+lis       r5, GalaxyName_TextFormat@ha
+addi      r5, r5, GalaxyName_TextFormat@l # "GalaxyName_%s"
+crclr     4*cr1+eq
+bl        snprintf
+addi      r3, r1, 0x08
+bl        .MR_getGameMessageDirectOrNULL
+lwz       r0, 0x114(r1)
+mtlr      r0
+addi      r1, r1, 0x110
+blr
+
+.MR_getGameMessageDirectOrNULL:
+stwu      r1, -0x20(r1)
+ mflr      r0
+ stw       r0, 0x24(r1)
+ stw       r31, 0x1C(r1)
+ mr        r31, r3
+ addi      r3, r1, 0x08
+ bl        __ct__15TalkMessageInfoFv
+ mr        r4, r31
+addi      r3, r1, 0x08
+bl        getGameMessageDirect__13MessageSystemFP15TalkMessageInfoPCc
+cmpwi     r3, 0
+ bne       loc_800413F8
+ li        r3, 0
+ b         loc_800413FC
+loc_800413F8:
+lwz       r3, 0x08(r1)
+
+loc_800413FC:
+lwz       r0, 0x24(r1)
+lwz       r31, 0x1C(r1)
+mtlr      r0
+addi      r1, r1, 0x20
+blr
 
 #================== GameSettings
 #Strings are in SceneStrings.s
