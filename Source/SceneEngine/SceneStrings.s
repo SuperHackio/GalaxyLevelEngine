@@ -170,7 +170,10 @@ HideGalaxyText:
     .string "AllStarList_Invalid"
     
 PageTitle_Format:
-    .string "AllStarList_Title%d" AUTO
+    .string "AllStarList_Title%d"
+    
+NoBootOut_DemoFormat:
+    .string "NoBootOut%d" AUTO
     
     
 Static_PreviousStage:

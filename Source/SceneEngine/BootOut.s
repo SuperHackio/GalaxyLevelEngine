@@ -143,14 +143,21 @@ mr r4, r3
 bl getClearedStageName__20GameSequenceFunctionFv
 bl setPowerStar__16GameDataFunctionFPCcl
 
-.GLE PRINTADDRESS
 #Finally fixing this. Reactivate all ScnearioSwitch objects!
 bl .ScenarioSwitch_ReviveAll
 
+#Another interruption. Try to start a special cutscene!
+bl .NoBootOut_TryStartDemo
+cmpwi r3, 0
+beq .NoBootOut_NoDemo
+b .NoBootOut_DemoJumpLoc
+
+.NoBootOut_NoDemo:
 #This needs to be the last thing we do
 li r3, 60
 bl openWipeCircle__2MRFl
 
+.NoBootOut_DemoJumpLoc:
 bl        getSceneMgr__7AudWrapFv
 li        r0, 0
 stb       r0, 0xC(r3)
@@ -167,6 +174,51 @@ lwz       r0, 0x14(r1)
 mtlr      r0
 addi      r1, r1, 0x10
 blr
+
+
+
+.NoBootOut_TryStartDemo:
+stwu      r1, -0x100(r1)
+mflr      r0
+stw       r0, 0x104(r1)
+addi      r11, r1, 0x100
+bl _savegpr_29
+
+lis r3, .PowerStarPtr@ha
+addi r3, r3, .PowerStarPtr@l
+lwz r31, 0x00(r3)
+
+addi      r3, r1, 0x0C
+li        r4, 0x90
+#We're keeping this string inside SceneStrings.s
+lis r5, NoBootOut_DemoFormat@ha
+addi r5, r5, NoBootOut_DemoFormat@l
+lwz r6, 0x90(r31)  #PowerStar number
+crclr     4*cr1+eq
+bl        snprintf
+
+addi r3, r1, 0x0C
+bl isDemoExist__2MRFPCc
+cmpwi r3, 0
+beq .NoBootOut_TryStartDemo_Return
+
+#Try to start a cutscene
+
+mr r3, r31
+addi r4, r1, 0x0C
+li r5, 0
+bl tryStartTimeKeepDemoMarioPuppetable__2MRFP7NameObjPCcPCc
+
+.NoBootOut_TryStartDemo_Return:
+addi      r11, r1, 0x100
+bl _restgpr_29
+lwz       r0, 0x104(r1)
+mtlr      r0
+addi      r1, r1, 0x100
+blr
+
+
+
 
 
 
