@@ -10,7 +10,7 @@ blr
 #The following lines redirect useless statics to the above function.
 
 .GLE ADDRESS STATIC_INIT_LIST +0xD24
-.int .__DEAD_STATIC
+.int .StageResultObj_STATIC_INIT
 .int .__DEAD_STATIC
 .int .__DEAD_STATIC
 .int .__DEAD_STATIC

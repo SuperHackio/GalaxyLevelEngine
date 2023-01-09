@@ -332,10 +332,15 @@
 
 .set sub_8005A350, 0x8005A350
 
+
+.set sub_8004F640, 0x8004F640
+
 #============================
 
 .set unk_807D57D8, 0x807D57D8
 .set unk_807D2AB4, 0x807D2AB4
+
+.set WaitStringJapanese, 0x807D98CC
 
 #GlobalAnimeFunc
 .set animeFunc__19MameMuimuiAttackManFUl, 0x80351F60
@@ -600,5 +605,9 @@
 .set WorldmapCodeStart, 0x804DFA24
 
 .set GalaxyName_TextFormat, 0x8065E5A4
+
+
+#Used by StageResultObj
+.set unk_807D5E10, 0x807D5E10
 
 .GLE REGION END

@@ -312,6 +312,9 @@ lis r3, .QuickWarpArea_ManagerName@ha
 addi r3, r3, .QuickWarpArea_ManagerName@l
 blr
 
+.END_OF_QUICKWARPAREA_CODE:
+.GLE ASSERT __sinit_\Meister_cpp
+.GLE PRINTADDRESS
 .GLE ENDADDRESS
 
 
@@ -344,4 +347,6 @@ blr
 .int getAreaPriority__7AreaObjCFv
 .int .QuickWarpArea_GetManagerName
     
+
+.END_OF_QUICKWARPAREA_DATA:
 .GLE ENDADDRESS

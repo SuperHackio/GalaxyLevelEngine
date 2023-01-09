@@ -246,8 +246,10 @@
 .set startLastStageBGM__2MRFv, 0x8001B080
 .set sub_804E8E30, 0x804E8E30
 .set sub_8005A350, 0x8005A350
+.set sub_8004F640, 0x8004F640
 .set unk_807D57D8, 0x807DAED8
 .set unk_807D2AB4, 0x807D81B4
+.set WaitStringJapanese, 0x807DEFCC
 .set animeFunc__19MameMuimuiAttackManFUl, 0x80351F60
 .set AnimName, 0x80684378
 .set CometLimitTimer, 0x80704A20
@@ -412,4 +414,5 @@
 .set WorldmapDataStart, 0x80706060
 .set WorldmapCodeStart, 0x804DFA24
 .set GalaxyName_TextFormat, 0x80663CA4
+.set unk_807D5E10, 0x807DB510
 .GLE REGION END
