@@ -138,6 +138,28 @@ lwz       r3, 0x11C(r3)
 bl kill__9LiveActorFv
 
 bl .MR_ApplyStarMask
+
+.GLE PRINTADDRESS
+
+bl getGameSequenceInGame__20GameSequenceFunctionFv
+bl getPlayResultInStageHolder__18GameSequenceInGameFv
+li r4, 0
+stb r4, 0x43(r3)
+
+bl getClearedPowerStarId__20GameSequenceFunctionFv
+mr r4, r3
+bl getClearedStageName__20GameSequenceFunctionFv
+
+bl hasPowerStar__16GameDataFunctionFPCcl
+cmpwi r3, 0
+bne .NoBootOut_SetPowerStar
+
+bl getGameSequenceInGame__20GameSequenceFunctionFv
+bl getPlayResultInStageHolder__18GameSequenceInGameFv
+li r4, 1
+stb r4, 0x43(r3)
+
+.NoBootOut_SetPowerStar:
 bl getClearedPowerStarId__20GameSequenceFunctionFv
 mr r4, r3
 bl getClearedStageName__20GameSequenceFunctionFv
