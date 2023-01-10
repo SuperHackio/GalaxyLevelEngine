@@ -224,7 +224,7 @@ mr r30, r3
 #If Obj Arg 0 is set, save all the current data!
 lwz r3, 0x98(r29)
 cmpwi r3, 0
-beq loc_804D8748_2
+bne loc_804D8748_2
 
 mr r3, r30
 bl getClearedStarPieceNum__23PlayResultInStageHolderCFv
@@ -430,7 +430,7 @@ bl getPlayResultInStageHolder__18GameSequenceInGameFv
 
 lwz r4, 0x98(r31)
 cmpwi r4, 0
-beq .StageResultObj_exeStageResultsAfter_Restore
+bne .StageResultObj_exeStageResultsAfter_Restore
 
 li r4, 0
 stw r4, 0x4C(r3)
