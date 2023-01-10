@@ -1478,6 +1478,10 @@ bl _savegpr_25
 #Need to split this into the level transition and star mask because they now belong to separate BCSVs
 #Deal with the mask first, then the stage change
 
+#Fix for #53
+bl getClearedPowerStarId__20GameSequenceFunctionFv
+mr r25, r3
+
 #Moved to BootOut.s
 bl .MR_ApplyStarMask
 
@@ -1498,7 +1502,7 @@ mr r31, r3
 mr r3, r31
 lis r4, OnStarGet@ha
 addi r4, r4, OnStarGet@l
-mr r5, r30
+mr r5, r25
 bl .MR_GetStageDataHolderStageInfoEntry_Param00Int_Scenario
 
 cmpwi r3, -1
