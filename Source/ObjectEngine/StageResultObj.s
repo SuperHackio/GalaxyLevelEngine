@@ -25,7 +25,7 @@ stw       r0, 0x14(r1)
 stw       r31, 0x0C(r1)
 mr        r31, r3
 #LiveActor is 0x90 in size. I know that's not what's here but this is just a note soooo
-li        r3, 0xA0
+li        r3, 0xA8
 bl        __nw__FUl
 cmpwi     r3, 0
 beq       .StageResultObj_NEW_Return
@@ -57,6 +57,9 @@ li r3, 0
 stw r3, 0x90(r31) #StageResultInformer*
 stw r3, 0x94(r31) #SubModel* TicoBaby
 stw r3, 0x98(r31) #Obj Arg 0
+stw r3, 0x9C(r31) #Store Starbits
+stw r3, 0xA0(r31) #Store Coins
+stb r3, 0xA4(r31) #New Comet Medal flag
 
 mr        r3, r31
 lwz       r31, 0x0C(r1)
@@ -196,7 +199,7 @@ blr
 
 #-----------------------------------------------------
 
-
+.GLE PRINTADDRESS
 .StageResultObj_AppearWait:
 lwz       r3, 0(r4)
 
@@ -214,17 +217,16 @@ bl isFirstStep__2MRFPC9LiveActor
 cmpwi r3, 0
 beq .StageResultObj_AppearWait_NotFirstStep
 
-
-
-#If Obj Arg 0 is set, save all the current data!
-lwz r3, 0x98(r29)
-cmpwi r3, 0
-beq loc_804D8748
-
 bl getGameSequenceInGame__20GameSequenceFunctionFv
 bl getPlayResultInStageHolder__18GameSequenceInGameFv
 mr r30, r3
 
+#If Obj Arg 0 is set, save all the current data!
+lwz r3, 0x98(r29)
+cmpwi r3, 0
+beq loc_804D8748_2
+
+mr r3, r30
 bl getClearedStarPieceNum__23PlayResultInStageHolderCFv
 bl tryOnGameEventFlagStarPieceCounterStop__16GameDataFunctionFi
 
@@ -240,8 +242,28 @@ mr        r3, r30
 bl getStageName__23PlayResultInStageHolderCF
 bl onGalaxyFlagTicoCoin__16GameDataFunctionFPCc
 
+b loc_804D8748
+
+loc_804D8748_2:
+#Don't send the starbits/coins to the hubworld
+mr r3, r30
+bl getClearedStarPieceNum__23PlayResultInStageHolderCFv
+stw r3, 0x9C(r29)
+
+mr r3, r30
+bl getClearedCoinNum__23PlayResultInStageHolderCFv
+stw r3, 0xA0(r29)
+
+lbz r4, 0x62(r30)
+stb r4, 0xA4(r29)
+
+li r4, 0
+stw r4, 0x4C(r30)
+stw r4, 0x54(r30)
+stb r4, 0x62(r30)
+
+
 loc_804D8748:
-#don't clear the values here, clear them once we're done with them
 
 bl isPlayerElementModeYoshi__2MRFv
 cmpwi r3, 0
@@ -403,18 +425,31 @@ mtctr     r12
 bctrl
 
 #If Obj Arg 0 is set, save all the current data!
-lwz r3, 0x98(r31)
-cmpwi r3, 0
-beq .StageResultObj_exeStageResultsAfter_Return
-
 bl getGameSequenceInGame__20GameSequenceFunctionFv
 bl getPlayResultInStageHolder__18GameSequenceInGameFv
+
+lwz r4, 0x98(r31)
+cmpwi r4, 0
+beq .StageResultObj_exeStageResultsAfter_Restore
+
 li r4, 0
 stw r4, 0x4C(r3)
 stw r4, 0x54(r3)
+b .StageResultObj_exeStageResultsAfter_Return
 
+.StageResultObj_exeStageResultsAfter_Restore:
+lwz r4, 0x9C(r31)
+stw r4, 0x4C(r3)
+lwz r4, 0xA0(r31)
+stw r4, 0x54(r3)
+lbz r4, 0xA4(r31)
+stb r4, 0x62(r3)
 
 .StageResultObj_exeStageResultsAfter_Return:
+
+bl forceSyncStarPieceCounter__2MRFv
+bl forceSyncCoinCounter__2MRFv
+
 addi      r11, r1, 0x20
 bl        _restgpr_29
 lwz       r0, 0x24(r1)
@@ -449,6 +484,20 @@ lwz       r0, 0x14(r1)
 mtlr      r0
 addi      r1, r1, 0x10
 blr
+
+
+#This is here to fix Mario's hair model from appearing at 0,0,0 during level intros
+.MarioHairAndHatModel_Hide:
+bl registerDemoSimpleCastAll__2MRFP9LiveActor
+mr r3, r30
+bl hideModelAndOnCalcAnim__2MRFP9LiveActor
+b .MarioHairAndHatModel_Hide_Return
+
+.GLE ADDRESS __ct__20MarioHairAndHatModelFv +0x134
+b .MarioHairAndHatModel_Hide
+.MarioHairAndHatModel_Hide_Return:
+.GLE ENDADDRESS
+
 
 .GLE ASSERT __sinit_\Meister_cpp
 .GLE ENDADDRESS
