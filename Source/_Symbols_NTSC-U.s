@@ -335,6 +335,8 @@
 
 .set sub_8004F640, 0x8004F640
 
+.set startGameDataSaveSequence__20GameSequenceFunctionFbbb, 0x804D5DA0
+
 #============================
 
 .set unk_807D57D8, 0x807D57D8

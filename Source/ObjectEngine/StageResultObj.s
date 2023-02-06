@@ -60,6 +60,7 @@ stw r3, 0x98(r31) #Obj Arg 0
 stw r3, 0x9C(r31) #Store Starbits
 stw r3, 0xA0(r31) #Store Coins
 stb r3, 0xA4(r31) #New Comet Medal flag
+stb r3, 0xA5(r31) #Obj Arg 1 "Do not save game"
 
 mr        r3, r31
 lwz       r31, 0x0C(r1)
@@ -82,7 +83,8 @@ mr        r30, r4
 bl initDefaultPos__2MRFP9LiveActorRC12JMapInfoIter
 
 mr r3, r31
-bl connectToSceneMapObjMovement__2MRFP7NameObj
+#bl connectToSceneMapObjMovement__2MRFP7NameObj
+bl connectToSceneLayoutMovementCalcAnim__2MRFP7NameObj
 
 mr r3, r31
 bl invalidateClipping__2MRFP9LiveActor
@@ -119,6 +121,14 @@ bl tryRegisterDemoCast__2MRFP9LiveActorRC12JMapInfoIter
 mr r3, r30
 addi r4, r31, 0x98
 bl getJMapInfoArg0NoInit__2MRFRC12JMapInfoIterPl
+
+
+mr r3, r30
+addi r4, r1, 0x08
+bl getJMapInfoArg1NoInit__2MRFRC12JMapInfoIterPb
+lbz r3, 0x08(r1)
+stb r3, 0xA5(r31)
+
 
 mr        r3, r31
 addi      r4, r13, .StageResultObj_NrvNULL_sInstance - STATIC_R13
@@ -382,10 +392,90 @@ beq       .StageResultObj_exeStageResults_Return
 
 .StageResultObj_exeStageResultsAfter_End:
 mr        r3, r31
-addi r4, r13, .StageResultObj_NrvStageResultsAfter_sInstance - STATIC_R13
+addi r4, r13, .StageResultObj_NrvGameSave_sInstance - STATIC_R13
 bl setNerve__9LiveActorFPC5Nerve
 
 .StageResultObj_exeStageResults_Return:
+addi      r11, r1, 0x20
+bl        _restgpr_29
+lwz       r0, 0x24(r1)
+mtlr      r0
+addi      r1, r1, 0x20
+blr
+
+#------------------------------------------
+.GLE PRINTADDRESS
+.StageResultObj_exeGameSave:
+lwz       r3, 0(r4)
+
+stwu      r1, -0x20(r1)
+mflr      r0
+stw       r0, 0x24(r1)
+addi      r11, r1, 0x20
+bl        _savegpr_29
+
+mr r31, r3
+bl isFirstStep__2MRFPC9LiveActor
+cmpwi r3, 0
+beq .StageResultObj_exeGameSave_NotFirstStep
+
+#If Obj Arg 0 is set, save all the current data!
+bl getGameSequenceInGame__20GameSequenceFunctionFv
+bl getPlayResultInStageHolder__18GameSequenceInGameFv
+
+lwz r4, 0x98(r31)
+cmpwi r4, 0
+bne .StageResultObj_exeGameSave_Restore
+
+li r4, 0
+stw r4, 0x4C(r3)
+stw r4, 0x54(r3)
+b .StageResultObj_exeGameSave_DoSave
+
+.StageResultObj_exeGameSave_Restore:
+lwz r4, 0x9C(r31)
+stw r4, 0x4C(r3)
+lwz r4, 0xA0(r31)
+stw r4, 0x54(r3)
+lbz r4, 0xA4(r31)
+stb r4, 0x62(r3)
+
+.StageResultObj_exeGameSave_DoSave:
+
+bl forceSyncStarPieceCounter__2MRFv
+bl forceSyncCoinCounter__2MRFv
+
+lbz r3, 0xA5(r31)
+cmpwi r3, 0
+bgt .StageResultObj_exeGameSave_NotFirstStep
+
+#first step
+li r3, 1
+li r4, 0
+li r5, 0
+bl startGameDataSaveSequence__20GameSequenceFunctionFbbb
+
+
+.StageResultObj_exeGameSave_NotFirstStep:
+
+mr r3, r31
+li r4, 15
+bl isGreaterStep__2MRFPC9LiveActorl
+cmpwi r3, 0
+beq .StageResultObj_exeGameSave_Return
+
+
+bl isActiveSaveDataHandleSequence__20GameSequenceFunctionFv
+cmpwi r3, 0
+bne .StageResultObj_exeGameSave_Return
+
+
+mr        r3, r31
+addi r4, r13, .StageResultObj_NrvStageResultsAfter_sInstance - STATIC_R13
+bl setNerve__9LiveActorFPC5Nerve
+
+
+.StageResultObj_exeGameSave_Return:
 addi      r11, r1, 0x20
 bl        _restgpr_29
 lwz       r0, 0x24(r1)
@@ -424,31 +514,7 @@ lwz       r12, 0x34(r12)
 mtctr     r12
 bctrl
 
-#If Obj Arg 0 is set, save all the current data!
-bl getGameSequenceInGame__20GameSequenceFunctionFv
-bl getPlayResultInStageHolder__18GameSequenceInGameFv
-
-lwz r4, 0x98(r31)
-cmpwi r4, 0
-bne .StageResultObj_exeStageResultsAfter_Restore
-
-li r4, 0
-stw r4, 0x4C(r3)
-stw r4, 0x54(r3)
-b .StageResultObj_exeStageResultsAfter_Return
-
-.StageResultObj_exeStageResultsAfter_Restore:
-lwz r4, 0x9C(r31)
-stw r4, 0x4C(r3)
-lwz r4, 0xA0(r31)
-stw r4, 0x54(r3)
-lbz r4, 0xA4(r31)
-stb r4, 0x62(r3)
-
 .StageResultObj_exeStageResultsAfter_Return:
-
-bl forceSyncStarPieceCounter__2MRFv
-bl forceSyncCoinCounter__2MRFv
 
 addi      r11, r1, 0x20
 bl        _restgpr_29
@@ -477,8 +543,11 @@ stw r4, 0x04(r3)
 addi r4, r5, .StageResultObj_NrvStageResults - .StageResultObj_NrvNULL
 stw r4, 0x08(r3)
 
-addi r4, r5, .StageResultObj_NrvStageResultsAfter - .StageResultObj_NrvNULL
+addi r4, r5, .StageResultObj_NrvGameSave - .StageResultObj_NrvNULL
 stw r4, 0x0C(r3)
+
+addi r4, r5, .StageResultObj_NrvStageResultsAfter - .StageResultObj_NrvNULL
+stw r4, 0x10(r3)
 
 lwz       r0, 0x14(r1)
 mtlr      r0
@@ -499,7 +568,7 @@ b .MarioHairAndHatModel_Hide
 .GLE ENDADDRESS
 
 
-.GLE ASSERT __sinit_\Meister_cpp
+.GLE ASSERT 0x80352F10
 .GLE ENDADDRESS
 
 #=====================================================================
@@ -515,6 +584,9 @@ b .MarioHairAndHatModel_Hide
 .int 0
 
 .StageResultObj_NrvStageResults_sInstance:
+.int 0
+
+.StageResultObj_NrvGameSave_sInstance:
 .int 0
 
 .StageResultObj_NrvStageResultsAfter_sInstance:
@@ -594,6 +666,12 @@ b .MarioHairAndHatModel_Hide
 .int 0
 .int 0
 .int .StageResultObj_exeStageResults
+.int executeOnEnd__5NerveCFP5Spine
+
+.StageResultObj_NrvGameSave:
+.int 0
+.int 0
+.int .StageResultObj_exeGameSave
 .int executeOnEnd__5NerveCFP5Spine
 
 .StageResultObj_NrvStageResultsAfter:
