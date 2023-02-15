@@ -1104,7 +1104,7 @@ b .Pichan_EventFunc_Vanilla
 #====== PichanRacer ======
 #Add new AnimeFunc
 .GLE ADDRESS init__11PichanRacerFRC12JMapInfoIter +0xE4
-b .MR_RegisterBranchAndGlobalAnimeFunc
+bl .MR_RegisterBranchAndGlobalAnimeFunc
 .GLE ENDADDRESS
 
 
