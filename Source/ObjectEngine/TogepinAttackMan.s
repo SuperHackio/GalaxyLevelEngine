@@ -15,7 +15,8 @@ b .TogepinArgs
 .GLE ENDADDRESS
 
 #This might only work because Togepin is lower in the alphabet than MameMuimui
-.GLE ADDRESS .TogepinArgs
+.GLE ADDRESS .SUPER_SPIN_DRIVER_CONNECTOR
+.TogepinArgs:
 li r3, 0x1388 #5000
 stw r3, 0xA8(r26)
 
@@ -37,6 +38,7 @@ lwz r4, 0xAC(r31)
 b setBestScoreAttackCurrentStage__16GameDataFunctionFv
 
 .GLE PRINTADDRESS
+.TOGEPIN_ATTACK_MAN_CONNECTOR:
 .GLE ENDADDRESS
 
 #Load the requested score

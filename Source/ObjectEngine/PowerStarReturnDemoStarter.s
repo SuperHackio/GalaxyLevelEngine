@@ -29,8 +29,7 @@ b .StarReturnDemoStarter_InitEx
 .StarReturnDemoStarter_InitEx_Return:
 .GLE ENDADDRESS
 
-.GLE ADDRESS sub_804F1140
-blr
+.GLE ADDRESS .MAME_MUIMUI_ATTACK_MAN_CONNECTOR
 
 .StarReturnDemoStarter_InitEx:
 #Gonna borrow ScenarioStarter's floats
@@ -76,7 +75,6 @@ b .InitReturnDemoCamera_Return
 
 
 .ReturnDemoCamera_Init:
-.GLE PRINTADDRESS
 stwu      r1, -0x30(r1)
 mflr      r0
 stw       r0, 0x34(r1)
@@ -156,7 +154,6 @@ b .StartReturnCamera
 .GLE ENDADDRESS
 
 .StartReturnCamera:
-.GLE PRINTADDRESS
 bl getPlayerPos__2MRFv
 mr r6, r3
 lwz r3, 0x100(r31)
@@ -214,7 +211,7 @@ bl changeTargetPlayer__16MultiEventCameraFv
 .NotYetCancel:
 b .EndReturnCamera_Return
 
-
+.POWER_STAR_RETURN_DEMO_STARTER_CONNECTOR:
 .GLE ENDADDRESS
 
 .GLE ADDRESS exeStageResultAfter__21StarReturnDemoStarterFv +0x34

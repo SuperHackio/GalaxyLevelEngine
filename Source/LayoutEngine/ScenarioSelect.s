@@ -1590,14 +1590,6 @@ blr
 .GLE ASSERT exeCancel__20ScenarioSelectLayoutFv
 .GLE ENDADDRESS
 
-#Refer to LoadIcon.s
-.GLE ADDRESS .ScenarioSelect_LoadingIcon_Addition
-li r3, 0
-stw r3, 0xE8(r30)
-
-#Start the Loading icon, if applicable
-b .loc_8048F498
-.GLE ENDADDRESS
 
 .GLE ADDRESS exeCancel__20ScenarioSelectLayoutFv +0x38
 lwz       r3, 0xD8(r31)
@@ -2101,6 +2093,34 @@ bl .MR_OpenCurrentWipe
 .GLE ADDRESS exeCancel__20ScenarioSelectLayoutFv +0x48
 li r3, BackFadeTime
 .GLE ENDADDRESS
+
+
+
+
+.GLE ADDRESS .LOAD_ICON_CONNECTOR
+#Refer to LoadIcon.s
+.ScenarioSelect_LoadingIcon_Addition:
+li r3, 0
+stw r3, 0xE8(r30)
+
+#Start the Loading icon, if applicable
+b .loc_8048F498
+
+#==================================================
+
+#So, this chunk is here for future purposes, if I have any...
+
+
+
+
+#EndWorldmapCode
+.SCENARIO_SELECT_CONNECTOR:
+.GLE ENDADDRESS
+
+
+
+
+
 
 #GLE Build Tool feature poggers
 .GLE ADDRESS __vt__20ScenarioSelectLayout

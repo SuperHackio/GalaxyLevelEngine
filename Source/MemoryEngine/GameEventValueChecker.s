@@ -3,7 +3,7 @@
 
 
 #Most things here override WorldMapHolder
-.GLE ADDRESS __ct__14WorldMapHolderFv
+.GLE ADDRESS .SCENARIO_SELECT_CONNECTOR
 .GameEventValueChecker_Ctor:
 stwu      r1, -0x10(r1)
 mflr      r0
@@ -356,6 +356,6 @@ BestScore:
 .GLE ENDADDRESS
 
 
-.GLE PRINTADDRESS
-.GLE ASSERT sub_804E8200
+#EndWorldmapCode
+.GAME_EVENT_VALUE_CHECKER_CONNECTOR:
 .GLE ENDADDRESS

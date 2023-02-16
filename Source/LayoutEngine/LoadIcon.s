@@ -1,6 +1,6 @@
 #Editing GameSystem to make a new layout for loading
 
-.GLE ADDRESS sub_804F18A0
+.GLE ADDRESS .FILE_SELECT_CONNECTOR
 #Instead of nopping this out, we're gonna use it!
 #Puts old addresses to good use hopefully
 .LoadIcon_StaticInit:
@@ -119,7 +119,6 @@ b .GameSystemReset_Ex_Return
 
 
 #LoadingIcon::LoadingIcon((void))
-.GLE PRINTADDRESS
 .LoadingIcon_Ctor:
 stwu      r1, -0x10(r1)
 mflr      r0
@@ -466,7 +465,6 @@ mtlr      r0
 addi      r1, r1, 0x10
 blr
 
-
 LoadIcon_ActorName:
     .string "LoadIcon"
     
@@ -521,7 +519,6 @@ LoadIcon_VTable:
 .int executeOnEnd__5NerveCFP5Spine
 
 
-.ScenarioSelect_LoadingIcon_Addition:
-.GLE PRINTADDRESS
-.GLE ASSERT sub_804F1ED0
+#End worldmap code
+.LOAD_ICON_CONNECTOR:
 .GLE ENDADDRESS

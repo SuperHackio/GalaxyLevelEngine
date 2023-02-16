@@ -1,6 +1,6 @@
 #Moving forwards by 4 because of the DEAD_STATIC
 
-.GLE ADDRESS .GALAXYINFOAREA_LINK
+.GLE ADDRESS .TOGEPIN_ATTACK_MAN_CONNECTOR
 #This file contains utilities relating to Scenarios
 #========================================================================================
 
@@ -1063,7 +1063,7 @@ blr
 
 .GLE PRINTMESSAGE EndWorldmapCode
 .GLE PRINTADDRESS
-.SCENARIO_UTILITY_LINK:
+.SCENARIO_UTILITY_CONNECTOR:
 .GLE ENDADDRESS
 #End of the worldmap usage for now
 
@@ -1344,6 +1344,9 @@ blr
 
 
 .GLE ADDRESS ScenarioEngineStringTable
+ReturnType:
+    .string "ReturnType"
+    
 RequireScenarioName_Format:
     .string "RequireScenarioName%d"
     

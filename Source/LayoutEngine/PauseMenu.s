@@ -13,7 +13,6 @@ li r3, 2
 .GLE ENDADDRESS
 
 
-.GLE ADDRESS makeActorDead__23MarioFacePlanetPreviousFv
 
 .GLE ADDRESS enterPauseMenu__9AudSystemFv +0x18
 bl .GetPauseVol
@@ -30,6 +29,7 @@ b .AudSystem_DoPauseVol_GLE
 .AudSystem_DoPauseVol_GLE_Return:
 .GLE ENDADDRESS
 
+.GLE ADDRESS makeActorDead__23MarioFacePlanetPreviousFv
 .AudSystem_DoPauseVol_GLE:
 bl .GetPauseVol
 #if the volume is set to 0.0f, then do the normal pause

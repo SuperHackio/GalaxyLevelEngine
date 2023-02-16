@@ -1,9 +1,17 @@
+.GLE IGNORE
+#2023-02-14
+#Goodbye Mini Comet
+#You served your time in GLE-V2, but unfortunately you were part of the worldmap code. And I have overwritten you now.
+#top 10 anime deaths
+
+
+
+
 #Lovely comet that was previously used in SMG2's world maps
 #A bit finiky to work with, but it's good enough for the GLE Template hack
 #Replaces ItemRoomDoor because that object is broken now anyways I think
 
-.GLE ADDRESS sub_804EF8B0
-blr
+.GLE ADDRESS .MAME_MUIMUI_ATTACK_MAN_CONNECTOR
 
 .RegisterForDemo:
 stwu      r1, -0x20(r1)
@@ -39,6 +47,7 @@ mtlr      r0
 addi      r1, r1, 0x20
 blr
 
+.MINI_COMET_CONNECTOR:
 .GLE ENDADDRESS
 
 .GLE ADDRESS cCreateTable__14NameObjFactory +0x1570
@@ -51,4 +60,8 @@ bl __ct__13WorldMapCometFPCc
 
 .GLE ADDRESS init__13WorldMapCometFRC12JMapInfoIter
 b .RegisterForDemo
+.GLE ENDADDRESS
+
+.GLE ADDRESS sub_804E31A0
+.MINI_COMET_STATIC_INIT:
 .GLE ENDADDRESS

@@ -12,7 +12,7 @@
 .int 0x00000030
 .GLE ENDADDRESS
 
-.GLE ADDRESS .ALLSTARLIST_LINK
+.GLE ADDRESS .GAME_EVENT_VALUE_CHECKER_CONNECTOR
 .CreateGalaxyInfoArea:
 stwu      r1, -0x10(r1)
 mflr      r0
@@ -412,7 +412,7 @@ GalaxyInfoArea_VTable:
 .int .GalaxyInfoArea_GetManagerName
 
 .GLE PRINTMESSAGE EndWorldmapCode
-.GALAXYINFOAREA_LINK:
+.GALAXYINFOAREA_CONNECTOR:
 .GLE ENDADDRESS
 
 

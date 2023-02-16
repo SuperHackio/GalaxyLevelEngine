@@ -68,9 +68,7 @@ MameMuimuiScorerLvX:
 
 
 
-.GLE ADDRESS sub_804E8200
-blr
-#Taking out yet another static initilizer
+.GLE ADDRESS .GALAXYINFOAREA_CONNECTOR
 
 .LOCAL_CreateScorerArchiveName:
 addi r3, r1, 0x08  #Stack should have enough room
@@ -90,6 +88,7 @@ b         initSequence__16MameMuimuiScorerFP14ResourceHolder
 mr        r3, r30
 mr        r4, r27
 b         .InitRemapBcsv
+
 .GLE PRINTADDRESS
 .InitRemapBcsv:
 #r3 = MameMuimuiScorer
@@ -482,6 +481,6 @@ bl .MameMuimuiSetHighScore
 .GLE PRINTADDRESS
 
 
-.TogepinArgs:
+.MAME_MUIMUI_ATTACK_MAN_CONNECTOR:
 .GLE ENDADDRESS
 

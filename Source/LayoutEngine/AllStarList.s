@@ -3,7 +3,7 @@ b .CreateStarString
 .GLE ASSERT createStarString__2MRFPwiPCcbb +0x404
 #haha 404
 .GLE ENDADDRESS
-.GLE ADDRESS WorldmapCodeStart +0x04
+.GLE ADDRESS .BGM_SETTING_INFO_CONNECTOR
 
 #Checks to see if the galaxy string has a space - galaxy names won't ever have spaces in them.
 .IsStarStringScenario:
@@ -399,7 +399,7 @@ b .loadGalaxyNames_Loop_Continue
 
 #.GLE ASSERT createStarString__2MRFPwiPCcbb +0x410
 .GLE PRINTMESSAGE EndWorldmapCode
-.ALLSTARLIST_LINK:
+.ALLSTARLIST_CONNECTOR:
 .GLE ENDADDRESS
 
 
@@ -552,11 +552,11 @@ blr
 .GLE ENDADDRESS
 
 #Help I can't remember why I wanted to delete these
-.GLE PRINTMESSAGE REMINDER!!! DELETE THIS!!! (0x8045DBBC)
+#.GLE PRINTMESSAGE REMINDER!!! DELETE THIS!!! (0x8045DBBC)
 .GLE ADDRESS sub_8045DB80 +0x3C
 bl .GetMaxAllStarListPageNo
 .GLE ENDADDRESS
-.GLE PRINTMESSAGE REMINDER!!! DELETE THIS!!! (0x8045DC1C)
+#.GLE PRINTMESSAGE REMINDER!!! DELETE THIS!!! (0x8045DC1C)
 .GLE ADDRESS sub_8045DB80 +0x9C
 bl .GetMaxAllStarListPageNo
 .GLE ENDADDRESS

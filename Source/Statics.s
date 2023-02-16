@@ -2,7 +2,7 @@
 
 #sub_804E0420
 .GLE ADDRESS WorldmapCodeStart
-.__DEAD_STATIC:  #Comment!
+.__DEAD_STATIC:  #Comment! This is likely what breaks the old GLE Build Tool versions lol
 blr
 .GLE ENDADDRESS
 
@@ -15,7 +15,46 @@ blr
 #The following lines redirect useless statics to the above function.
 
 .GLE ADDRESS STATIC_INIT_LIST +0xD24
+.int .LoadIcon_StaticInit
 .int .StageResultObj_STATIC_INIT
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
+.int .__DEAD_STATIC
 .int .__DEAD_STATIC
 .int .__DEAD_STATIC
 .int .__DEAD_STATIC

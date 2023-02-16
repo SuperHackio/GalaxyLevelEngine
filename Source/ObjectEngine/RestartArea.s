@@ -94,7 +94,7 @@ blr
 .GLE ASSERT __ct__18SoundEmitterSphereFiPCc
 .GLE ENDADDRESS
 
-.GLE ADDRESS sub_804F99E0
+.GLE ADDRESS .POWER_STAR_RETURN_DEMO_STARTER_CONNECTOR
 #replaces something regarding the worldmap idk lol
 .RestartArea_Movement:
 stwu      r1, -0x10(r1)
@@ -130,6 +130,8 @@ lwz       r0, 0x14(r1)
 mtlr      r0
 addi      r1, r1, 0x10
 blr
+
+.RESTART_AREA_CONNECTOR:
 .GLE ENDADDRESS
 
 

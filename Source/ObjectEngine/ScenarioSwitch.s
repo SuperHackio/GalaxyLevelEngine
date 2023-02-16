@@ -6,8 +6,8 @@
 .GLE ENDADDRESS
 
 #TODO: Consider moving this?
-.GLE ADDRESS sub_804F46C0
-blr
+#TODID: Considered moving this successfully (I moved it)
+.GLE ADDRESS .RESTART_AREA_CONNECTOR
 #==========================================
 
 .ScenarioSwitch_Create:
@@ -279,5 +279,5 @@ ScenarioSwitch_VTable:
 .int receiveMsgEnemyAttack__9LiveActorFUlP9HitSensorP9HitSensor
 .int receiveOtherMsg__9LiveActorFUlP9HitSensorP9HitSensor
 
-.GLE ASSERT sub_804F5550
+.SCENARIO_SWITCH_CONNECTOR:
 .GLE ENDADDRESS

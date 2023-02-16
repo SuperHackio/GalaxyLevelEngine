@@ -45,8 +45,7 @@ b .SuperSpinDriver_Emit
 .GLE ENDADDRESS
 
 
-.GLE ADDRESS sub_804F0370
-blr
+.GLE ADDRESS .SCENARIO_SWITCH_CONNECTOR
 
 .SuperSpinDriver_Off:
 stwu      r1, -0x10(r1)
@@ -100,7 +99,7 @@ bl offCalcAnim__2MRFP9LiveActor
 .SuperSpinDriver_CalcReturn:
 b .SuperSpinDriver_CalcAnimReturn
 
-.GLE ASSERT sub_804F0F40
+.SUPER_SPIN_DRIVER_CONNECTOR:
 .GLE ENDADDRESS
 
 .GLE ADDRESS init__15SuperSpinDriverFRC12JMapInfoIter +0xD8

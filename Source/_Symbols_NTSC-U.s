@@ -372,7 +372,6 @@
 .set SoundIdName, 0x8066BE9C
 .set Volume, 0x8066BEA8
 .set Type, 0x8065D0C4
-.set ReturnType, 0x806FBA60
 #"" (00)
 .set NULLSTRING, 0x807D0478
 #"" (00 00)

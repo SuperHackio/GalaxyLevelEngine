@@ -41,7 +41,7 @@ blr
 .GLE ADDRESS sub_804C1AB0
 .GetReturnDemoOverride:
 #HubworldStarReturnDataTable::getReturnDemoOrOverride
-#Returns a char const * to the return demo
+#Returns a char const* to the star return demo to use.
 #Returns the Galaxy Default if no event overrides it
 #Returns the Default if the Galaxy doesn't override it
 #Returns 0 if there are no defaults defined
@@ -83,7 +83,7 @@ addi r4, r4, NULLSTRING@l
 bl isEqualString__2MRFPCcPCc
 cmpwi r3, 1
 lwz r3, 0x08(r1)
-bne .ReturnDemoOverride_Return
+bne .ReturnDemoOverride_TryGetDefaults
 
 .ReturnDemoOverride_TryFindGalaxyOverride:
 #Lets check the Galaxy Overrides
@@ -311,7 +311,18 @@ blr
 #==================================================================
 #==================================================================
 #==================================================================
+
+#Very important note: 0x09 is now used for the "IsForceStartEvents" flag.
+
 .GLE ADDRESS appear__23MarioFaceShipEventStateFv
+.GLE PRINTMESSAGE EventState_Appear
+.GLE PRINTADDRESS
+lbz r0, 0x09(r3)
+cmpwi r0, 0
+beq .MarioFaceShipEventState_Appear_Normal
+b .MarioFaceShipEventState_Appear_Extended
+
+.MarioFaceShipEventState_Appear_Normal:
 stwu      r1, -0x90(r1)
 mflr      r0
 stw       r0, 0x94(r1)
@@ -627,10 +638,10 @@ addi r3, r1, 0x08
 .GLE ADDRESS registerStarReturnEvents__23MarioFaceShipEventStateFPv
 .GLE PRINTMESSAGE RegisterStarReturnEvents
 .GLE PRINTADDRESS
-stwu      r1, -0x70(r1)
+stwu      r1, -0x90(r1)
 mflr      r0
-stw       r0, 0x74(r1)
-addi      r11, r1, 0x70
+stw       r0, 0x94(r1)
+addi      r11, r1, 0x90
 bl        _savegpr_18
 mr        r31, r3
 bl initEventArray__23MarioFaceShipEventStateFv
@@ -692,47 +703,11 @@ cmpw r18, r19
 blt .NoDupeLoop
 
 
-addi r3, r1, 0x08
-mr r4, r30
-lis r5, StageName@ha
-addi r5, r5, StageName@l
-mr r6, r27
-bl getCsvDataStr__2MRFPPCcPC8JMapInfoPCcl
+#2023-02-14
+#We now check a repeatable field which here is treated as an OR set
+b .EventRepeatableFields_Loc
 
-#Lets check if the name is empty
-lwz r3, 0x08(r1)
-lis r4, NULLSTRING@ha
-addi r4, r4, NULLSTRING@l
-bl isEqualString__2MRFPCcPCc
-cmpwi r3, 1
-beq .RegisterStarReturnEvents_CheckScenario #No Galaxy Name defined. Skip!
-
-#Lets match the stage names
-bl getClearedStageName__20GameSequenceFunctionFv
-lwz r4, 0x08(r1)
-bl isEqualString__2MRFPCcPCc
-cmpwi r3, 1
-bne .RegisterStarReturnEvents_Loop_Continue #Galaxy names do not match. Event will
-#not be activated
-
-.RegisterStarReturnEvents_CheckScenario:
-addi r3, r1, 0x08
-mr r4, r30
-lis r5, ScenarioNo@ha
-addi r5, r5, ScenarioNo@l
-mr r6, r27
-bl getCsvDataS32__2MRFPlPC8JMapInfoPCcl
-lwz r3, 0x08(r1)
-cmpwi r3, -1
-beq .RegisterStarReturnEvents_CheckPowerStarNum #ScenarioNo doesn't matter. Skip!
-
-bl getClearedPowerStarId__20GameSequenceFunctionFv
-lwz r4, 0x08(r1)
-cmpw r3, r4
-bne .RegisterStarReturnEvents_Loop_Continue #Scenario's do not match. Event will not be activated
-
-.RegisterStarReturnEvents_CheckPowerStarNum:
-
+.ReturnStagePair_Success:
 mr r3, r30
 mr r4, r27
 bl isJMapEntryProgressComplete
@@ -741,6 +716,7 @@ beq .RegisterStarReturnEvents_Loop_Continue
 
 #Lets check to see if the demo exists or not
 #If not we need to flag it as watched to avoid issues
+#Edit: Actually, DO NOT SET THE CUTSCENE AS WATCHED!!! The demo object might just be in another stage...
 addi r3, r1, 0x08
 mr r4, r30
 lis r5, DemoName@ha
@@ -757,10 +733,12 @@ cmpwi r3, 0
 bne .DoRegisterEvent
 
 #flag the event as watched
-mr r3, r26
-li r4, 1
-bl .setGameEventFlagFaceShipEvent
-b .RegisterStarReturnEvents_Loop_Continue
+#Edit 2023-01-18: Why do we flag the cutscene as watched before even starting it???
+#Hell we were even doing it A SECOND TIME later down the pipeline so what gives????
+#mr r3, r26
+#li r4, 1
+#bl .setGameEventFlagFaceShipEvent
+#b .RegisterStarReturnEvents_Loop_Continue
 
 .DoRegisterEvent:
 mr r3, r31
@@ -778,12 +756,13 @@ bl getCsvDataElementNum__2MRFPC8JMapInfo
 cmpw r27, r3
 blt .RegisterStarReturnEvents_Loop
 
-addi      r11, r1, 0x70
+addi      r11, r1, 0x90
 bl        _restgpr_18
-lwz       r0, 0x74(r1)
+lwz       r0, 0x94(r1)
 mtlr      r0
-addi      r1, r1, 0x70
+addi      r1, r1, 0x90
 blr
+.GLE ASSERT registerStartEvents__23MarioFaceShipEventStateFPv
 .GLE ENDADDRESS
 
 
@@ -850,7 +829,7 @@ bl getCsvDataS32__2MRFPlPC8JMapInfoPCcl
 
 lwz r3, 0x08(r1)
 li r4, 1
-bl sub_804D4100
+bl .setGameEventFlagFaceShipEvent
 
 
 .NextEvent:
@@ -892,6 +871,7 @@ lwz       r0, 0x44(r1)
 mtlr      r0
 addi      r1, r1, 0x40
 blr
+.GLE ASSERT startEvents__23MarioFaceShipEventStateFPCc
 .GLE ENDADDRESS
 
 .GLE ADDRESS sub_804B5530
@@ -935,6 +915,21 @@ addi      r1, r1, 0x10
 blr
 .GLE ENDADDRESS
 
+.GLE ADDRESS exeDoEvent__23MarioFaceShipEventStateFv
+b .TryWaitForWipeToChangeStage
+.TryWaitForWipeToChangeStage_Fail:
+.GLE ENDADDRESS
+
+.TryWaitForWipeToChangeStage:
+lbz r5, 0x09(r3)
+cmpwi r5, 0
+beq .ActualStartEvents
+b .AlternateStartEvents
+
+.ActualStartEvents:
+stwu      r1, -0x20(r1)
+b .TryWaitForWipeToChangeStage_Fail
+
 .GLE ADDRESS exeDoEvent__23MarioFaceShipEventStateFv +0x18
 b .RetargetLocationA
 .GLE ENDADDRESS
@@ -948,6 +943,7 @@ blr
 
 
 .GLE ADDRESS startEvents__23MarioFaceShipEventStateFPCc
+
 stwu      r1, -0x30(r1)
 mflr      r0
 stw       r0, 0x34(r1)
@@ -962,6 +958,27 @@ slwi      r0, r0, 2
 add       r4, r29, r0
 lwz       r31, 0x14(r4)
 
+#Lets check to see if we are currently in the stage we need to be in.
+bl MR_GetHubworldEventDataTable
+mr r4, r31
+li r5, 0  #No need to be strict!
+bl .GLE_IsCurrentlyInStageFromJMapInfo
+cmpwi r3, 0
+bne .SkipSceneChangeEvents
+
+
+
+#No going back now! We must change stages.
+li r3, 1   #r3 might already be 1 from the successful read but I'm not testing that so I won't bother optimizing for that
+stb r3, 0x09(r29) #Set the flag to activate "automatic Cutscene mode"
+
+#li r3, 60
+#bl closeSystemWipeMario__2MRFl
+bl forceCloseSystemWipeFade__2MRFv
+
+b .StartEvents_Return
+
+.SkipSceneChangeEvents:
 bl MR_GetHubworldEventDataTable
 mr r4, r3
 addi r3, r1, 0x08
@@ -982,6 +999,7 @@ mr        r3, r29
 addi      r4, r13, sInstance__Q226NrvMarioFaceShipEventState27HostTypeNrvWaitDemoComplete - STATIC_R13
 bl        setNerve__13NerveExecutorFPC5Nerve
 
+.StartEvents_Return:
 addi      r11, r1, 0x30
 bl        _restgpr_29
 lwz       r0, 0x34(r1)
@@ -1012,6 +1030,11 @@ cmpwi r3, 1
 bne .ResultNo
 
 .ResultYes:
+
+#TODO: Check to see if there's another cutscene in queue that requires a stage change.
+#If there is one, we'll also skip doing the default end wipe
+
+
 li r3, 30
 b .DoDefaultEndWipe
 .ResultNo:
@@ -1082,7 +1105,7 @@ lis r3, Game@ha
 addi      r3, r3, Game@l
 li        r6, 0
 li        r7, 0
-bl        startStageBGMFromStageName__2MRFPCcPCcl
+bl        startStageBGMFromStageName__2MRFPCcPCclbb
 
 .StartHubworldMusic_Return:
 addi      r11, r1, 0x20
@@ -1127,32 +1150,213 @@ b .GameScene_Extra3_Return
 .NoBgm2:
 b loc_80452684
 
-
-
-
-
-#Needed to put this here 'cause I couldn't fit inside SceneUtility.s
-.GLE ADDRESS sub_804D5DF0 +0x14
-b .ResetForGameOver
-nop
-.GameOverReturn:
-.GLE ENDADDRESS
-
-.ResetForGameOver:
-
-bl forceCloseSystemWipeFade__2MRFv
-bl resetPlayResultInStageHolder__2MRFv
-
-lis r3, PlayerLeft_Setting@ha
-addi r3, r3, PlayerLeft_Setting@l
-li r4, 0
-bl .MR_GetGameSetting
-bl addPlayerLeft__16GameDataFunctionFi
-b .GameOverReturn
 .GLE ASSERT startGrandStarReturnBGM__2MRFv
 .GLE ENDADDRESS
 
+#GameScene already takes care of opening with a circle wipe so we don't need this other one...
+.GLE ADDRESS 0x804B4890
+nop
+.GLE ENDADDRESS
 
+
+#==================================================================
+
+.GLE ADDRESS .SCENARIO_UTILITY_CONNECTOR
+
+.GLE PRINTADDRESS
+.AlternateStartEvents:
+stwu      r1, -0x30(r1)
+mflr      r0
+stw       r0, 0x34(r1)
+addi      r11, r1, 0x30
+bl        _savegpr_29
+mr        r29, r3
+
+bl isSystemWipeActive__2MRFv
+cmpwi r3, 0
+bne .AlternateStartEvents_Return
+
+li r3, 10
+bl stopStageBGM__2MRFUl
+
+#Okay, Lets try and change stages...
+bl MR_GetHubworldEventDataTable
+lwz       r0, 0x38(r29)
+slwi      r0, r0, 2
+add       r4, r29, r0
+lwz       r4, 0x14(r4)
+bl .MR_RequestMoveStageFromJMapInfo
+
+
+.AlternateStartEvents_Return:
+addi      r11, r1, 0x30
+bl        _restgpr_29
+lwz       r0, 0x34(r1)
+mtlr      r0
+addi      r1, r1, 0x30
+blr
+
+
+#r3 = string to check
+.GLE_IsEqualNullString:
+lis r4, NULLSTRING@ha
+addi r4, r4, NULLSTRING@l
+b isEqualString__2MRFPCcPCc
+
+
+#ReturnStageName1 + ReturnScenario1 = One pair to check
+#
+#If no fields exist, then assume this cutscene applies to all galaxies
+#
+#If a ReturnStageName is empty, only check the Scenario and assume the return galaxy can be any galaxy
+#
+#If a ReturnScenario is -1, ignore it and assume that means "Any Scenario".
+#
+#If a ReturnSCenario is 0, This check will return TRUE when you return with the final star that is
+#availible in the paired ReturnStageName. (If the ReturnStageName is empty, just assume the previously logged completed galaxy)
+#
+#If ReturnStageName is empty AND ReturnScenario is -1, then assume true (as the entry is likely not in use)
+.EventRepeatableFields_Loc:
+li r18, 1 #i?
+b .ReturnStagePair_LoopStart
+
+
+.ReturnStagePair_Loop:
+#First generate the paired strings
+addi      r3, r1, 0x10
+li        r4, 0x14
+lis r5, ReturnStageName_Format@ha
+addi r5, r5, ReturnStageName_Format@l
+mr        r6, r18
+crclr     4*cr1+eq
+bl        snprintf
+
+addi      r3, r1, 0x24
+li        r4, 0x14
+lis r5, ReturnScenario_Format@ha
+addi r5, r5, ReturnScenario_Format@l
+mr        r6, r18
+crclr     4*cr1+eq
+bl        snprintf
+
+
+#Check the ReturnStageName first
+
+mr r3, r30
+addi r4, r1, 0x10
+bl isExistItemInfo__8JMapInfoFPCc
+cmpwi r3, 0 #This means it failed to find the entry
+beq .ReturnStagePair_Success_
+
+addi r3, r1, 0x08
+mr r4, r30
+addi r5, r1, 0x10
+mr r6, r27
+bl getCsvDataStr__2MRFPPCcPC8JMapInfoPCcl
+
+lwz r3, 0x08(r1)
+bl .GLE_IsEqualNullString
+cmpwi r3, 0
+#Ignore galaxy name if string is empty!
+bne .ReturnStagePair_NeedsDefaultGalaxy
+
+bl getClearedStageName__20GameSequenceFunctionFv
+lwz r4, 0x08(r1)
+bl isEqualString__2MRFPCcPCc
+cmpwi r3, 1
+bne .ReturnStagePair_Fail #Galaxy names do not match. Event will not be activated
+b .ReturnStagePair_CheckScenario
+
+.ReturnStagePair_NeedsDefaultGalaxy:
+bl getClearedStageName__20GameSequenceFunctionFv
+stw r3, 0x08(r1)
+
+.ReturnStagePair_CheckScenario:
+#We can assume that out field exists because it has to! Wowie!
+#I mean they don't call 'em pairs for nothing...
+
+addi r3, r1, 0x0C
+mr r4, r30
+addi r5, r1, 0x24
+mr r6, r27
+bl getCsvDataS32__2MRFPlPC8JMapInfoPCcl
+lwz r4, 0x0C(r1)
+
+cmpwi r4, -1  #If the field is not in use, skip it!
+beq .ReturnStagePair_LoopContinue
+
+cmpwi r4, 0
+bne .ReturnStagePair_CheckScenarioSingle
+
+#Lets check to see if a galaxy was provided:
+lwz r3, 0x08(r1)
+bl .GLE_IsEqualNullString
+cmpwi r3, 0
+beq .ReturnStagePair_CheckScenarioMulti
+#Use the results stage:
+bl getClearedStageName__20GameSequenceFunctionFv
+#Fallthrough
+.ReturnStagePair_CheckScenarioMulti:
+
+bl isGalaxyCompletedWithGreen__2MRFPCc
+cmpwi r3, 0
+beq .ReturnStagePair_Fail
+
+bl sub_804D6B10
+cmpwi r3, 0
+beq .ReturnStagePair_Fail
+b .ReturnStagePair_LoopContinue
+
+.ReturnStagePair_CheckScenarioSingle:
+bl getClearedPowerStarId__20GameSequenceFunctionFv
+cmpw r3, r4
+bne .ReturnStagePair_Fail #Scenario's do not match. Event will not be activated
+
+
+.ReturnStagePair_LoopContinue:
+addi r18, r18, 1
+
+.ReturnStagePair_LoopStart:
+b .ReturnStagePair_Loop
+.ReturnStagePair_Fail:
+b .RegisterStarReturnEvents_Loop_Continue
+.ReturnStagePair_Success_:
+b .ReturnStagePair_Success
+
+
+.MarioFaceShipEventState_Appear_Extended:
+#Do we even still need all this stack junk???
+stwu      r1, -0x90(r1)
+mflr      r0
+stw       r0, 0x94(r1)
+addi r11, r1, 0x90
+bl _savegpr_29
+
+mr r31, r3
+#This version is for when we've just changed stage and need to run cutscenes
+
+li r0, 0
+stb r0, 0x09(r3)
+stb r0, 0x08(r3)
+
+#li r3, 60
+#bl openSystemWipeMario__2MRFl
+bl forceCloseWipeFade__2MRFv
+
+mr r3, r31
+bl startStarReturnEvents__23MarioFaceShipEventStateFv
+
+addi      r11, r1, 0x90
+bl        _restgpr_29
+lwz       r0, 0x94(r1)
+mtlr      r0
+addi      r1, r1, 0x90
+blr
+
+.HUBWORLD_STATE_CONNECTOR:
+.GLE ENDADDRESS
+
+#==================================================================
 
 .GLE ADDRESS HubworldState_Strings
 #String table
@@ -1167,15 +1371,18 @@ GRANDSTAR:
     
 GRANDSTARPLUS:
     .string "GRANDSTARPLUS"
-    
-StageName:
-    .string "StageName"
 
 DemoName:
     .string "DemoName"
 
 EventNo:
-    .string "EventNo" AUTO
+    .string "EventNo"
+
+ReturnStageName_Format:
+    .string "ReturnStageName%d" 
+
+ReturnScenario_Format:
+    .string "ReturnScenario%d" AUTO
 
 .GLE ENDADDRESS
 

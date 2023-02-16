@@ -1,6 +1,6 @@
 #Scene Utility for the GLE
 
-.GLE ADDRESS .SCENARIO_UTILITY_LINK
+.GLE ADDRESS .HUBWORLD_STATE_CONNECTOR
 
 #BCSV Get shortcuts
 .StageDataHolder_GetSceneChangeList:
@@ -43,6 +43,7 @@ lwz       r0, 0x14(r1)
 mtlr      r0
 addi      r1, r1, 0x10
 blr
+
 
 
 #Note for Aurum or someone with symbol map access, address 0x8004C860 is the wrong function. It should be "getValue_Ul___8JMapInfoCFiPCcPl_Cb"
@@ -237,6 +238,8 @@ mtlr      r0
 addi      r1, r1, 0x50
 blr
 
+
+
 .MR_ChangePlayer:
 cmpwi r3, 2
 beq .MR_SwapPlayer   #This function is close enough that we can just beq to it.
@@ -264,6 +267,11 @@ cmpwi r3, 0
 beq .ChangeToLuigi
 b .ChangeToMario
 #This function is absurd!
+
+
+
+
+
 
 .MR_GoToSavedStage:
 .GLE PRINTADDRESS
@@ -298,6 +306,9 @@ lwz       r0, 0x14(r1)
 mtlr      r0
 addi      r1, r1, 0x10
 blr
+
+
+
 
 .MR_SetPathsFromJMap:
 #Reads a BCSV Entry and sets the path variables
@@ -368,6 +379,113 @@ slwi r3, r3, 1
 sthx r4, r5, r3
 blr
 
+
+#=========================================================
+
+#Binding GLE::isCurrentlyInStageFromJMapInfo(JMapInfo& JMapInfo, s32 Entry Index, bool StrictCompare)
+.GLE_IsCurrentlyInStageFromJMapInfo:
+#Returns 1 if the player is inside the galaxy listed in the BCSV entry
+#r3 = JMapInfo*
+#r4 = Entry Index
+#r5 = if set to 1, also require the spawn point and zone to be verified
+stwu      r1, -0x60(r1)
+mflr      r0
+stw       r0, 0x64(r1)
+addi      r11, r1, 0x60
+bl _savegpr_28
+
+mr r31, r3
+mr r30, r4
+mr r29, r5
+
+
+.GLE_IsCurrentlyInStageFromJMapInfo_CompareGalaxyName:
+addi r3, r1, 0x08
+mr r4, r31
+lis r5, GalaxyName@ha
+addi r5, r5, GalaxyName@l
+mr r6, r30
+bl getCsvDataStrOrNULL__2MRFPPCcPC8JMapInfoPCcl
+lwz r3, 0x08(r1)
+
+cmpwi r3, 0
+#No Galaxy name.... Well that's bad... Return true (to indicate "no change needed")
+beq .GLE_IsCurrentlyInStageFromJMapInfo_Return_TRUE
+
+bl isEqualStageName__2MRFPCc
+cmpwi r3, 0
+beq .GLE_IsCurrentlyInStageFromJMapInfo_Return
+
+
+.GLE_IsCurrentlyInStageFromJMapInfo_CompareScenario:
+addi r3, r1, 0x0C
+mr r4, r31
+lis r5, ScenarioNo@ha
+addi r5, r5, ScenarioNo@l
+mr r6, r30
+bl getCsvDataS32__2MRFPlPC8JMapInfoPCcl
+
+bl getCurrentScenarioNo__2MRFv
+lwz r4, 0x0C(r1)
+cmpw r3, r4
+li r3, 0
+bne .GLE_IsCurrentlyInStageFromJMapInfo_Return
+
+
+
+cmpwi r29, 0  #if r29 is TRUE, continue checking and DO NOT BRANCH
+li r3, 1  #Return 1 as a success
+beq .GLE_IsCurrentlyInStageFromJMapInfo_Return
+
+
+#fallthrough
+.GLE_IsCurrentlyInStageFromJMapInfo_CompareZone:
+addi r3, r1, 0x10
+mr r4, r31
+lis r5, ZoneName@ha
+addi r5, r5, ZoneName@l
+mr r6, r30
+bl getCsvDataStrOrNULL__2MRFPPCcPC8JMapInfoPCcl
+
+bl getCurrentMarioStartIdInfo__2MRFv
+lwz r28, 0x04(r3)
+lwz r3, 0x00(r3)
+lwz r4, 0x10(r1)
+cmpw r3, r4
+li r3, 0
+bne .GLE_IsCurrentlyInStageFromJMapInfo_Return
+
+
+
+.GLE_IsCurrentlyInStageFromJMapInfo_CompareMarioNo:
+addi r3, r1, 0x14
+mr r4, r31
+lis r5, MarioNo@ha
+addi r5, r5, MarioNo@l
+mr r6, r30
+bl getCsvDataS32__2MRFPlPC8JMapInfoPCcl
+
+lwz r4, 0x14(r1)
+cmpw r28, r4
+li r3, 0
+bne .GLE_IsCurrentlyInStageFromJMapInfo_Return
+#fallthrough
+.GLE_IsCurrentlyInStageFromJMapInfo_Return_TRUE:
+li r3, 1
+
+
+
+.GLE_IsCurrentlyInStageFromJMapInfo_Return:
+addi      r11, r1, 0x60
+bl _restgpr_28
+lwz       r0, 0x64(r1)
+mtlr      r0
+addi      r1, r1, 0x60
+blr
+
+
+#========================================================
+
 .GLE PRINTADDRESS
 .MR_GetStageMode:
 #Reads the StageInfo bcsv to find the Mode entry
@@ -412,6 +530,8 @@ lwz       r0, 0x14(r1)
 mtlr      r0
 addi      r1, r1, 0x10
 blr
+
+
 
 
 .MR_GetStageInfoEntry:
@@ -505,6 +625,9 @@ lwz       r0, 0x14(r1)
 mtlr      r0
 addi      r1, r1, 0x10
 blr
+
+
+
 
 #This section will be for the Scenario Settings
 #As of GLE-V2, the Scenario Settings have moved!
@@ -1776,6 +1899,29 @@ addi r5, r5, Static_ModularPaths@l
 slwi r4, r4, 1
 lhzx r4, r5, r4
 blr
+
+#================================================================
+
+#Needed to put this here 'cause I couldn't fit inside SceneUtility.s
+#Edit: Moved back to SceneUtility.s wowie
+.GLE ADDRESS sub_804D5DF0 +0x14
+b .ResetForGameOver
+nop
+.GameOverReturn:
+.GLE ENDADDRESS
+
+.ResetForGameOver:
+
+bl forceCloseSystemWipeFade__2MRFv
+bl resetPlayResultInStageHolder__2MRFv
+
+lis r3, PlayerLeft_Setting@ha
+addi r3, r3, PlayerLeft_Setting@l
+li r4, 0
+bl .MR_GetGameSetting
+bl addPlayerLeft__16GameDataFunctionFi
+b .GameOverReturn
+
 
 #============== TOTALLY UNRELATED POWERUP FUNCTION =============
 #no sus here. Totally not just copied from SMG1........(spoiler: it was copied from SMG1)

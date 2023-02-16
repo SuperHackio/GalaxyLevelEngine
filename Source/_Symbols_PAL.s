@@ -247,6 +247,7 @@
 .set sub_804E8E30, 0x804E8E30
 .set sub_8005A350, 0x8005A350
 .set sub_8004F640, 0x8004F640
+.set startGameDataSaveSequence__20GameSequenceFunctionFbbb, 0x804D5DA0
 .set unk_807D57D8, 0x807DAED8
 .set unk_807D2AB4, 0x807D81B4
 .set WaitStringJapanese, 0x807DEFCC
@@ -273,7 +274,6 @@
 .set SoundIdName, 0x8067159C
 .set Volume, 0x806715A8
 .set Type, 0x806627C4
-.set ReturnType, 0x80701160
 .set NULLSTRING, 0x807D5B78
 .set NULLWSTRING, 0x807D5880
 .set GalaxySelectInfo_WorldMapGalaxyInformation, 0x806FF3A0

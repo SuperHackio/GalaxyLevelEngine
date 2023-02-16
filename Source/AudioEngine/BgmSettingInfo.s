@@ -3,8 +3,7 @@
 #3 ints.
 .set TrackEntrySize, 4 * 0x04
 
-.GLE ADDRESS sub_804E8FD0
-blr
+.GLE ADDRESS WorldmapCodeStart +0x04
 
 .InitBgmSettingsChannelControl:
 mr r27, r3 #Keep this
@@ -100,6 +99,8 @@ b .InitBgmSettingsChannelControl_Return
     .string "ChangeType" AUTO
 
 
+#End worldmap code
+.BGM_SETTING_INFO_CONNECTOR:
 .GLE ENDADDRESS
 
 

@@ -38,8 +38,7 @@ blr
 .GLE ASSERT __ct__Q217FileSelectInfoSub10SlideStateFP14FileSelectInfo
 .GLE ENDADDRESS
 
-.GLE ADDRESS sub_804F5550
-blr
+.GLE ADDRESS .ALLSTARLIST_CONNECTOR
 
 .Message_Loop:
 #Iterate each BCSV Entry to find message entries
@@ -167,6 +166,6 @@ mtlr      r0
 addi      r1, r1, 0x10
 blr
 
-.GLE PRINTADDRESS
-.GLE ASSERT sub_804F5D00
+#END WORLDMAP CODE
+.FILE_SELECT_CONNECTOR:
 .GLE ENDADDRESS
