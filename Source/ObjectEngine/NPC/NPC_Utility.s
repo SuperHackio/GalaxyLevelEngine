@@ -652,14 +652,24 @@ blr
 
 #MR::RegisterTalkToDemo((LiveActor *,JMapInfoIter const &))
 .MR_RegisterTalkToDemo:
-stwu      r1, -0x10(r1)
+stwu      r1, -0x20(r1)
 mflr      r0
-stw       r0, 0x14(r1)
-stw       r31, 0x0C(r1)
-stw       r30, 0x08(r1)
+stw       r0, 0x24(r1)
+stw       r31, 0x1C(r1)
+stw       r30, 0x18(r1)
 mr        r31, r3
+mr        r30, r4
 bl tryRegisterDemoCast__2MRFP9LiveActorRC12JMapInfoIter
 cmpwi r3, 0
+beq .RegisterTalkToDemo_Return
+
+mr r3, r30
+addi      r4, r1, 0x08
+bl        getJMapInfoMessageID__2MRFRC12JMapInfoIterPl
+lwz       r3, 0x08(r1)
+
+
+cmpwi r3, -2
 beq .RegisterTalkToDemo_Return
 
 mr        r3, r31
@@ -667,11 +677,11 @@ lwz       r4, 0x94(r31)
 bl registerDemoTalkMessageCtrl__12DemoFunctionFP9LiveActorP15TalkMessageCtrl
 
 .RegisterTalkToDemo_Return:
-lwz       r0, 0x14(r1)
-lwz       r31, 0x0C(r1)
-lwz       r30, 0x08(r1)
+lwz       r0, 0x24(r1)
+lwz       r31, 0x1C(r1)
+lwz       r30, 0x18(r1)
 mtlr      r0
-addi      r1, r1, 0x10
+addi      r1, r1, 0x20
 blr
 
 
@@ -1260,6 +1270,10 @@ blr
 .Tico_DoGlobalEventFunc:
 b .MR_GlobalEventFunc
 .GLE ASSERT exeReaction__4TicoFv
+.GLE ENDADDRESS
+
+.GLE ADDRESS init__4TicoFRC12JMapInfoIter +0x17C
+bl .MR_RegisterTalkToDemo
 .GLE ENDADDRESS
 
 #====== TicoBaby ======
