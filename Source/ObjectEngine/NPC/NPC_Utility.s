@@ -884,7 +884,7 @@ b .KinopioBank_EventFunc_Vanilla
 #====== LuigiTalkNpc ======
 .GLE ADDRESS init__12LuigiTalkNpcFRC12JMapInfoIter +0x110
 bl .MR_RegisterEventAndGlobalAnimeFunc
-b .LuigiTalkNpcInitJumpLoc
+#This leads right into the next GLE ADDRESS right under this
 .GLE ENDADDRESS
 
 .GLE ADDRESS init__12LuigiTalkNpcFRC12JMapInfoIter +0x11C
@@ -981,6 +981,10 @@ b .Peach_RegisterGlobals
 .Peach_RegisterGlobals:
 mr        r3, r29
 bl .MR_RegisterAllGlobalFuncs
+
+mr r3, r29
+mr r4, r30
+bl .MR_RegisterTalkToDemo
 
 addi      r11, r1, 0xC0
 b .Peach_RegisterGlobals_Return
