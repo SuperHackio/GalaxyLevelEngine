@@ -791,7 +791,6 @@ b .HoneyBee_RegisterGlobals
 .GLE ENDADDRESS
 
 .HoneyBee_RegisterGlobals:
-.Rabbit_RegisterGlobals:
 mr        r3, r29
 bl .MR_RegisterAllGlobalFuncs
 
@@ -1225,11 +1224,17 @@ bl .MR_RegisterAllGlobalFuncs
 
 #====== Rabbit ======
 .GLE ADDRESS init__6RabbitFRC12JMapInfoIter +0x200
-#Shared with HoneyBee!
+#NOT Shared with HoneyBee! They don't use the same register...
 b .Rabbit_RegisterGlobals
 .Rabbit_RegisterGlobals_Return:
 .GLE ENDADDRESS
 
+.Rabbit_RegisterGlobals:
+mr        r3, r31
+bl .MR_RegisterAllGlobalFuncs
+
+addi      r11, r1, 0xE0
+b .Rabbit_RegisterGlobals_Return
 
 
 #====== Rosetta ======
