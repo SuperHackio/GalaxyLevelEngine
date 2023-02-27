@@ -516,6 +516,9 @@ bl isRunMarioFaceShipOpeningCamera__2MRFv
 cmpwi r3, 0
 beq .registerStartEvents_NoOpeningCam
 
+li r3, 1
+bl stopStageBGM__2MRFUl
+
 mr r3, r31
 lis r4, StartFromFileSelect@ha
 addi r4, r4, StartFromFileSelect@l
@@ -1154,7 +1157,7 @@ b loc_80452684
 .GLE ENDADDRESS
 
 #GameScene already takes care of opening with a circle wipe so we don't need this other one...
-.GLE ADDRESS 0x804B4890
+.GLE ADDRESS exeStart__29MarioFaceShipInGameActorStateFv +0x80
 nop
 .GLE ENDADDRESS
 

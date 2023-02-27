@@ -496,7 +496,6 @@ blr
 
 #========================================================================================
 
-#TODO: Expand this!
 startScenarioSelectBgm:
 stwu r1, -0x20(r1)
 mflr      r0
@@ -515,7 +514,6 @@ addi r4, r4, SelectBgm@l
 li r5, 2
 li r6, 0  #Always 0
 bl .getActiveEntryFromGalaxyInfo
-.GLE PRINTADDRESS
 cmpwi r3, 0
 bne .CustomSelectMusic
 

@@ -56,11 +56,29 @@ stw       r4, 0x00(r31)
 li r3, 0
 stw r3, 0x90(r31) #StageResultInformer*
 stw r3, 0x94(r31) #SubModel* TicoBaby
-stw r3, 0x98(r31) #Obj Arg 0
+#Arg0 used to be here
 stw r3, 0x9C(r31) #Store Starbits
 stw r3, 0xA0(r31) #Store Coins
 stb r3, 0xA4(r31) #New Comet Medal flag
-stb r3, 0xA5(r31) #Obj Arg 1 "Do not save game"
+stb r3, 0xA5(r31) #Obj Arg 1 "Do not save game" (1 = true)
+stb r3, 0xA6(r31) #Obj Arg 2 "Skip results and only save" (1 = true)
+
+
+
+
+#Obj Arg 0 "Save Type"
+
+#-1 = Save All
+# 0 = Save None
+# 1 = Save Coins Only
+# 2 = Save Starbits Only
+# 3 = Save Coins and Starbits Only
+# 4 = Save Comet Medal Only
+# 5 = Save Coins and Comet Medal Only
+# 6 = Save Starbits and Comet Medal Only
+# 7 = Save All
+li r3, -1 #set all the bits!
+stw r3, 0x98(r31)
 
 mr        r3, r31
 lwz       r31, 0x0C(r1)
@@ -121,13 +139,23 @@ bl tryRegisterDemoCast__2MRFP9LiveActorRC12JMapInfoIter
 mr r3, r30
 addi r4, r31, 0x98
 bl getJMapInfoArg0NoInit__2MRFRC12JMapInfoIterPl
-
+.GLE PRINTADDRESS
 
 mr r3, r30
 addi r4, r1, 0x08
+li r0, 0
+stw r0, 0x00(r4)
 bl getJMapInfoArg1NoInit__2MRFRC12JMapInfoIterPb
 lbz r3, 0x08(r1)
 stb r3, 0xA5(r31)
+
+mr r3, r30
+addi r4, r1, 0x08
+li r0, 0
+stw r0, 0x00(r4)
+bl getJMapInfoArg2NoInit__2MRFRC12JMapInfoIterPb
+lbz r3, 0x08(r1)
+stb r3, 0xA6(r31)
 
 
 mr        r3, r31
@@ -160,8 +188,18 @@ bl        _savegpr_29
 mr r31, r3
 bl appear__9LiveActorFv
 
-mr r3, r31
+.GLE PRINTADDRESS
+lbz r3, 0xA6(r31)
+cmpwi r3, 0
+ble .StageResultObj_Appear_setNerve_Wait
+addi r4, r13, .StageResultObj_NrvGameSave_sInstance - STATIC_R13
+b .StageResultObj_Appear_setNerve
+
+.StageResultObj_Appear_setNerve_Wait:
 addi r4, r13, .StageResultObj_NrvAppearWait_sInstance - STATIC_R13
+
+.StageResultObj_Appear_setNerve:
+mr r3, r31
 bl setNerve__9LiveActorFPC5Nerve
 
 addi      r11, r1, 0x20
@@ -231,18 +269,74 @@ bl getGameSequenceInGame__20GameSequenceFunctionFv
 bl getPlayResultInStageHolder__18GameSequenceInGameFv
 mr r30, r3
 
-#If Obj Arg 0 is set, save all the current data!
+
+
+
+
+
+
+
+
+
+
+
+#New Obj Arg 0
+#It's a bitfield now
+
+.StageResultObj_TrySaveCoins:
 lwz r3, 0x98(r29)
-cmpwi r3, 0
-bne loc_804D8748_2
+rlwinm. r0,r3,0,31,31
+beq .StageResultObj_NoSaveCoins
 
-mr r3, r30
-bl getClearedStarPieceNum__23PlayResultInStageHolderCFv
-bl tryOnGameEventFlagStarPieceCounterStop__16GameDataFunctionFi
-
+#Save coins to save file
 mr r3, r30
 bl getClearedCoinNum__23PlayResultInStageHolderCFv
 bl tryOnGameEventFlagCoinCounterStop__16GameDataFunctionFi
+b .StageResultObj_TrySaveStarbits
+
+
+.StageResultObj_NoSaveCoins:
+#Do not save coins to save file
+mr r3, r30
+bl getClearedCoinNum__23PlayResultInStageHolderCFv
+stw r3, 0xA0(r29)
+li r4, 0
+stw r4, 0x54(r30)
+
+
+
+
+
+
+.StageResultObj_TrySaveStarbits:
+lwz r3, 0x98(r29)
+rlwinm. r0,r3,0,30,30
+beq .StageResultObj_NoSaveStarbits
+
+#save starbits to save file
+mr r3, r30
+bl getClearedStarPieceNum__23PlayResultInStageHolderCFv
+bl tryOnGameEventFlagStarPieceCounterStop__16GameDataFunctionFi
+b .StageResultObj_TrySaveMedal
+
+
+.StageResultObj_NoSaveStarbits:
+#Do not save starbits to save file
+mr r3, r30
+bl getClearedStarPieceNum__23PlayResultInStageHolderCFv
+stw r3, 0x9C(r29)
+li r4, 0
+stw r4, 0x4C(r30)
+
+
+
+
+
+
+.StageResultObj_TrySaveMedal:
+lwz r3, 0x98(r29)
+rlwinm.  r0,r3,0,29,29
+beq .StageResultObj_NoSaveMedal
 
 bl        tryCollectTicoCoinSaved__20GameSequenceFunctionFv
 lbz       r0, 0x61(r30)
@@ -251,26 +345,16 @@ beq       loc_804D8748
 mr        r3, r30
 bl getStageName__23PlayResultInStageHolderCF
 bl onGalaxyFlagTicoCoin__16GameDataFunctionFPCc
-
 b loc_804D8748
 
-loc_804D8748_2:
-#Don't send the starbits/coins to the hubworld
-mr r3, r30
-bl getClearedStarPieceNum__23PlayResultInStageHolderCFv
-stw r3, 0x9C(r29)
 
-mr r3, r30
-bl getClearedCoinNum__23PlayResultInStageHolderCFv
-stw r3, 0xA0(r29)
-
+.StageResultObj_NoSaveMedal:
 lbz r4, 0x62(r30)
 stb r4, 0xA4(r29)
-
 li r4, 0
-stw r4, 0x4C(r30)
-stw r4, 0x54(r30)
 stb r4, 0x62(r30)
+
+
 
 
 loc_804D8748:
@@ -404,6 +488,7 @@ addi      r1, r1, 0x20
 blr
 
 #------------------------------------------
+.GLE PRINTMESSAGE RestoreItems
 .GLE PRINTADDRESS
 .StageResultObj_exeGameSave:
 lwz       r3, 0(r4)
@@ -419,32 +504,63 @@ bl isFirstStep__2MRFPC9LiveActor
 cmpwi r3, 0
 beq .StageResultObj_exeGameSave_NotFirstStep
 
+
+#Ignore the stuff underneath since we never got to part 1 of that code if the value is set to 1.
+lbz r3, 0xA6(r31)
+cmpwi r3, 0
+bgt .StageResultObj_exeGameSave_TrySave
+
 #If Obj Arg 0 is set, save all the current data!
 bl getGameSequenceInGame__20GameSequenceFunctionFv
 bl getPlayResultInStageHolder__18GameSequenceInGameFv
 
-lwz r4, 0x98(r31)
-cmpwi r4, 0
-bne .StageResultObj_exeGameSave_Restore
 
-li r4, 0
-stw r4, 0x4C(r3)
-stw r4, 0x54(r3)
-b .StageResultObj_exeGameSave_DoSave
 
-.StageResultObj_exeGameSave_Restore:
-lwz r4, 0x9C(r31)
-stw r4, 0x4C(r3)
+#New Obj Arg 0
+#It's a bitfield now
+lwz r5, 0x98(r31)
+
+.StageResultObj_TryRestoreCoins:
+rlwinm. r0,r5,0,31,31
+bne .StageResultObj_NoRestoreCoins
+
 lwz r4, 0xA0(r31)
 stw r4, 0x54(r3)
+b .StageResultObj_TryRestoreStarbits
+
+.StageResultObj_NoRestoreCoins:
+li r4, 0
+stw r4, 0x54(r3)
+
+
+.StageResultObj_TryRestoreStarbits:
+rlwinm. r0,r5,0,30,30
+bne .StageResultObj_NoRestoreStarbits
+
+
+lwz r4, 0x9C(r31)
+stw r4, 0x4C(r3)
+b .StageResultObj_TryRestoreMedal
+
+.StageResultObj_NoRestoreStarbits:
+li r4, 0
+stw r4, 0x4C(r3)
+
+
+.StageResultObj_TryRestoreMedal:
+rlwinm.  r0,r5,0,29,29
+bne .StageResultObj_NoRestoreMedal
 lbz r4, 0xA4(r31)
 stb r4, 0x62(r3)
 
+
+.StageResultObj_NoRestoreMedal:
 .StageResultObj_exeGameSave_DoSave:
 
 bl forceSyncStarPieceCounter__2MRFv
 bl forceSyncCoinCounter__2MRFv
 
+.StageResultObj_exeGameSave_TrySave:
 lbz r3, 0xA5(r31)
 cmpwi r3, 0
 bgt .StageResultObj_exeGameSave_NotFirstStep

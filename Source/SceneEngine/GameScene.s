@@ -408,7 +408,8 @@ b .RequestChangeStageAfterMiss
 
 #Called from HubworldState.s
 .EndScenarioSelectBgm:
-b sub_8001BB90 #Needed to end the Scenario Select music
+li r3, 1
+b stopStageBGM__2MRFUl #Needed to end the Scenario Select music
 
 
 
@@ -416,7 +417,8 @@ b sub_8001BB90 #Needed to end the Scenario Select music
 
 #Thanks I hate it
 .EndScenarioSelectBgmWithForceToBlank:
-bl sub_8001BB90
+li r3, 1
+bl stopStageBGM__2MRFUl
 mr        r3, r31
 b .EndScenarioSelectBgmWithForceToBlank_Return
 
@@ -428,7 +430,8 @@ b .EndScenarioSelectBgmWithForceToBlank
 
 #Thanks I hate it 2: electric bugaloo
 .EndScenarioSelectBgmWithForceToBlank2:
-bl sub_8001BB90
+li r3, 1
+bl stopStageBGM__2MRFUl
 mr        r3, r31
 b .EndScenarioSelectBgmWithForceToBlank2_Return
 
@@ -468,17 +471,17 @@ addi      r1, r1, 0x10
 blr
 
 
-
+#Hopefully fixed the proper way now!!
 .GLE ADDRESS exeConfirm__9PauseMenuFv +0x88
-b .StopSubBGM
-.StopSubBGM_Return:
+#b .StopSubBGM
+#.StopSubBGM_Return:
 .GLE ENDADDRESS
 
 .StopSubBGM:
-li r3, 0x00
-bl stopSubBGM__2MRFUl
-li        r3, 0x5A
-b .StopSubBGM_Return
+#li r3, 0x00
+#bl stopSubBGM__2MRFUl
+#li        r3, 0x5A
+#b .StopSubBGM_Return
 
 .GLE ENDADDRESS
 

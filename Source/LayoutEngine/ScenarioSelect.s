@@ -1400,6 +1400,10 @@ bctrl
 #bl 0x8048F000 ;Handles being able to use the DPAD at the stars
 #Removed because I don't fully understand it yet and thus, can't replace it.
 #I will add a replacement in the future
+
+mr r3, r30
+bl .tryDpdSelection__20ScenarioSelectLayoutFv
+
 mr        r3, r30
 bl updateSelectedScenario__20ScenarioSelectLayoutFv
 mr        r3, r30
@@ -2105,6 +2109,52 @@ stw r3, 0xE8(r30)
 
 #Start the Loading icon, if applicable
 b .loc_8048F498
+
+#==================================================
+
+#Finally re-adding selecting stars with the Nunchuk/DPad
+#I think I overwrote the original so I'm gonna make a new one
+.tryDpdSelection__20ScenarioSelectLayoutFv:
+stwu      r1, -0x60(r1)
+mflr      r0
+stw       r0, 0x64(r1)
+addi      r11, r1, 0x50
+stfd      f31, 0x50(r1)
+psq_st    f31, 0x58(r1), 0, 0
+bl        _savegpr_28
+
+mr        r31, r3
+
+#First we can check to see if there are any Power Stars being shown on the scenario select. If not we can skip this function completely
+#I hope this works for our purposes...lol
+lwz       r4, 0x68(r3)
+lwz       r4, 0(r4)
+lbz       r0, 0x38(r4)
+cmpwi r3, 0
+bne .tryDpdSelection_Return
+
+
+
+
+
+
+
+
+
+
+
+
+
+.tryDpdSelection_Return:
+addi      r11, r1, 0x50
+psq_l     f31, 0x58(r1), 0, 0
+lfd       f31, 0x50(r1)
+bl        _restgpr_28
+lwz       r0, 0x64(r1)
+mtlr      r0
+addi      r1, r1, 0x60
+blr
+
 
 #==================================================
 

@@ -1534,7 +1534,8 @@ stw       r0, 0x64(r1)
 addi      r11, r1, 0x60
 bl _savegpr_25
 
-bl sub_8001BB90
+#Not needed anymore as this was fixed the PROPER WAY FINALLY
+#bl sub_8001BB90
 
 bl .MR_GetExitOverrideIndex
 cmpwi r3, -1
