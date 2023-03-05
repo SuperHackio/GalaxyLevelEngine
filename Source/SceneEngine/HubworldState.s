@@ -83,7 +83,7 @@ addi r4, r4, NULLSTRING@l
 bl isEqualString__2MRFPCcPCc
 cmpwi r3, 1
 lwz r3, 0x08(r1)
-bne .ReturnDemoOverride_TryGetDefaults
+bne .ReturnDemoOverride_Return
 
 .ReturnDemoOverride_TryFindGalaxyOverride:
 #Lets check the Galaxy Overrides
