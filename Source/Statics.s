@@ -17,7 +17,7 @@ blr
 .GLE ADDRESS STATIC_INIT_LIST +0xD24
 .int .LoadIcon_StaticInit
 .int .StageResultObj_STATIC_INIT
-.int .__DEAD_STATIC
+.int .MiniComet_sInit
 .int .__DEAD_STATIC
 .int .__DEAD_STATIC
 .int .__DEAD_STATIC

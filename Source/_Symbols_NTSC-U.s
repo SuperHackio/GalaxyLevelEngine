@@ -419,6 +419,8 @@
 .set LavaRotateStepsRotatePartsA, 0x806B5BD0
 
 
+.set MiniComet_NerveLoc, 0x807D5E60
+.set MiniComet_Data, 0x80700F30
 
 .set TicoCoin, 0x806B6E5C
 

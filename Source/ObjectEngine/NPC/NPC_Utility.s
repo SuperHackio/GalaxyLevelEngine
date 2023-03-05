@@ -213,7 +213,7 @@ mr r29, r3
 #       0x02 = Coins
 #       0x03 = Purple Coins
 #       0x04 = Current Score
-#       Example: 0x3002 will display coins
+#       Example: 0x2002 will display coins
 #0x03 = ForceKillPlayerByGroundRace
 #0x04 = Restart current stage
 #0x05 = Change Stage. Parameter value is an index into ChangeSceneListInfo (Main Galaxy only)
