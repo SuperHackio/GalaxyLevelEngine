@@ -50,3 +50,40 @@ b .AudSystem_DoPauseVol_GLE_Return
 #bl moveVolumeStageBGM__2MRFfUl
 b .AudSystem_DoPauseVol_GLE_Return
 .GLE ENDADDRESS
+
+
+
+.GLE ADDRESS .LOAD_ICON_CONNECTOR
+
+.GLE ADDRESS updateStarPane__9PauseMenuFv +0x58
+bl .PauseMenu_MakeGalaxyStatusAccessor
+.GLE ENDADDRESS
+
+.PauseMenu_MakeGalaxyStatusAccessor:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+stw       r31, 0x0C(r1)
+
+lis r3, PauseStarSource@ha
+addi r3, r3, PauseStarSource@l
+li r4, 0
+li r5, 2
+bl .MR_GetCurrentScenarioSetting_Type
+cmpwi r3, 0
+bne .PauseMenu_MakeGalaxyStatusAccessor_Continue
+bl       getCurrentStageName__2MRFv
+
+.PauseMenu_MakeGalaxyStatusAccessor_Continue:
+mr        r31, r3
+bl        getScenarioDataParser__20ScenarioDataFunctionFv
+mr        r4, r31
+bl        makeAccessor__18ScenarioDataParserCFPCc
+lwz       r0, 0x14(r1)
+lwz       r31, 0x0C(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
+
+.PAUSE_MENU_CONNECTOR:
+.GLE ENDADDRESS

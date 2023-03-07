@@ -279,61 +279,45 @@ b sscanf
 #========================================================================================
 
 
-#GLE::makeStarPaneName(r3 = char const * StringLocation, r4 = int StarID)
+#GLE::makeStarRowName(r3 = char const* StringDestPtr, r4 = int RowID)
+makeStarRowName:
+lis r5, ScenarioSelectRow_Format@ha
+addi r5, r5, ScenarioSelectRow_Format@l
+b makePaneName_Loc
+
+#GLE::makeStarPaneName(r3 = char const* StringDestPtr, r4 = int StarID)
 makeStarPaneName:
-mr r6, r4
 lis r5, Star_Format@ha
 addi r5, r5, Star_Format@l
 b makePaneName_Loc
 
-#GLE::makeNewBubblePaneName(r3 = char const * StringLocation, r4 = int StarID)
+#GLE::makeNewBubblePaneName(r3 = char const* StringDestPtr, r4 = int StarID)
 makeNewBubblePaneName:
-mr r6, r4
 lis r5, New_Format@ha
 addi r5, r5, New_Format@l
 b makePaneName_Loc
 
-#GLE::makeHiddenBubblePaneName(r3 = char const * StringLocation, r4 = int StarID)
+#GLE::makeHiddenBubblePaneName(r3 = char const* StringDestPtr, r4 = int StarID)
 makeHiddenBubblePaneName:
-mr r6, r4
 lis r5, Hidden_Format@ha
 addi r5, r5, Hidden_Format@l
 b makePaneName_Loc
 
-#GLE::makeCometBubblePaneName(r3 = char const * StringLocation, r4 = int StarID)
+#GLE::makeCometBubblePaneName(r3 = char const* StringDestPtr, r4 = int StarID)
 makeCometBubblePaneName:
-mr r6, r4
 lis r5, Comet_Format@ha
 addi r5, r5, Comet_Format@l
-#Cheat here and just let the code continue
+#b makePaneName_Loc   #Cheat here and just let the code continue
+
+
+
 
 #Used by the above functions
 makePaneName_Loc:
+mr r6, r4
 li        r4, 0x08
 crclr     4*cr1+eq
 b        snprintf
-
-
-
-#New addition to lock the ScenarioSelect to a max amount of stars
-
-#r3 = GalaxyStatusAccessor
-.GetPowerStarNumOrMax:
-stwu      r1, -0x10(r1)
-mflr      r0
-stw       r0, 0x14(r1)
-bl getPowerStarNum__20GalaxyStatusAccessorCFv
-
-cmpwi r3, StarCount
-ble .GetPowerStarNumOrMax_Return
-
-li r3, StarCount
-
-.GetPowerStarNumOrMax_Return:
-lwz       r0, 0x14(r1)
-mtlr      r0
-addi      r1, r1, 0x10
-blr
 
 #========================================================================================
 
@@ -1059,6 +1043,389 @@ addi      r1, r1, 0x10
 blr
 
 
+
+
+
+.GLE ADDRESS hasPowerStar__16GameDataFunctionFPCcl
+b .GLE_hasPowerStar
+.GLE ENDADDRESS
+
+#This function takes Power Star Masks into account
+#GLE::hasPowerStar((char const* GalaxyName, long StarId))
+.GLE_hasPowerStar:
+stwu      r1, -0x120(r1)
+mflr      r0
+stw       r0, 0x124(r1)
+stw       r31, 0x11C(r1)
+stw       r30, 0x118(r1)
+mr        r30, r3
+mr        r31, r4
+
+bl makeGalaxyStatusAccessor__2MRFPCc
+stw r3, 0x08(r1)
+addi r3, r1, 0x08
+#Doesn't use any register other than r3
+bl getWorldNo__20GalaxyStatusAccessorCFv
+lis r4, StarMask@ha
+addi r4, r4, StarMask@l
+li r5, 2
+mr r6, r31
+bl .getActiveEntryFromGalaxyInfo
+
+#It failed so we can just continue as normal
+cmpwi r3, 0
+beq .GLE_hasPowerStar_AfterMask
+
+lis r4, GalaxyScenario_Format@ha
+addi r4, r4, GalaxyScenario_Format@l
+addi r5, r1, 0x0C
+addi r6, r1, 0x08
+crclr     4*cr1+eq
+bl sscanf
+
+lwz r31, 0x08(r1)
+addi r30, r1, 0x0C
+
+#r30 and r31 should be changed before this point
+.GLE_hasPowerStar_AfterMask:
+mr r3, r30
+bl        makeSomeGalaxyStorage__16GameDataFunctionFPCc
+mr        r4, r31
+bl        getScenarioAccessor__25GameDataSomeGalaxyStorageCFl
+li        r4, 1
+bl        testFlag__28GameDataSomeScenarioAccessorCFUl
+lwz       r0, 0x124(r1)
+lwz       r31, 0x11C(r1)
+lwz       r30, 0x118(r1)
+mtlr      r0
+addi      r1, r1, 0x120
+blr
+
+
+
+
+#Extend GameDataSomeGalaxyStorage::getPowerStarNumOwned(const(void))
+#Extending so we can ignore masks
+.GLE ADDRESS getPowerStarNumOwned__25GameDataSomeGalaxyStorageCFv
+stwu      r1, -0x120(r1)
+mflr      r0
+stw       r0, 0x124(r1)
+addi      r11, r1, 0x120
+bl        _savegpr_27
+mr        r28, r3
+li        r30, 0
+li        r29, 0
+li        r31, 0
+b         loc_804DD15C
+
+loc_804DD138:
+b .getPowerStarNumOwned_Ext
+nop
+nop
+nop
+.getPowerStarNumOwned_Ext_ReturnLoc:
+cmpwi     r3, 0
+beq       loc_804DD154
+addi      r30, r30, 1
+
+loc_804DD154:
+addi      r29, r29, 1
+addi      r31, r31, 0xC
+
+loc_804DD15C:
+lwz       r0, 0x0C(r28)
+cmpw      r29, r0
+blt       loc_804DD138
+mr        r3, r30
+addi      r11, r1, 0x120
+bl        _restgpr_27
+lwz       r0, 0x124(r1)
+mtlr      r0
+addi      r1, r1, 0x120
+blr
+.GLE ENDADDRESS
+
+.getPowerStarNumOwned_Ext:
+lwz r3, 0x00(r28)
+bl makeGalaxyStatusAccessor__2MRFPCc
+stw r3, 0x08(r1)
+
+addi r3, r1, 0x08
+bl getWorldNo__20GalaxyStatusAccessorCFv
+stw r3, 0x08(r1)
+
+li r27, 0
+b .getPowerStarNumOwned_Ext_LoopStart
+
+
+.getPowerStarNumOwned_Ext_Loop:
+addi r3, r1, 0x0C
+lwz r4, 0x08(r1)
+lis r5, Type@ha
+addi r5, r5, Type@l
+mr r6, r27
+bl getCsvDataStr__2MRFPPCcPC8JMapInfoPCcl
+
+cmpwi r3, 0
+beq .getPowerStarNumOwned_Ext_LoopBreak
+
+lwz r3, 0x0C(r1)
+lis r4, StarMask@ha
+addi r4, r4, StarMask@l
+bl isEqualString__2MRFPCcPCc
+cmpwi r3, 0
+beq .getPowerStarNumOwned_Ext_LoopContinue
+
+
+addi r3, r1, 0x0C
+lwz r4, 0x08(r1)
+lis r5, Param00Int@ha
+addi r5, r5, Param00Int@l
+mr r6, r27
+bl getCsvDataS32__2MRFPlPC8JMapInfoPCcl
+
+lwz r3, 0x0C(r1)
+addi r4, r29, 1
+cmpw r3, r4
+bne .getPowerStarNumOwned_Ext_LoopContinue  #Wrong Scenario
+
+addi r3, r1, 0x0C
+lwz r4, 0x08(r1)
+lis r5, Param00Str@ha
+addi r5, r5, Param00Str@l
+mr r6, r27
+bl getCsvDataStrOrNULL__2MRFPPCcPC8JMapInfoPCcl
+
+lwz r3, 0x0C(r1)
+cmpwi r3, 0
+beq .getPowerStarNumOwned_Ext_LoopBreak #No Mask
+
+addi r4, r1, 0x10
+bl .GLE_GetGalaxyAndScenarioFromString
+
+lwz r3, 0x00(r28)
+addi r4, r1, 0x14
+bl isEqualString__2MRFPCcPCc
+cmpwi r3, 0
+beq .getPowerStarNumOwned_Ext_NoMaskJumpLoc
+
+lwz r3, 0x10(r1)
+addi r4, r29, 1
+cmpw r3, r4
+beq .getPowerStarNumOwned_Ext_LoopBreak
+
+.getPowerStarNumOwned_Ext_NoMaskJumpLoc:
+b loc_804DD154 #If there is a mask, just ignore the star.
+
+.getPowerStarNumOwned_Ext_LoopContinue:
+addi r27, r27, 1
+
+.getPowerStarNumOwned_Ext_LoopStart:
+lwz r3, 0x08(r1)
+bl getCsvDataElementNum__2MRFPC8JMapInfo
+cmpw r27, r3
+blt .getPowerStarNumOwned_Ext_Loop
+
+.getPowerStarNumOwned_Ext_LoopBreak:
+lwz       r0, 8(r28)
+li        r4, 1
+add       r3, r0, r31
+bl        testFlag__28GameDataSomeScenarioAccessorCFUl
+b .getPowerStarNumOwned_Ext_ReturnLoc
+
+
+
+#Replacement for
+#GameDataFunction::getPowerStarNumMax((void))
+#that ignores the ghost stars created by Power Star Masks
+
+.GLE ADDRESS getPowerStarNumMax__16GameDataFunctionFv
+b .GLE_getPowerStarNumMax
+.GLE ENDADDRESS
+
+
+.GLE_getPowerStarNumMax:
+stwu      r1, -0x20(r1)
+mflr      r0
+stw       r0, 0x24(r1)
+stw       r31, 0x1C(r1)
+addi      r3, r1, 0x0C
+li        r31, 0
+bl        makeBeginScenarioDataIter__2MRFP16ScenarioDataIter
+b         loc_804D28D0
+
+loc_804D28B0:
+addi      r3, r1, 0x0C
+bl        makeAccessor__16ScenarioDataIterCFv
+stw       r3, 0x08(r1)
+addi      r3, r1, 0x08
+bl        .__getPowerStarNum
+add       r31, r31, r3
+addi      r3, r1, 0x0C
+bl        goNext__16ScenarioDataIterFv
+
+loc_804D28D0:
+addi      r3, r1, 0x0C
+bl        isEnd__16ScenarioDataIterCFv
+cmpwi     r3, 0
+beq       loc_804D28B0
+mr        r3, r31
+lwz       r31, 0x1C(r1)
+lwz       r0, 0x24(r1)
+mtlr      r0
+addi      r1, r1, 0x20
+blr
+
+
+.__getPowerStarNum:
+lwz       r3, 0(r3)
+
+stwu      r1, -0x120(r1)
+mflr      r0
+stw       r0, 0x124(r1)
+addi      r11, r1, 0x120
+bl        _savegpr_27
+mr        r27, r3
+lis       r30, PowerStarId_String@ha
+addi      r30, r30, PowerStarId_String@l
+li        r29, 0
+li        r28, 1
+li        r31, 0
+b         loc_804CB71C
+
+loc_804CB6E0:
+stw       r31, 0x08(r1)
+mr        r3, r27
+mr        r4, r28
+bl        getScenarioDataIter__12ScenarioDataCFl
+stw       r4, 0x14(r1)
+mr        r4, r30
+addi      r5, r1, 0x08
+stw       r3, 0x10(r1)
+addi      r3, r1, 0x10
+bl        getValue<Ul>__12JMapInfoIterCFPCcPUl_b
+lwz       r0, 0x08(r1)
+cmpwi     r0, 0
+beq       loc_804CB718
+b .getPowerStarNum_Ext
+.getPowerStarNum_Ext_Return:
+
+loc_804CB718:
+addi      r28, r28, 1
+
+loc_804CB71C:
+lwz       r3, 4(r27)
+lwz       r3, 0(r3)
+cmpwi     r3, 0
+bne       loc_804CB734
+li        r0, 0
+b         loc_804CB738
+
+loc_804CB734:
+lwz       r0, 0(r3)
+
+loc_804CB738:
+cmpw      r28, r0
+ble       loc_804CB6E0
+addi      r11, r1, 0x120
+mr        r3, r29
+bl        _restgpr_27
+lwz       r0, 0x124(r1)
+mtlr      r0
+addi      r1, r1, 0x120
+blr
+
+#Extend for Masked stars
+#Doesn't actually extend anymore...
+.getPowerStarNum_Ext:
+mr        r3, r27
+lwz r3, 0x0C(r3) #Get GalaxyInfo BCSV
+stw r3, 0x08(r1)
+
+li r31, 0
+b .getPowerStarNum_Ext_LoopStart
+
+
+.getPowerStarNum_Ext_Loop:
+addi r3, r1, 0x0C
+lwz r4, 0x08(r1)
+lis r5, Type@ha
+addi r5, r5, Type@l
+mr r6, r31
+bl getCsvDataStr__2MRFPPCcPC8JMapInfoPCcl
+
+cmpwi r3, 0
+beq .getPowerStarNum_Ext_LoopBreak
+
+lwz r3, 0x0C(r1)
+lis r4, StarMask@ha
+addi r4, r4, StarMask@l
+bl isEqualString__2MRFPCcPCc
+cmpwi r3, 0
+beq .getPowerStarNum_Ext_LoopContinue
+
+
+addi r3, r1, 0x0C
+lwz r4, 0x08(r1)
+lis r5, Param00Int@ha
+addi r5, r5, Param00Int@l
+mr r6, r31
+bl getCsvDataS32__2MRFPlPC8JMapInfoPCcl
+
+lwz r3, 0x0C(r1)
+cmpw r3, r28
+bne .getPowerStarNum_Ext_LoopContinue  #Wrong Scenario
+
+addi r3, r1, 0x0C
+lwz r4, 0x08(r1)
+lis r5, Param00Str@ha
+addi r5, r5, Param00Str@l
+mr r6, r31
+bl getCsvDataStrOrNULL__2MRFPPCcPC8JMapInfoPCcl
+
+lwz r3, 0x0C(r1)
+cmpwi r3, 0
+beq .getPowerStarNum_Ext_LoopBreak #No Mask
+
+addi r4, r1, 0x10
+bl .GLE_GetGalaxyAndScenarioFromString
+
+lwz r3, 0x00(r27)
+addi r4, r1, 0x14
+bl isEqualString__2MRFPCcPCc
+cmpwi r3, 0
+beq .getPowerStarNum_Ext_NoMaskJumpLoc
+
+lwz r3, 0x10(r1)
+addi r4, r29, 1
+cmpw r3, r4
+beq .getPowerStarNum_Ext_LoopBreak
+
+.getPowerStarNum_Ext_NoMaskJumpLoc:
+b loc_804CB718 #If there is a mask, just ignore the star.
+
+.getPowerStarNum_Ext_LoopContinue:
+addi r31, r31, 1
+
+.getPowerStarNum_Ext_LoopStart:
+lwz r3, 0x08(r1)
+bl getCsvDataElementNum__2MRFPC8JMapInfo
+cmpw r31, r3
+blt .getPowerStarNum_Ext_Loop
+
+.getPowerStarNum_Ext_LoopBreak:
+addi r29, r29, 1
+
+.getPowerStarNum_Ext_LoopBreakNoAdd:
+li r31, 0
+b .getPowerStarNum_Ext_Return
+
+
+
+
+
+
+
 .GLE PRINTMESSAGE EndWorldmapCode
 .GLE PRINTADDRESS
 .SCENARIO_UTILITY_CONNECTOR:
@@ -1342,6 +1709,9 @@ blr
 
 
 .GLE ADDRESS ScenarioEngineStringTable
+PowerStarId_String:
+    .string "PowerStarId"
+
 ReturnType:
     .string "ReturnType"
     
@@ -1388,7 +1758,10 @@ StarMask:
     .string "Mask" 
     
 SelectBgm:
-    .string "SelectBgm" 
+    .string "SelectBgm"
+    
+PauseStarSource:
+    .string "PauseStarSource"
     
 CometMedalStatus:
     .string "NoTicoCoin" AUTO

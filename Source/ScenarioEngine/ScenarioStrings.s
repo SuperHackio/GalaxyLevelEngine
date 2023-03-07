@@ -15,6 +15,9 @@ Hidden_Format:
 Comet_Format:
     .string "Comet%d"
     
+ScenarioSelectRow_Format:
+    .string "Row%d"
+    
 ScenarioSelect:
     .string "ScenarioSelect"
     
@@ -126,14 +129,8 @@ CS_CLICK_CLOSE:
 ShaBCounter:
     .string "ShaBCounter"
     
-BackButton0:
-    .string "BackButton0"
-    
-BackButton1:
-    .string "BackButton1"
-    
-BackButton2:
-    .string "BackButton2"
+BackButton_PointerPosFormat:
+    .string "BackButton%d"
     
 BoxButton:
     .string "BoxButton"

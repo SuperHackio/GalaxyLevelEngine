@@ -1,7 +1,18 @@
 #Constants
-.set StarCount, 8
-.set RowCount, 2
+.set MaxPerRow, 4
+.set MaxTotalRows, 2
+.set MaxStars, MaxPerRow * MaxTotalRows
+
 .set BackFadeTime, 0x1A    #Normally 0x5A
+#Idl if this is too much allocation but I'm not trusting this game for a second...
+.set ParticleRamForStars, 0x08 * MaxStars
+
+
+#Swapped the positions of these because they are in this order in the code.
+.GLE ADDRESS init__19ScenarioSelectSceneFv +0x68
+#More particles
+li r6, ParticleRamForStars
+.GLE ENDADDRESS
 
 
 .GLE ADDRESS init__19ScenarioSelectSceneFv +0x27C
@@ -9,10 +20,8 @@
 li r3, 0xF0
 .GLE ENDADDRESS
 
-.GLE ADDRESS init__19ScenarioSelectSceneFv +0x68
-#More particles
-li r6, 0x30
-.GLE ENDADDRESS
+
+
 
 .GLE ADDRESS __ct__20ScenarioSelectLayoutFP12EffectSystemPC13CameraContext
 #ScenarioSelectLayout::ScenarioSelectLayout((EffectSystem *,CameraContext const *)):
@@ -55,15 +64,15 @@ stw r31,0x6C(r28)
 
 #Initilize Bubble Position Arrays
 #Vector2<f>, hence the 8
-li r3, StarCount *8
+li r3, MaxStars *8
 bl __nwa__FUl
 stw r3, 0x78(r28)
 
-li r3,  StarCount *8
+li r3,  MaxStars *8
 bl __nwa__FUl
 stw r3, 0x7C(r28)
 
-li r3,  StarCount *8
+li r3,  MaxStars *8
 bl __nwa__FUl
 stw r3, 0x80(r28)
 
@@ -89,6 +98,23 @@ stw r31,0xE4(r28)
 
 addi r3,r28,0x38
 bl identity__Q29JGeometry38TMatrix34<Q29JGeometry13SMatrix34C<f>>Fv
+
+
+#NEW
+li r3, 8 #Initilize 2 arrays: Star Pane Name, and Back Button
+bl __nwa__FUl
+stw r3, 0xEC(r28)
+
+li r3, MaxStars *4
+bl __nwa__FUl
+lwz r4, 0xEC(r28)
+stw r3, 0x00(r4)
+
+li r3, MaxPerRow *4
+bl __nwa__FUl
+lwz r4, 0xEC(r28)
+stw r3, 0x04(r4)
+
 
 addi r11,r1,0x20
 mr r3,r28
@@ -193,7 +219,7 @@ addi r5, r1, 0x10
 bl setFollowPos__2MRFPCQ29JGeometry8TVec2<f>PC11LayoutActorPCc
 
 addi r28, r28, 1
-cmpwi r28, StarCount
+cmpwi r28, MaxStars
 blt BubblePaneLoop
 
 #Continue assigning pane controls
@@ -228,7 +254,7 @@ bl setFollowPos__2MRFPCQ29JGeometry8TVec2<f>PC11LayoutActorPCc
 
 
 mr r3, r31
-li r4, StarCount
+li r4, MaxStars
 bl initPointingTarget__11LayoutActorFi
 mr r3, r31
 li r4, 0
@@ -241,7 +267,7 @@ addi r5, r31, 0x38
 bl setEffectHostMtx__2MRFP11LayoutActorPCcPA4_f
 
 #Let's initilize the ScenarioSelectStar objects
-li        r3, StarCount *4
+li        r3, MaxStars *4
 bl __nwa__FUl
 stw       r3, 0x68(r31)
 lfs       f31, ScenarioSelectZero - STATIC_R2(r2) #0.0f
@@ -276,7 +302,11 @@ bl        __nw__FUl
 cmpwi     r3, 0
 beq- ScenarioSelectStarInitFailure
 
-stw r3, 0x10(r1)
+lwz r4, 0xEC(r31) #Load the name array table
+lwz r4, 0x00(r4) #Get the StarPane Name array
+stwx r3, r4, r30
+
+stw r3, 0x10(r1) #Store on the stack as well to save on code lines
 addi r4, r24, 1
 bl makeStarPaneName
 
@@ -286,12 +316,11 @@ addi      r5, r1, 8
 li        r6, 0
 
 lfs       f1, StarPointerTargetRadius - STATIC_R2(r2) #60.0f
-.GLE PRINTADDRESS
 bl        addStarPointerTargetCircle__2MRFP11LayoutActorPCcfRCQ29JGeometry8TVec2<f>PCc
 addi      r24, r24, 1
 addi      r30, r30, 4
 .ScenarioSelectStarLoopStart:
-cmpwi     r24, StarCount
+cmpwi     r24, MaxStars
 blt+ .ScenarioSelectStarLoop
 
 #FINISH IT
@@ -321,6 +350,13 @@ bl initWithoutIter__7NameObjFv
 mr        r3, r31
 addi r4,r13,sInstance__Q223NrvScenarioSelectLayout33ScenarioSelectLayoutNrvAppearStar - STATIC_R13
 bl initNerve__11LayoutActorFPC5Nerve
+
+
+#new: init the back button strings
+mr        r3, r31
+bl .ScenarioSelect_InitBackButton
+
+
 addi      r11, r1, 0x50
 psq_l     f31, 0x58(r1), 0, 0
 lfd       f31, 0x50(r1)
@@ -374,13 +410,21 @@ addi r4, r28, ScenarioFrame - ScenarioSelectLayout
 addi r5, r28, Wait - ScenarioSelectLayout
 li        r6, 0
 bl startPaneAnim__2MRFP11LayoutActorPCcPCcUl
+
+
+
+
+#=============================================
+
+
+
+
 mr        r3, r31
 addi r4, r28, StarTop - ScenarioSelectLayout
 addi r5, r28, StarPositionTop - ScenarioSelectLayout
 li        r6, 0
 bl startPaneAnim__2MRFP11LayoutActorPCcPCcUl
 
-#TODO: Subject for change
 lwz       r3, 0x0C(r1)
 lis       r29, 0x4330
 stw       r29, 0x10(r1)
@@ -425,8 +469,16 @@ b .ContinueSetup
 .ShiftStarTop:
 lfs       f0, StarTopShiftNum - STATIC_R2(r2)
 stfs      f0, 0xC4(r31)
-.ContinueSetup:
 
+
+
+
+#=============================================
+
+
+
+
+.ContinueSetup:
 bl getCurrentGalaxyNameOnCurrentLanguage__2MRFv
 cmpwi r3, 0
 beq .SkipGalaxyNameSet
@@ -472,7 +524,7 @@ bl hidePaneRecursive__2MRFP11LayoutActorPCc
 
 addi r27, r27, 1
 .BubblePaneLoopStart:
-cmpwi r27, StarCount+1
+cmpwi r27, MaxStars+1
 blt .BubblePaneLoop
 
 
@@ -590,7 +642,7 @@ bctrl
 .loc_8048D988:
 addi      r30, r30, 1
 addi      r31, r31, 4
-cmpwi     r30, StarCount
+cmpwi     r30, MaxStars
 blt       .loc_8048D964
 lwz       r3, 0x6C(r29)
 lwz       r12, 0(r3)
@@ -632,7 +684,7 @@ mtctr     r12
 bctrl
 addi      r30, r30, 1
 addi      r31, r31, 4
-cmpwi     r30, StarCount
+cmpwi     r30, MaxStars
 blt       loc_8048DA04
 lwz       r3, 0x6C(r29) # MultiSceneActor pointer
 lwz       r12, 0(r3)
@@ -672,7 +724,7 @@ mtctr     r12
 bctrl
 addi      r30, r30, 1
 addi      r31, r31, 4
-cmpwi     r30, StarCount
+cmpwi     r30, MaxStars
 blt       loc_8048DA94
 lwz       r3, 0x6C(r29)
 lwz       r12, 0(r3)
@@ -788,7 +840,7 @@ blt+ CalcDisplayScenarioNumLoop
 
 #If an entry is not found, default to half the star count.
 CalcDisplayScenarioNumLoop_DefaultResult:
-li r25, StarCount/RowCount
+li r25, MaxStars/MaxTotalRows
 CalcDisplayScenarioNumLoop_Break:
 
 li r30, 0
@@ -1021,13 +1073,13 @@ addi r25, r25, 1
 addi r22, r22, 1
 cmpw r25, r30
 ble .ScenarioSelectLayout_AppearAllStar_LoopContinue
-li r0, StarCount/RowCount
+li r0, MaxStars/MaxTotalRows
 cmpw r25, r0
 bgt .ScenarioSelectLayout_AppearAllStar_LoopContinue
 
 #Small correction
-#r25 = r25 + ((StarCount/RowCount) - r25)
-li r0, StarCount/RowCount
+#r25 = r25 + ((MaxStars/MaxTotalRows) - r25)
+li r0, MaxStars/MaxTotalRows
 sub r3, r0, r25
 add r25, r25, r3
 addi r25, r25, 1
@@ -1105,7 +1157,7 @@ blr
 .GLE ASSERT isAppearStarEndAll__20ScenarioSelectLayoutCFv
 
 .GLE ADDRESS isAppearStarEndAll__20ScenarioSelectLayoutCFv +0x50
-cmpwi r30, StarCount
+cmpwi r30, MaxStars
 .GLE ENDADDRESS
 
 .GLE ADDRESS tryCancel__20ScenarioSelectLayoutFv +0x14
@@ -1117,7 +1169,7 @@ lwz       r3, 0xD8(r3)
 .GLE ENDADDRESS
 
 .GLE ADDRESS calcViewAndEntryStarModel__20ScenarioSelectLayoutFv +0x40
-cmpwi r30, StarCount
+cmpwi r30, MaxStars
 .GLE ENDADDRESS
 
 .GLE ADDRESS setPlayerLeft__20ScenarioSelectLayoutFv -0x0C
@@ -1188,7 +1240,7 @@ bl makeCometBubblePaneName
 bl LOCAL_StartAnimNewPane
 
 addi r29, r29, 1
-cmpwi r29, StarCount
+cmpwi r29, MaxStars
 ble ScenarioSelectLayout_StartAnimAllNewPane_BubblePaneLoop
 
 addi      r11, r1, 0x60
@@ -1235,7 +1287,7 @@ bl makeCometBubblePaneName
 bl LOCAL_SetAnimRateNewPane
 
 addi r29, r29, 1
-cmpwi r29, StarCount
+cmpwi r29, MaxStars
 ble ScenarioSelectLayout_SetAnimRateAllNewPane_BubblePaneLoop
 
 addi      r11, r1, 0x50
@@ -1490,7 +1542,7 @@ bl        notSelect__18ScenarioSelectStarFv
 .loc_8048F354:
 addi      r29, r29, 1
 addi      r31, r31, 4
-cmpwi     r29, StarCount
+cmpwi     r29, MaxStars
 blt       .loc_8048F31C
 mr        r3, r28
 lis r4, NewEnd@ha
@@ -1845,7 +1897,7 @@ b         .loc_8048DE98
 .loc_8048DE60:
 addi      r28, r28, 1
 addi      r31, r31, 4
-cmpwi     r28, StarCount
+cmpwi     r28, MaxStars
 blt       .loc_8048DE18
 
 .loc_8048DE70:
@@ -2083,11 +2135,11 @@ blr
 .GLE ENDADDRESS
 
 .GLE ADDRESS trySelect__20ScenarioSelectLayoutFv +0x44
-li r0, StarCount
+li r0, MaxStars
 .GLE ENDADDRESS
 
 .GLE ADDRESS getSelectedStar__20ScenarioSelectLayoutCFv
-li r0, StarCount
+li r0, MaxStars
 .GLE ENDADDRESS
 
 .GLE ADDRESS exeStartScenarioSelect__19ScenarioSelectSceneFv +0x24
@@ -2101,7 +2153,7 @@ li r3, BackFadeTime
 
 
 
-.GLE ADDRESS .LOAD_ICON_CONNECTOR
+.GLE ADDRESS .PAUSE_MENU_CONNECTOR
 #Refer to LoadIcon.s
 .ScenarioSelect_LoadingIcon_Addition:
 li r3, 0
@@ -2112,49 +2164,676 @@ b .loc_8048F498
 
 #==================================================
 
+#New addition to lock the ScenarioSelect to a max amount of stars
+
+#r3 = GalaxyStatusAccessor
+.GetPowerStarNumOrMax:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+bl getPowerStarNum__20GalaxyStatusAccessorCFv
+
+cmpwi r3, MaxStars
+ble .GetPowerStarNumOrMax_Return
+
+li r3, MaxStars
+
+.GetPowerStarNumOrMax_Return:
+lwz       r0, 0x14(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
+
+#==================================================
+
 #Finally re-adding selecting stars with the Nunchuk/DPad
 #I think I overwrote the original so I'm gonna make a new one
+.GLE PRINTADDRESS
 .tryDpdSelection__20ScenarioSelectLayoutFv:
+stwu      r1, -0x90(r1)
+mflr      r0
+stw       r0, 0x94(r1)
+addi      r11, r1, 0x90
+bl        _savegpr_21
+
+mr        r31, r3
+#this is for later :D
+bl getDefaultButtonOffsetVec2__15StarPointerUtilFv
+mr r29, r3
+
+#First we can check to see if there are any Power Stars being shown on the scenario select. If not we can skip this function completely
+#I hope this works for our purposes...lol
+lwz       r4, 0x68(r31)
+lwz       r4, 0(r4)
+lbz       r0, 0x38(r4)
+cmpwi r0, 0
+bne .tryDpdSelection_Return
+
+
+#In vanilla, the star pointer positions are layed out like this:
+
+#Star1       Star2       Star3
+#Star4       Star5       Star6
+#BackButton0 BackButton1 BackButton2
+
+#For our GLE intents and purposes,
+#We need a new system that's more versitile.
+#Nintendo created a full on quadruple linked list system for using the DPad/Stick with layouts, it's actually quite insane.
+#we'll need to build our own "node map" which is NOT going to be easy...
+
+
+#First we must check to see if the system is already initilized
+li        r4, 1
+bl sub_8005E720
+cmpwi     r3, 0
+beq .tryDpdSelection_UpdateBackButtonPos
+
+#Lets get the upper and lower rows... again.
+mr r3, r31
+addi r4, r1, 0x10
+addi r5, r1, 0x14
+bl ScenarioSelectLayout_CalcDisplayScenarioNum
+
+addi r3, r1, 0x10
+bl .ScenarioSelect_CalcActiveRows
+mr r27, r3
+
+addi r3, r1, 0x10
+bl .ScenarioSelect_CalcLastActiveRow
+mr r26, r3
+
+#Nintendo made the back button code incredibly stupidly. We'll be optimizing that here...
+lbz       r0, 0xDC(r31)
+cmpwi     r0, 0
+beq .tryDpdSelection_SkipCreateBackButtons
+
+#Default position is at (0,0)!
+lfs       f0, ScenarioSelectZero - STATIC_R2(r2)
+stfs      f0, 0x08(r1)
+stfs      f0, 0x0C(r1)
+
+
+#Reminder: r29 = DefaultButtonOffsetVec2*
+li        r28, 0
+b .tryDpdSelection_BackButtonCreateLoop_Start
+
+
+.tryDpdSelection_BackButtonCreateLoop_Loop:
+lwz r4, 0xEC(r31) #Load the name array table
+lwz r4, 0x04(r4) #Get the BackButton Name array
+slwi r5, r28, 2 #Index the array
+lwzx r3, r4, r5
+
+mr        r4, r29
+addi r5, r1, 0x08
+
+#Note: This SEEMS to work, but I don't remember fixing the use of <> in function names...
+bl addStarPointerMovePosition__15StarPointerUtilFPCcPQ29JGeometry8TVec3<f>RCQ29JGeometry8TVec3<f>
+
+addi r28, r28, 1
+
+.tryDpdSelection_BackButtonCreateLoop_Start:
+
+slwi r3, r26, 2
+addi r4, r1, 0x10
+
+lwzx r4, r4, r3
+cmpwi r4, 0
+cmpw r28, r4
+blt .tryDpdSelection_BackButtonCreateLoop_Loop
+
+
+
+.tryDpdSelection_SkipCreateBackButtons:
+
+#Create the move positions for the stars themselves now
+li        r28, 0
+li        r30, 0
+
+.tryDpdSelection_StarPaneCreateLoop_Loop:
+lwz       r3, 0x68(r31)
+lwzx      r3, r3, r30
+lbz       r0, 0x38(r3)
+cmpwi     r0, 0
+bne .tryDpdSelection_StarPaneCreateLoop_Continue
+
+mr        r3, r31
+lwz r4, 0xEC(r31) #Load the name array table
+lwz r4, 0x00(r4) #Get the BackButton Name array
+lwzx r4, r4, r30
+addi r5, r1, 0x08
+bl addStarPointerMovePositionFromPane__15StarPointerUtilFP11LayoutActorPCcPQ29JGeometry8TVec2_f_
+
+.tryDpdSelection_StarPaneCreateLoop_Continue:
+addi      r28, r28, 1
+addi      r30, r30, 4
+
+.tryDpdSelection_StarPaneCreateLoop_Start:
+cmpwi r28, MaxStars
+blt .tryDpdSelection_StarPaneCreateLoop_Loop
+
+
+#Here's the hard part!
+#We need to connect everything in a web now.
+
+
+li r30, 0   #Current Row
+addi r29, r1, 0x10  #Row Count [] index pointer
+b .tryDpdSelection_ConnectRowH_Start
+
+
+
+
+.tryDpdSelection_ConnectRowH_Loop:
+lwz r3, 0x00(r29)
+cmpwi r3, 1  #Rows with 1 star do not need to be linked horizontally at all.
+ble .tryDpdSelection_ConnectRowV
+
+li r28, 0   #Current Star in Row
+b .tryDpdSelection_ConnectStarH_Start
+
+.tryDpdSelection_ConnectStarH_Loop:
+lwz r3, 0x00(r29)
+subi r4, r3, 1 #Current row count - 1
+cmpw r28, r4
+
+#these happen for both.
+lwz r6, 0xEC(r31) #Load the name array table
+lwz r6, 0x00(r6) #Get the StarPane Name array
+mulli r7, r30, MaxPerRow  #Row Offset
+#link the positions!
+beq .tryDpdSelection_ConnectStarH_EdgeOfRow
+
+#Current
+add r5, r7, r28
+slwi r5, r5, 2
+lwzx r3, r6, r5
+#Target
+add r5, r7, r28
+addi r5, r5, 1
+slwi r5, r5, 2
+lwzx r4, r6, r5
+bl setConnectionMovePositionRight2Way__15StarPointerUtilFPCcPCc
+
+b .tryDpdSelection_ConnectStarH_Continue
+.tryDpdSelection_ConnectStarH_EdgeOfRow:
+#Current
+add r5, r7, r28
+slwi r5, r5, 2
+lwzx r3, r6, r5
+#Target
+slwi r5, r7, 2
+lwzx r4, r6, r5
+bl setConnectionMovePositionRight2Way__15StarPointerUtilFPCcPCc
+
+.tryDpdSelection_ConnectStarH_Continue:
+addi r28, r28, 1
+
+.tryDpdSelection_ConnectStarH_Start:
+lwz r3, 0x00(r29) #Get the row count
+cmpw r28, r3  #If we've handleed each item in the row, continue
+blt .tryDpdSelection_ConnectStarH_Loop
+
+.GLE PRINTADDRESS
+.tryDpdSelection_ConnectRowV:
+#If this is the lowest active star row, we need to connect to the back buttons instead, so we'll need a separate handler for that.
+cmpw r30, r26
+beq .tryDpdSelection_ConnectToBackButtonV
+
+
+
+
+#Handle a star row below this one
+#The Nightmare in GLE's Dream Land
+
+lwz r3, 0x00(r29) #Get the row count
+lwz r4, 0x04(r29) #Get the next row count
+cmpw r3, r4
+beq .tryDpdSelection_ConnectRowEqualV
+bgt .tryDpdSelection_ConnectRowUnequalV_Invert
+
+#-----
+
+.tryDpdSelection_ConnectRowUnequalV:
+bl getStarPointerDirector__19StarPointerFunctionFv
+lwz       r25, 0x18(r3)
+#Top row has the least stars
+
+lwz r28, 0x00(r29) #Get the row count
+subi r28, r28, 1
+b .tryDpdSelection_ConnectRowUnequalV_LoopStart
+
+.tryDpdSelection_ConnectRowUnequalV_Loop:
+
+#Store the current upper pane
+lwz r6, 0xEC(r31) #Load the name array table
+lwz r6, 0x00(r6) #Get the StarPane Name array
+mulli r7, r30, MaxPerRow  #Row Offset
+add r5, r7, r28
+slwi r5, r5, 2
+lwzx r4, r6, r5
+mr r3, r25
+bl getPositionByName__29StarPointerMovePositionHolderFPCc
+mr r24, r3 #Store the position of the current upper pane for comparison
+
+#Scan the positions from right to left -- as soon as the X position is less than or equal to the current star, connect them.
+
+lwz r22, 0x04(r29) #Get the next row count
+subi r22, r22, 1
+li r23, 0
+b .tryDpdSelection_ConnectRowUnequalV_LowerLoopStart
+
+.tryDpdSelection_ConnectRowUnequalV_LowerLoop:
+#Lets first get the Target lower position
+lwz r6, 0xEC(r31) #Load the name array table
+lwz r6, 0x00(r6) #Get the StarPane Name array
+addi r7, r30, 1
+mulli r7, r7, MaxPerRow  #Row Offset
+add r5, r7, r22
+slwi r5, r5, 2
+lwzx r4, r6, r5
+mr r3, r25
+bl getPositionByName__29StarPointerMovePositionHolderFPCc
+lfs f0, 0x00(r3)
+lfs f1, 0x00(r24)
+
+#Compare floats. if Current.x > Target.x
+fcmpo    cr0, f0, f1
+bgt .tryDpdSelection_ConnectRowUnequalV_LowerLoopContinue_IsToRight
+
+#If we already set the down connector, we don't need to set it again!
+cmpwi r23, 1
+beq .tryDpdSelection_ConnectRowUnequalV_LowerLoopContinue_IsToLeft
+stw r3, 0x20(r24) #Set the down connector on the upper row
+stw r24, 0x1C(r3) #Set the up connector on the lower row
+li r23, 1
+b .tryDpdSelection_ConnectRowUnequalV_LowerLoopContinue
+
+.tryDpdSelection_ConnectRowUnequalV_LowerLoopContinue_IsToLeft:
+#For stars that are to the left of the last star on the shortest row, force assign them
+cmpwi r28, 0
+bne .tryDpdSelection_ConnectRowUnequalV_LowerLoopContinue
+stw r24, 0x1C(r3) #Set the down connector on the upper row
+b .tryDpdSelection_ConnectRowUnequalV_LowerLoopContinue
+
+.tryDpdSelection_ConnectRowUnequalV_LowerLoopContinue_IsToRight:
+lwz r4, 0x1C(r3)
+cmpwi r4, 0
+bne .tryDpdSelection_ConnectRowUnequalV_LowerLoop_SKIP
+stw r24, 0x1C(r3) #Set the up connector on the lower row if it's not already set.
+.tryDpdSelection_ConnectRowUnequalV_LowerLoop_SKIP:
+
+.tryDpdSelection_ConnectRowUnequalV_LowerLoopContinue:
+subi r22, r22, 1
+
+.tryDpdSelection_ConnectRowUnequalV_LowerLoopStart:
+cmpwi r22, 0
+bge .tryDpdSelection_ConnectRowUnequalV_LowerLoop
+
+
+.tryDpdSelection_ConnectRowUnequalV_LoopContinue:
+subi r28, r28, 1
+
+.tryDpdSelection_ConnectRowUnequalV_LoopStart:
+cmpwi r28, 0
+bge .tryDpdSelection_ConnectRowUnequalV_Loop
+
+b .tryDpdSelection_ConnectRowH_Continue
+
+#-----
+
+.tryDpdSelection_ConnectRowUnequalV_Invert:
+bl getStarPointerDirector__19StarPointerFunctionFv
+lwz       r25, 0x18(r3)
+#Bottom row has the least stars
+
+lwz r28, 0x04(r29) #Get the next row count
+subi r28, r28, 1
+b .tryDpdSelection_ConnectRowUnequalV_Invert_LoopStart
+
+.tryDpdSelection_ConnectRowUnequalV_Invert_Loop:
+
+#Store the current upper pane
+lwz r6, 0xEC(r31) #Load the name array table
+lwz r6, 0x00(r6) #Get the StarPane Name array
+addi r7, r30, 1
+mulli r7, r7, MaxPerRow  #Row Offset
+add r5, r7, r28
+slwi r5, r5, 2
+lwzx r4, r6, r5
+mr r3, r25
+bl getPositionByName__29StarPointerMovePositionHolderFPCc
+mr r24, r3 #Store the position of the current upper pane for comparison
+
+#Scan the positions from right to left -- as soon as the X position is less than or equal to the current star, connect them.
+
+lwz r22, 0x00(r29) #Get the row count
+subi r22, r22, 1
+li r23, 0
+b .tryDpdSelection_ConnectRowUnequalV_Invert_LowerLoopStart
+
+.tryDpdSelection_ConnectRowUnequalV_Invert_LowerLoop:
+#Lets first get the Target lower position
+lwz r6, 0xEC(r31) #Load the name array table
+lwz r6, 0x00(r6) #Get the StarPane Name array
+mulli r7, r30, MaxPerRow  #Row Offset
+add r5, r7, r22
+slwi r5, r5, 2
+lwzx r4, r6, r5
+mr r3, r25
+bl getPositionByName__29StarPointerMovePositionHolderFPCc
+lfs f0, 0x00(r3)
+lfs f1, 0x00(r24)
+
+#Compare floats. if Current.x > Target.x
+fcmpo    cr0, f0, f1
+bgt .tryDpdSelection_ConnectRowUnequalV_Invert_LowerLoopContinue_IsToRight
+
+#If we already set the down connector, we don't need to set it again!
+cmpwi r23, 1
+beq .tryDpdSelection_ConnectRowUnequalV_Invert_LowerLoopContinue_IsToLeft
+stw r3, 0x1C(r24) #Set the up connector on the lower row
+stw r24, 0x20(r3) #Set the down connector on the upper row
+li r23, 1
+b .tryDpdSelection_ConnectRowUnequalV_Invert_LowerLoopContinue
+
+.tryDpdSelection_ConnectRowUnequalV_Invert_LowerLoopContinue_IsToLeft:
+#For stars that are to the left of the last star on the shortest row, force assign them
+cmpwi r28, 0
+bne .tryDpdSelection_ConnectRowUnequalV_Invert_LowerLoopContinue
+stw r24, 0x20(r3) #Set the down connector on the upper row
+b .tryDpdSelection_ConnectRowUnequalV_Invert_LowerLoopContinue
+
+.tryDpdSelection_ConnectRowUnequalV_Invert_LowerLoopContinue_IsToRight:
+lwz r4, 0x20(r3)
+cmpwi r4, 0
+bne .tryDpdSelection_ConnectRowUnequalV_Invert_LowerLoop_SKIP
+stw r24, 0x20(r3) #Set the down connector on the upper row if it's not already set.
+.tryDpdSelection_ConnectRowUnequalV_Invert_LowerLoop_SKIP:
+
+.tryDpdSelection_ConnectRowUnequalV_Invert_LowerLoopContinue:
+subi r22, r22, 1
+
+.tryDpdSelection_ConnectRowUnequalV_Invert_LowerLoopStart:
+cmpwi r22, 0
+bge .tryDpdSelection_ConnectRowUnequalV_Invert_LowerLoop
+
+
+.tryDpdSelection_ConnectRowUnequalV_Invert_LoopContinue:
+subi r28, r28, 1
+
+.tryDpdSelection_ConnectRowUnequalV_Invert_LoopStart:
+cmpwi r28, 0
+bge .tryDpdSelection_ConnectRowUnequalV_Invert_Loop
+
+b .tryDpdSelection_ConnectRowH_Continue
+
+#-----
+
+#If the two rows in question have an equal amount of stars, we can just iterate through them and match 1:1
+.tryDpdSelection_ConnectRowEqualV:
+li r28, 0   #Current Star in Row
+b .tryDpdSelection_ConnectRowEqualV_LoopStart
+
+.tryDpdSelection_ConnectRowEqualV_Loop:
+lwz r6, 0xEC(r31) #Load the name array table
+lwz r6, 0x00(r6) #Get the StarPane Name array
+mulli r7, r30, MaxPerRow  #Row Offset
+
+#Current
+add r5, r7, r28
+slwi r5, r5, 2
+lwzx r3, r6, r5
+#Target
+addi r7, r30, 1
+mulli r7, r7, MaxPerRow  #Row Offset
+add r5, r7, r28
+slwi r5, r5, 2
+lwzx r4, r6, r5
+bl setConnectionMovePositionDown2Way__15StarPointerUtilFPCcPCc
+
+.tryDpdSelection_ConnectRowEqualV_LoopContinue:
+addi r28, r28, 1
+.tryDpdSelection_ConnectRowEqualV_LoopStart:
+lwz r3, 0x00(r29) #Get the row count
+cmpw r28, r3  #If we've handleed each item in the row, continue
+blt .tryDpdSelection_ConnectRowEqualV_Loop
+
+b .tryDpdSelection_ConnectRowH_Continue
+
+#-----
+
+.tryDpdSelection_ConnectToBackButtonV:
+#First check to see if there's even a back button active or not. If not, we can skip this!
+lbz       r0, 0xDC(r31)
+cmpwi     r0, 0
+beq .tryDpdSelection_ConnectRowH_Continue
+#Hook up the back buttons to the lowest row
+#r26 = Lowest Row ID (for now, only 0 and 1 -- 0 for Top row [or empty bottom row], 1 for Bottom Row)
+
+li r28, 0   #Current Star in Row
+b .tryDpdSelection_ConnectToBackButtonV_LoopStart
+
+.tryDpdSelection_ConnectToBackButtonV_Loop:
+lwz r6, 0xEC(r31) #Load the name array table
+lwz r6, 0x00(r6) #Get the StarPane Name array
+mulli r7, r30, MaxPerRow  #Row Offset
+#Current
+add r5, r7, r28
+slwi r5, r5, 2
+lwzx r3, r6, r5
+#Target
+lwz r6, 0xEC(r31) #Load the name array table
+lwz r6, 0x04(r6) #Get the BackButton Name array
+slwi r5, r28, 2
+lwzx r4, r6, r5
+bl setConnectionMovePositionDown2Way__15StarPointerUtilFPCcPCc
+
+.tryDpdSelection_ConnectToBackButtonV_LoopContinue:
+addi r28, r28, 1
+
+.tryDpdSelection_ConnectToBackButtonV_LoopStart:
+lwz r3, 0x00(r29)
+cmpw r28, r3
+blt .tryDpdSelection_ConnectToBackButtonV_Loop
+
+
+
+.tryDpdSelection_ConnectRowH_Continue:
+addi r30, r30, 0x01
+addi r29, r29, 0x04
+.tryDpdSelection_ConnectRowH_Start:
+cmpwi r30, MaxTotalRows
+blt .tryDpdSelection_ConnectRowH_Loop
+
+
+
+
+
+
+
+
+
+#And then we need to set the default option (Star1 always).
+lwz r4, 0xEC(r31) #Load the name array table
+lwz r4, 0x00(r4) #Get the StarPane Name array
+li r5, 0
+lwzx r3, r4, r5
+bl setDefaultAllMovePosition__15StarPointerUtilFPCc
+
+
+.tryDpdSelection_UpdateBackButtonPos:
+lbz       r0, 0xDC(r31)
+cmpwi     r0, 0
+beq .tryDpdSelection_EndInit
+
+addi r3, r1, 0x08
+lwz       r4, 0xD8(r31)
+lis r5, BoxButton@ha
+addi r5, r5, BoxButton@l
+bl copyPaneTrans__2MRFPQ29JGeometry8TVec2<f>PC11LayoutActorPCc
+
+#Reminder: r29 = DefaultButtonOffsetVec2*
+li        r28, 0
+b .tryDpdSelection_BackButtonUpdateLoop_Start
+
+
+.tryDpdSelection_BackButtonUpdateLoop_Loop:
+lwz r4, 0xEC(r31) #Load the name array table
+lwz r4, 0x04(r4) #Get the BackButton Name array
+slwi r5, r28, 2 #Index the array
+lwzx r3, r4, r5
+
+addi r4, r1, 0x08
+bl setStarPointerMovePosition__15StarPointerUtilFPCcPQ29JGeometry8TVec2_f_
+
+addi r28, r28, 1
+
+.tryDpdSelection_BackButtonUpdateLoop_Start:
+
+slwi r3, r26, 2
+addi r4, r1, 0x10
+
+lwzx r4, r4, r3
+cmpwi r4, 0
+cmpw r28, r4
+blt .tryDpdSelection_BackButtonUpdateLoop_Loop
+
+
+.tryDpdSelection_EndInit:
+#No idea what these do
+mr        r3, r31
+bl        sub_8005E940
+mr        r3, r31
+bl        sub_8005E790
+
+
+.tryDpdSelection_Return:
+addi      r11, r1, 0x90
+bl        _restgpr_21
+lwz       r0, 0x94(r1)
+mtlr      r0
+addi      r1, r1, 0x90
+blr
+
+
+#returns the number of rows that have a star count greater than 0
+#r3 = Row count array pointer (should be the address of the first element directly)
+.ScenarioSelect_CalcActiveRows:
 stwu      r1, -0x60(r1)
 mflr      r0
 stw       r0, 0x64(r1)
 addi      r11, r1, 0x50
-stfd      f31, 0x50(r1)
-psq_st    f31, 0x58(r1), 0, 0
 bl        _savegpr_28
 
-mr        r31, r3
+mr r31, r3
+li r30, 0 #index
+li r29, 0 #Row Count
+b .CalcActiveRows_LoopStart
+.CalcActiveRows_Loop:
 
-#First we can check to see if there are any Power Stars being shown on the scenario select. If not we can skip this function completely
-#I hope this works for our purposes...lol
-lwz       r4, 0x68(r3)
-lwz       r4, 0(r4)
-lbz       r0, 0x38(r4)
+lwz r3, 0x00(r31)
 cmpwi r3, 0
-bne .tryDpdSelection_Return
+beq .CalcActiveRows_LoopContinue
 
+addi r29, r29, 1
 
+.CalcActiveRows_LoopContinue:
+addi r30, r30, 1
+addi r31, r31, 0x04
 
+.CalcActiveRows_LoopStart:
+cmpwi r30, MaxTotalRows
+blt .CalcActiveRows_Loop
 
+mr r3, r29
 
-
-
-
-
-
-
-
-
-.tryDpdSelection_Return:
 addi      r11, r1, 0x50
-psq_l     f31, 0x58(r1), 0, 0
-lfd       f31, 0x50(r1)
 bl        _restgpr_28
 lwz       r0, 0x64(r1)
 mtlr      r0
 addi      r1, r1, 0x60
 blr
 
+
+#returns the index of the last row with more than 0 stars in it
+#r3 = Row count array pointer (should be the address of the first element directly)
+.ScenarioSelect_CalcLastActiveRow:
+stwu      r1, -0x60(r1)
+mflr      r0
+stw       r0, 0x64(r1)
+addi      r11, r1, 0x50
+bl        _savegpr_28
+
+mr r31, r3
+li r30, 0 #index
+li r29, 0 #Row Count
+b .CalcLastActiveRow_LoopStart
+.CalcLastActiveRow_Loop:
+
+lwz r3, 0x00(r31)
+cmpwi r3, 0
+beq .CalcLastActiveRow_LoopContinue
+
+mr r29, r30
+
+.CalcLastActiveRow_LoopContinue:
+addi r30, r30, 1
+addi r31, r31, 0x04
+
+.CalcLastActiveRow_LoopStart:
+cmpwi r30, MaxTotalRows
+blt .CalcLastActiveRow_Loop
+
+mr r3, r29
+
+addi      r11, r1, 0x50
+bl        _restgpr_28
+lwz       r0, 0x64(r1)
+mtlr      r0
+addi      r1, r1, 0x60
+blr
+
+.ScenarioSelect_InitBackButton:
+stwu      r1, -0x60(r1)
+mflr      r0
+stw       r0, 0x64(r1)
+addi      r11, r1, 0x50
+bl        _savegpr_28
+
+mr r31, r3
+
+li r30, 0
+b .ScenarioSelect_InitBackButton_LoopStart
+
+.ScenarioSelect_InitBackButton_Loop:
+li r3, 0x10
+bl __nw__FUl
+#Do we *really* need to check to see if this failed?
+lwz r4, 0xEC(r31) #Load the name array table
+lwz r4, 0x04(r4) #Get the BackButton Name array
+slwi r5, r30, 2 #Index the array
+stwx r3, r4, r5
+mr r6, r30
+
+lis r5, BackButton_PointerPosFormat@ha
+addi r5, r5, BackButton_PointerPosFormat@l
+li        r4, 0x10
+crclr     4*cr1+eq
+bl        snprintf
+
+#Normally I'd put a continue here, but there's no point where a continue would happen.
+addi r30, r30, 1
+.ScenarioSelect_InitBackButton_LoopStart:
+cmpwi r30, MaxPerRow
+blt .ScenarioSelect_InitBackButton_Loop
+
+addi      r11, r1, 0x50
+bl        _restgpr_28
+lwz       r0, 0x64(r1)
+mtlr      r0
+addi      r1, r1, 0x60
+blr
 
 #==================================================
 

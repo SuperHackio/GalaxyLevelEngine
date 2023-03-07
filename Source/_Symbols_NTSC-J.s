@@ -83,6 +83,7 @@
 .set getSettingInfo__14AudBgmSettingsFl, 0x80083890
 .set setBgmStateYoshi, 0x80220B80
 .set setBgmStateSlowdownTime, 0x80220C40
+.set updateStarPane__9PauseMenuFv, 0x804872E0
 .set createStarString__2MRFPwiPCcbb, 0x80041D60
 .set hasPowerStarAsBronze__20GalaxyStatusAccessorCFl, 0x804D1DD0
 .set getValue_l_PCc___2MRCFPlP8JMapInfoPCcPCcPCc_Cb, 0x8004D180
@@ -233,6 +234,17 @@
 .set sub_8045DB80, 0x8045DB80
 .set sub_804D5DF0, 0x804D5DF0
 .set sub_80495E20, 0x80495E20
+.set sub_8005E720, 0x8005E720
+.set getDefaultButtonOffsetVec2__15StarPointerUtilFv, 0x8005E820
+.set addStarPointerMovePosition__15StarPointerUtilFPCcPQ29JGeometry8TVec3<f>RCQ29JGeometry8TVec3<f>, 0x8005E830
+.set addStarPointerMovePositionFromPane__15StarPointerUtilFP11LayoutActorPCcPQ29JGeometry8TVec2_f_, 0x8005E880
+.set setDefaultAllMovePosition__15StarPointerUtilFPCc, 0x8005E9F0
+.set sub_8005E940, 0x8005E940
+.set sub_8005E790, 0x8005E790
+.set setConnectionMovePositionRight2Way__15StarPointerUtilFPCcPCc, 0x8005EB60
+.set setConnectionMovePositionDown2Way__15StarPointerUtilFPCcPCc, 0x8005EBB0
+.set getPositionByName__29StarPointerMovePositionHolderFPCc, 0x8049B9B0
+.set setStarPointerMovePosition__15StarPointerUtilFPCcPQ29JGeometry8TVec2_f_, 0x8005E8F0
 .set sub_804E53B0, 0x804E53B0
 .set sub_804E5870, 0x804E5870
 .set PowerStar_DataStart, 0x806A7B98
@@ -298,6 +310,8 @@
 .set FileSelectInfo_Message, 0x806F2C70
 .set Game, 0x806EF1E4
 .set LavaRotateStepsRotatePartsA, 0x806B53B0
+.set MiniComet_NerveLoc, 0x807D5620
+.set MiniComet_Data, 0x80700710
 .set TicoCoin, 0x806B663C
 .set ScenarioSelectStringTable, 0x806F6448
 .set ScenarioEngineStringTable, 0x80701B00

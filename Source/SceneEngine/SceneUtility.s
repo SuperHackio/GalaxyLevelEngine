@@ -674,7 +674,7 @@ li r6, 0 #default to byte
 #r3 = Setting Name
 #r4 = Scenario ID
 #r5 = Reverse
-#r6 = Type, 0 = Byte, 1 = Float
+#r6 = Type, 0 = Byte, 1 = Float, 2 = String
 stwu      r1, -0x100(r1)
 mflr      r0
 stw       r0, 0x104(r1)
@@ -768,6 +768,13 @@ mr r6, r22
 
 cmpwi r21, 0
 beq .__readByte
+cmpwi r21, 1
+beq .__readFloat
+
+.__readString:
+bl getCsvDataStrOrNULL__2MRFPPCcPC8JMapInfoPCcl
+lwz r3, 0x08(r1)
+b .MR_GetScenarioSetting_Return
 
 #keeping this label here in case I need to add another data type...
 .__readFloat:
@@ -778,6 +785,7 @@ b .MR_GetScenarioSetting_Return
 .__readByte:
 bl getCsvDataU8__2MRFPUcPC8JMapInfoPCcl
 lbz r3, 0x08(r1)
+#b .MR_GetScenarioSetting_Return  #Fallthrough
 
 .MR_GetScenarioSetting_Return:
 cmpwi r21, 0

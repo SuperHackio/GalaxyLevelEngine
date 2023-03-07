@@ -254,6 +254,8 @@ b __ct__16GalaxySelectInfoFl
 #so I'm just gonna re-write it
 #r6 tells us if we need to skip the galaxy details
 #Used if we only want to load the banner and message
+
+#TODO: Add a binding SOMEWHERE so people can make changes to the layout if they want.
 .GalaxySelectInfo_show:
 stwu      r1, -0x80(r1)
 mflr      r0
@@ -297,6 +299,9 @@ lwz       r3, 0x3C(r27)
 bl        getGalaxyNameOnCurrentLanguage__2MRFPCc
 mr        r5, r3
 mr        r3, r27
+#Leaving this here so I don't have to find it again when I inevidable get asked for it
+.GLE PRINTMESSAGE == GalaxyInfoBanner Temp hook Position ==
+.GLE PRINTADDRESS
 addi      r4, r30, GalaxySelectInfo_GalaxyName - GalaxySelectInfo_WorldMapGalaxyInformation
 bl        setTextBoxMessageRecursive__2MRFP11LayoutActorPCcPCw
 
