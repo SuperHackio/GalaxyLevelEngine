@@ -258,7 +258,7 @@ bgt .QuickWarpArea_Movement_Return
 #Might need to jump over this?
 bl .MR_IsLoadingIconOut
 cmpwi r3, 0
-bne .QuickWarpArea_OpenWipe
+beq .QuickWarpArea_OpenWipe
 bl .MR_EndLoadingIcon
 
 .QuickWarpArea_OpenWipe:
