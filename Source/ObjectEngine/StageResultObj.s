@@ -1,8 +1,5 @@
 #This object will let you spawn the Stage Results whenever you want
 
-#Obj Arg 0 = Store Collectables? (bool) -1 = false, * = true
-#  Setting this Obj Arg to TRUE will put any collected coins into the global counters that you see in hubworlds. Useful for NBO Stars as it will also save your comet medal.
-
 
 #Object Entry replaces SkyIslandPartsA. Just add it as a SimpleMapObj to the ProductMapObjDataTable
 .GLE ADDRESS cCreateTable__14NameObjFactory +0x1590

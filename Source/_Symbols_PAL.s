@@ -234,6 +234,7 @@
 .set sub_8045DB80, 0x8045DB80
 .set sub_804D5DF0, 0x804D5DF0
 .set sub_80495E20, 0x80495E20
+.set sub_8045E9D0, 0x8045E9D0
 .set sub_8005E720, 0x8005E720
 .set getDefaultButtonOffsetVec2__15StarPointerUtilFv, 0x8005E820
 .set addStarPointerMovePosition__15StarPointerUtilFPCcPQ29JGeometry8TVec3<f>RCQ29JGeometry8TVec3<f>, 0x8005E830
@@ -245,6 +246,13 @@
 .set setConnectionMovePositionDown2Way__15StarPointerUtilFPCcPCc, 0x8005EBB0
 .set getPositionByName__29StarPointerMovePositionHolderFPCc, 0x8049B9B0
 .set setStarPointerMovePosition__15StarPointerUtilFPCcPQ29JGeometry8TVec2_f_, 0x8005E8F0
+.set exeNextPage__11AllStarListFv, 0x8045DDF0
+.set exePreviousPage__11AllStarListFv, 0x8045DCA0
+.set sInstance__Q214NrvAllStarList22AllStarListNrvPageNext, 0x807DAAAC
+.set sInstance__Q214NrvAllStarList26AllStarListNrvPageNextOver, 0x807DAAB0
+.set sInstance__Q214NrvAllStarList26AllStarListNrvPagePrevious, 0x807DAAA4
+.set sInstance__Q214NrvAllStarList30AllStarListNrvPagePreviousOver, 0x807DAAA8
+.set unk_807D53B4, 0x807DAAB4
 .set sub_804E53B0, 0x804E53B0
 .set sub_804E5870, 0x804E5870
 .set PowerStar_DataStart, 0x806ADAB8
