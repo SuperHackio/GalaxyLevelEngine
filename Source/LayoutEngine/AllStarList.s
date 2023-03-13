@@ -797,6 +797,13 @@ beq .AllStarList_InverseClampOrZero_StartHunting
 
 mr r3, r29
 mr r4, r31
+bl .__AllStarList_IsExistPageLock_JMapIndex
+cmpwi r3, 0
+mr r3, r29
+beq .AllStarList_InverseClampOrZero_Return
+
+mr r3, r29
+mr r4, r31
 bl .__AllStarList_IsPageUnlocked
 cmpwi r3, 0
 mr r3, r29
@@ -969,6 +976,7 @@ b .MR_GetGameSetting
 
 
 #This is set inside the Galaxy's GalaxyInfo
+.GLE PRINTADDRESS
 .GetStartAllStarListPageNo:
 stwu      r1, -0x10(r1)
 mflr      r0
