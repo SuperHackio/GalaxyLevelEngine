@@ -87,10 +87,10 @@ blr
 #-----------------------------------------------------
 
 .StageResultObj_Init:
-stwu      r1, -0x20(r1)
+stwu      r1, -0x60(r1)
 mflr      r0
-stw       r0, 0x24(r1)
-addi      r11, r1, 0x20
+stw       r0, 0x64(r1)
+addi      r11, r1, 0x60
 bl        _savegpr_27
 
 mr        r31, r3
@@ -129,6 +129,28 @@ mr r3, r31
 mr r4, r30
 bl tryRegisterDemoCast__2MRFP9LiveActorRC12JMapInfoIter
 
+
+lis r3, .StageResultObj_DemoFunctor_VTable@ha
+addi r3, r3, .StageResultObj_DemoFunctor_VTable@l
+lwz       r7, 0x00(r3)
+lwz       r6, 0x04(r3)
+lwz       r0, 0x08(r3)
+lis       r4, .Functor_StageResultObj_StageResultObj_VTable@ha
+addi      r4, r4, .Functor_StageResultObj_StageResultObj_VTable@l
+stw       r4, 0x14(r1)  #0x00
+mr        r3, r31
+addi      r4, r1, 0x14
+li r5, 0
+
+stw       r31, 0x18(r1) #0x04
+stw       r7, 0x1C(r1)  #0x08
+stw       r6, 0x20(r1)  #0x0C
+stw       r0, 0x24(r1)  #0x10
+bl        registerDemoActionFunctor__2MRFPC9LiveActorRCQ22MR11FunctorBasePCc
+
+
+
+
 lwz r3, 0x94(r31)
 mr r4, r30
 bl tryRegisterDemoCast__2MRFP9LiveActorRC12JMapInfoIter
@@ -166,11 +188,11 @@ lwz       r12, 0x34(r12)
 mtctr     r12
 bctrl
 
-addi      r11, r1, 0x20
+addi      r11, r1, 0x60
 bl _restgpr_27
-lwz       r0, 0x24(r1)
+lwz       r0, 0x64(r1)
 mtlr      r0
-addi      r1, r1, 0x20
+addi      r1, r1, 0x60
 blr
 
 #-----------------------------------------------------
@@ -638,6 +660,70 @@ blr
 
 
 #=====================================================
+
+#This function warps Mario to the position that this object is placed
+.GLE PRINTADDRESS
+.StageResultObj_DemoFunc:
+stwu      r1, -0x60(r1)
+mflr      r0
+stw       r0, 0x64(r1)
+
+mr r4, r3
+addi r3, r1, 0x08
+bl makeMtxTR__2MRFPA4_fPC9LiveActor
+addi r3, r1, 0x08
+bl setBaseMtx__11MarioAccessFPA4_f
+
+lwz       r0, 0x64(r1)
+mtlr      r0
+addi      r1, r1, 0x60
+blr
+
+.Functor_StageResultObj_CAST:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+mr        r4, r3
+addi      r12, r4, 8
+lwz       r3, 4(r3)
+bl        __ptmf_scall
+#nop  #As if I'm including this nop lol
+lwz       r0, 0x14(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
+
+.Functor_StageResultObj_Clone:
+stwu      r1, -0x10(r1)
+mflr      r0
+li        r5, 0
+stw       r0, 0x14(r1)
+stw       r31, 0x0C(r1)
+mr        r31, r3
+li        r3, 0x14
+bl        __nw__FUlP7JKRHeapi
+cmpwi     r3, 0
+beq       loc_803484F4
+lwz       r4, 4(r31)
+lis       r5, .Functor_StageResultObj_StageResultObj_VTable@ha
+addi      r5, r5, .Functor_StageResultObj_StageResultObj_VTable@l
+stw       r5, 0(r3)
+lwz       r0, 8(r31)
+stw       r4, 4(r3)
+lwz       r4, 0xC(r31)
+stw       r0, 8(r3)
+lwz       r0, 0x10(r31)
+stw       r4, 0xC(r3)
+stw       r0, 0x10(r3)
+
+loc_803484F4:
+lwz       r0, 0x14(r1)
+lwz       r31, 0x0C(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
+
+#=====================================================
 .StageResultObj_STATIC_INIT:
 stwu      r1, -0x10(r1)
 mflr      r0
@@ -680,7 +766,7 @@ b .MarioHairAndHatModel_Hide
 .MarioHairAndHatModel_Hide_Return:
 .GLE ENDADDRESS
 
-
+.GLE PRINTADDRESS
 .GLE ASSERT 0x80352F10
 .GLE ENDADDRESS
 
@@ -712,6 +798,11 @@ b .MarioHairAndHatModel_Hide
 
 .GLE ADDRESS .END_OF_QUICKWARPAREA_DATA
 
+.StageResultObj_DemoFunctor_VTable:
+.int 0
+.int 0xFFFFFFFF
+.int .StageResultObj_DemoFunc
+
 .StageResultObj_ObjName:
     .string "StageResultObj"
     
@@ -729,6 +820,13 @@ b .MarioHairAndHatModel_Hide
     
 .StageResultObj_ResultWait:
     .string "ResultWait" AUTO
+
+
+.Functor_StageResultObj_StageResultObj_VTable:
+.int 0
+.int 0
+.int .Functor_StageResultObj_CAST
+.int .Functor_StageResultObj_Clone
 
 
 .StageResultObj_VTable:
