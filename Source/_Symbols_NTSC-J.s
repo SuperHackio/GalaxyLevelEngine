@@ -270,6 +270,7 @@
 .set startGameDataSaveSequence__20GameSequenceFunctionFbbb, 0x804D5DA0
 .set unk_807D57D8, 0x807D4F98
 .set unk_807D2AB4, 0x807D2274
+.set BgmChangeArea_AreaMgr_Str, 0x806698A0
 .set WaitStringJapanese, 0x807D908C
 .set animeFunc__19MameMuimuiAttackManFUl, 0x80351F60
 .set AnimName, 0x8067E458

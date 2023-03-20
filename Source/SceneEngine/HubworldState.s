@@ -1397,5 +1397,5 @@ li r3, 0
 
 .GLE ADDRESS execute__Q232NrvMarioFaceShipInGameActorState15HostTypeNrvWaitCFP5Spine +0x20
 #There's conviniently a li r3, 0 right above this.
-#bl startCurrentStageBGM__2MRFi
+bl .GLE_StartCurrentStageBGMAndResetChangeBGMArea
 .GLE ENDADDRESS

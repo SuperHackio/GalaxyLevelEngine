@@ -373,6 +373,8 @@
 .set unk_807D57D8, 0x807D57D8
 .set unk_807D2AB4, 0x807D2AB4
 
+.set BgmChangeArea_AreaMgr_Str, 0x8066A0C0
+
 .set WaitStringJapanese, 0x807D98CC
 
 #GlobalAnimeFunc

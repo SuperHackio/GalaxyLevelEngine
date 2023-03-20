@@ -1985,6 +1985,64 @@ b .ExeNoStage_StartBgm
 .ExeNoStage_StartBgm_Return:
 .GLE ENDADDRESS
 
+#GLE::startCurrentStageBgmAndResetChangeBgmArea(int)
+.GLE_StartCurrentStageBGMAndResetChangeBGMArea:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+bl startCurrentStageBGM__2MRFi
+lwz       r0, 0x14(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+#Very epic fallthrough
+
+#GLE::resetChangeBgmArea()
+.GLE_ResetChangeBGMArea:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+stw       r31, 0x0C(r1)
+
+#BgmChangeArea_AreaMgr_Str
+lis r3, BgmChangeArea_AreaMgr_Str@ha
+addi r3, r3, BgmChangeArea_AreaMgr_Str@l
+bl getAreaObjManager__2MRFPCc
+
+
+#Loop time!
+li        r4, 0
+li        r5, 0
+li        r6, 1
+li        r8, 0
+b .GLE_ResetChangeBGMArea_LoopStart
+
+.GLE_ResetChangeBGMArea_Loop:
+lwz       r7, 0x14(r3)
+lwzx      r7, r7, r4
+
+#Reset the area
+stb       r5, 0x48(r7)
+
+.GLE_ResetChangeBGMArea_LoopContinue:
+addi      r8, r8, 1
+addi      r4, r4, 4
+.GLE_ResetChangeBGMArea_LoopStart:
+lwz       r0, 0x1C(r3)
+cmpw      r8, r0
+blt .GLE_ResetChangeBGMArea_Loop
+
+#Revalidate the areas
+bl getSceneMgr__7AudWrapFv
+li r0, 0
+stb r0, 0xC(r3)
+
+
+lwz       r0, 0x14(r1)
+lwz       r31, 0x0C(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
+
 
 .GLE PRINTMESSAGE EndWorldmapCode
 .GLE PRINTADDRESS
