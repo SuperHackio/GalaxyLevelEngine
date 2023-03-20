@@ -5,7 +5,7 @@
 #Obj Arg 2 = Wipe Type (-1 = Fade to White, 0 = Fade to Black, 1 = Circle, 2 = Mario, 3 = Bowser, 4 = Game Over)
 #Obj Arg 3 = Wipe Time (in frames)
 
-#Obj Arg 6 = Music fade time (default 0x2E)
+#Obj Arg 6 = Music fade time (default Same Time as the wipe)
 #Obj Arg 7 = Leave music playing (-1 = Stop music, "All other values" = Leave music) !! WARNING !! CAUSES LONG LOAD TIMES IF ANY NON-SEQUENCE SONG IS PLAYING!!
 
 #Obj Arg 4 was removed (GLE-V2)
@@ -74,7 +74,7 @@ mr r3, r30
 bl getPlacedZoneId__2MRFRC12JMapInfoIter
 stw r3, 0x4C(r31)
 
-li        r3, 0x2E
+li        r3, -1
 stw r3, 0x38(r31)
 
 lwz       r31, 0x0C(r1)
@@ -201,8 +201,17 @@ cmpwi r4, -1
 bne .SceneChangeArea_Movement_Invalidate
 #Cut the music
 lwz r3, 0x38(r31)
+cmpwi r3, -1
+bne .SceneChangeArea_StopSubBGM
+lwz r3, 0x2C(r31)
+.SceneChangeArea_StopSubBGM:
 bl stopSubBGM__2MRFUl
+
 lwz r3, 0x38(r31)
+cmpwi r3, -1
+bne .SceneChangeArea_StopBGM
+lwz r3, 0x2C(r31)
+.SceneChangeArea_StopBGM:
 bl stopStageBGM__2MRFUl
 
 #Set the used flag to true
