@@ -380,6 +380,9 @@
 #GlobalAnimeFunc
 .set animeFunc__19MameMuimuiAttackManFUl, 0x80351F60
 
+
+.set getZoneMsg, 0x800416F0
+
 #Symbols that point to strings already in the dol
 .set AnimName, 0x8067EC78
 .set CometLimitTimer, 0x806FF320
@@ -482,6 +485,8 @@
 
 .set InGameActorState_NoStage, 0x807D5BD8
 .set InGameActorState_PeachCastle, 0x807D5BC8
+
+.set CircleWipe_StrJp, 0x806F90DC
 
 #Keep these underscores and do not replace with <> 'cause it breaks the compiler
 .set sInstance__29SingletonHolder_10GameSystem_, 0x807D0DA4

@@ -1076,7 +1076,7 @@ b .PenguinMaster_RegisterGlobals_Return
 
 
 
-.GLE ADDRESS .Caretaker_InitEnd
+.GLE ADDRESS .MINI_COMET_CONNECTOR
 #====== Pichan ======
 .GLE ADDRESS init__6PichanFRC12JMapInfoIter +0x158
 mr        r3, r29
@@ -1340,5 +1340,6 @@ bl .MR_RegisterGlobalAnimeFunc
 
 
 .GLE PRINTADDRESS
-.GLE ASSERT TalkMessageFunc<9Caretaker>__FP9CaretakerM9CaretakerFPCvPvUl_b_51TalkMessageFuncM<P9Caretaker,M9CaretakerFPCvPvUl_b>
+#.GLE ASSERT TalkMessageFunc<9Caretaker>__FP9CaretakerM9CaretakerFPCvPvUl_b_51TalkMessageFuncM<P9Caretaker,M9CaretakerFPCvPvUl_b>
+.NPC_UTILITY_CONNECTOR:
 .GLE ENDADDRESS

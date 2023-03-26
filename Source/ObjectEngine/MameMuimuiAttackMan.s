@@ -68,7 +68,7 @@ MameMuimuiScorerLvX:
 
 
 
-.GLE ADDRESS .GALAXYINFOAREA_CONNECTOR
+.GLE ADDRESS .INFODISPLAYOBJ_CONNECTOR
 
 .LOCAL_CreateScorerArchiveName:
 addi r3, r1, 0x08  #Stack should have enough room

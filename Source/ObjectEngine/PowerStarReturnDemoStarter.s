@@ -29,7 +29,7 @@ b .StarReturnDemoStarter_InitEx
 .StarReturnDemoStarter_InitEx_Return:
 .GLE ENDADDRESS
 
-.GLE ADDRESS .MINI_COMET_CONNECTOR
+.GLE ADDRESS .NPC_UTILITY_CONNECTOR
 
 .StarReturnDemoStarter_InitEx:
 #Gonna borrow ScenarioStarter's floats

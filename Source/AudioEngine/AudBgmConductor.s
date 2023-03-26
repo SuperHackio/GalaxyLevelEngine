@@ -9,7 +9,7 @@ stfd      f31, 0x20(r1)
 psq_st    f31, 0x28(r1), 0, 0
 bl        _savegpr_29
 mr        r30, r3
-bl        movementPinchEventBgm__15AudBgmConductorFv
+bl        movementMorphBgm__15AudBgmConductorFv
 bl        getStageBgm__7AudWrapFv
 cmpwi     r3, 0
 mr        r31, r3

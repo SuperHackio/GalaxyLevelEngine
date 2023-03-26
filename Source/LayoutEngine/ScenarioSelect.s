@@ -1485,7 +1485,7 @@ addi r3, r31, CS_CLICK_CLOSE - ScenarioSelectLayout
 li        r4, 0
 li        r5, 0
 li        r6, 0
-bl startCSSound__2MRFPCcPCcl
+bl startCSSound__2MRFPCcPCcllf
 
 lbz       r0, 0xDC(r30)
 cmpwi     r0, 0

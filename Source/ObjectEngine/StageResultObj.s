@@ -891,7 +891,7 @@ b .MarioHairAndHatModel_Hide
 .int .StageResultObj_exeStageResultsAfter
 .int executeOnEnd__5NerveCFP5Spine
 
-
+.END_OF_STAGERESULTOBJ_DATA:
 
 
 .GLE ENDADDRESS
