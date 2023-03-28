@@ -381,7 +381,10 @@
 .set animeFunc__19MameMuimuiAttackManFUl, 0x80351F60
 
 
-.set getZoneMsg, 0x800416F0
+.set getSceneMessageDirect__2MRFPCcl, 0x80041410
+.set sDisplayFramesMin__33_unnamed_InformationObserver_cpp_, 0x807D0228
+.set InfoObserverCamera_StrJp, 0x806F4B24
+.set createZoneMsgId__2MRFPCclPCcl, 0x800416D0
 
 #Symbols that point to strings already in the dol
 .set AnimName, 0x8067EC78

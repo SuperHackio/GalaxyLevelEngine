@@ -18,7 +18,7 @@ blr
 .int .LoadIcon_StaticInit
 .int .StageResultObj_STATIC_INIT
 .int .MiniComet_sInit
-.int .__DEAD_STATIC
+.int .InfoDisplayObj_STATIC_INIT
 .int .__DEAD_STATIC
 .int .__DEAD_STATIC
 .int .__DEAD_STATIC

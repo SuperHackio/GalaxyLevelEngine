@@ -273,6 +273,10 @@
 .set BgmChangeArea_AreaMgr_Str, 0x8066F7C0
 .set WaitStringJapanese, 0x807DEFCC
 .set animeFunc__19MameMuimuiAttackManFUl, 0x80351F60
+.set getSceneMessageDirect__2MRFPCcl, 0x80041410
+.set sDisplayFramesMin__33_unnamed_InformationObserver_cpp_, 0x807D5928
+.set InfoObserverCamera_StrJp, 0x806FA224
+.set createZoneMsgId__2MRFPCclPCcl, 0x800416D0
 .set AnimName, 0x80684378
 .set CometLimitTimer, 0x80704A20
 .set PowerStarColor, 0x8069F5EC
@@ -336,6 +340,7 @@
 .set cBgmSettingInfo__13AudBgmSetting, 0x80645DA0
 .set InGameActorState_NoStage, 0x807DB2D8
 .set InGameActorState_PeachCastle, 0x807DB2C8
+.set CircleWipe_StrJp, 0x806FE7DC
 .set sInstance__29SingletonHolder_10GameSystem_, 0x807D64A4
 .set sInstance__Q212NrvGameScene15GameSceneAction, 0x807DAA10
 .set sInstance__Q226NrvInStageInGameActorState40InStageInGameActorStateNrvPlayerMissLeft, 0x807DB2E0

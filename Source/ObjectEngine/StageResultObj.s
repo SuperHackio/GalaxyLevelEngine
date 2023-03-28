@@ -731,7 +731,7 @@ stw       r0, 0x14(r1)
 
 lis r5, .StageResultObj_NrvNULL@ha
 addi r5, r5, .StageResultObj_NrvNULL@l
-addi r3, r13, unk_807D5E10 - STATIC_R13
+addi r3, r13, .StageResultObj_NrvNULL_sInstance - STATIC_R13
 
 addi r4, r5, .StageResultObj_NrvNULL - .StageResultObj_NrvNULL    #Typical SMG stuff
 stw r4, 0x00(r3)
@@ -773,7 +773,7 @@ b .MarioHairAndHatModel_Hide
 #=====================================================================
 
 #Static addresses
-.GLE ADDRESS unk_807D5E10
+.GLE ADDRESS unk_807D5E10 +0x10
 .GLE TRASH BEGIN
 
 .StageResultObj_NrvNULL_sInstance:

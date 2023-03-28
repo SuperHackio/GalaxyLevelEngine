@@ -221,7 +221,10 @@ mr r29, r3
 #0x07 = Add Starbits
 #0x08 = Remove Coins
 #0x09 = Remove Starbits
-#0x0A = 
+#0x0A = NPC Information Nerve
+#       (use an NPC switch before calling this, so that a InfoDisplayObj can spawn. Make sure you turn the switch off before turning it back on again or else the info box won't trigger!)
+#       0x00 = Start the nerve
+#       0x01 = Wait for the nerve to complete
 #0x0B = 
 #0x0C = 
 #0x0D = 
@@ -384,6 +387,27 @@ bl addStarPiece__2MRFi
 b .EventFunc_ReturnEventComplete
 
 .EventFunc_Case_A:
+cmpwi r30, 0
+beq .EventFunc_Case_A_Push
+
+mr        r3, r29
+addi      r4, r13, sInstance__Q215NrvLuigiTalkNpc26LuigiTalkNpcNrvInformation - STATIC_R13
+bl        isNerve__9LiveActorCFPC5Nerve
+cntlzw    r0, r3
+srwi      r3, r0, 5
+b .EventFunc_Return
+
+.EventFunc_Case_A_Push:
+mr        r3, r29
+addi      r4, r13, sInstance__Q215NrvLuigiTalkNpc26LuigiTalkNpcNrvInformation - STATIC_R13
+bl        isNerve__9LiveActorCFPC5Nerve
+cmpwi r3, 0
+bne .EventFunc_ReturnEventComplete   #Do not push nerve a second time
+
+mr        r3, r29
+addi      r4, r13, sInstance__Q215NrvLuigiTalkNpc26LuigiTalkNpcNrvInformation - STATIC_R13
+bl        pushNerve__8NPCActorFPC5Nerve
+b .EventFunc_ReturnEventComplete
 
 .EventFunc_Case_B:
 
@@ -414,6 +438,33 @@ blr
 .GLE ASSERT setAnim__9CaretakerFl
 .GLE ENDADDRESS
 
+#----------------------------------------------------------------------------------
+#this nerve is not required to be specific to Luigi.
+#so I re-write it here a bit.
+.GLE ADDRESS exeInformation__12LuigiTalkNpcFv
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+stw       r31, 0x0C(r1)
+mr        r31, r3
+li r4, 0x10
+bl        isGreaterStep__2MRFPC9LiveActorl
+cmpwi     r3, 0
+beq       loc_803516E4
+
+bl        isDeadInformationMessage__2MRFv
+cmpwi     r3, 0
+beq       loc_803516E4
+mr        r3, r31
+bl        popNerve__8NPCActorFv
+
+loc_803516E4:
+lwz       r0, 0x14(r1)
+lwz       r31, 0x0C(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
+.GLE ENDADDRESS
 #----------------------------------------------------------------------------------
 
 .GLE ADDRESS __sinit_\MarioFacePlanet_cpp
