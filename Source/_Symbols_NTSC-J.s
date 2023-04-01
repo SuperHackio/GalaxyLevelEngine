@@ -158,6 +158,7 @@
 .set branchFunc__11PichanRacerFUl, 0x8035A270
 .set eventFunc__11PichanRacerFUl, 0x8035A2E0
 .set eventFunc__4TicoFUl, 0x80366740
+.set isPowerStarColoured__2MRFv, 0x804D6B40
 .set sub_804E31A0, 0x804E31A0
 .set sub_8048EE60, 0x8048EE60
 .set sub_80030580, 0x80030580

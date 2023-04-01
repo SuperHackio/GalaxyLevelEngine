@@ -693,16 +693,64 @@ bl getValueS32__12ScenarioDataCFPCclPl
 cmpwi r3, 0
 beq .ReturnWithBool #if the value is not found
 
+
+
+#Time to actually figure out what color to use
+#If we are in the stage with an uncollected star,
+
+#Bronze star stats:
+#NEW in level: Bronze
+#NEW hub fly return: Bronze
+#HasAsBronze in Scenario Select: Bronze
+#HasAsBronze, use SuperDreamer: Empty
+#HasAsBronze, No SuperDreamer: Gold
+
+#Fun fact: I had to draw this logic out in Paint.net to fully grasp it
+.__B_HasPowerStar:
+addi r3, r1, 0x0C
+mr r4, r26
+bl hasPowerStar__20GalaxyStatusAccessorCFl
+cmpwi r3, 0
+beq .__B_IsUsedSuperDreamer
+
+
+.__B_HasPowerStarAsBronze:
+addi r3, r1, 0x0C
+mr r4, r26
+bl hasPowerStarAsBronze__20GalaxyStatusAccessorCFl
+cmpwi r3, 0
+beq .__B_UseActual
+
+
+.__B_IsUsedSuperDreamer:
+bl isScenarioSelecting__2MRFv
+cmpwi r3, 0
+beq .__B_IsUsedSuperDreamer2
+bl isScenarioDecided__2MRFv
+cmpwi r3, 0
+beq .__B_ForceBronze
+#If we're in the ScenarioSelect, we don't need to check if the SuperDreamer has been used.
+.__B_IsUsedSuperDreamer2:
 bl sub_804D7EE0
-cmpwi r3, 1
+cmpwi r3, 0
+beq .__B_UseActual
+
+
+.__B_ForceBronze:
 li r29, 1
-beq .ReturnWithBool
+b .ReturnWithBool
+
+
+.__B_UseActual:
 lwz r29, 0x08(r1)
+#b .ReturnWithBool
+
 
 .ReturnWithBool:
 cmpwi     r28, 0
 beq .Return
 
+.GLE PRINTADDRESS
 cmpwi r24, 0
 beq .IsNewStarSkip
 
@@ -714,9 +762,17 @@ bl isJustGetStar__20GameSequenceFunctionFPCcl
 cmpwi r3, 0
 beq .IsNewStarSkip
 
+#If this is a new star
 bl sub_804D6B10
 cmpwi r3, 1
 beq .Return
+
+#this returns 1 if the star is coloured and not empty.
+#I guess we'll see if this is reliable or not!!
+bl isPowerStarColoured__2MRFv
+cmpwi r3, 1
+beq .Return
+
 
 .IsNewStarSkip:
 addi r3, r1, 0x0C
@@ -724,12 +780,17 @@ mr r4, r26
 bl hasPowerStar__20GalaxyStatusAccessorCFl
 stb       r3, 0(r28)
 
+.__A_TryCheckBronze:
 addi r3, r1, 0x0C
 mr r4, r26
 bl hasPowerStarAsBronze__20GalaxyStatusAccessorCFl
 cmpwi r3, 0
 beq .Return
-li r3, 0   #Store the fact that the star is not yet collected. 'cause it technically isn't
+
+#If used a super dreamer
+bl sub_804D7EE0
+#li r3, 0   #Store the fact that the star is not yet collected. 'cause it technically isn't
+#Though, if you have the star as bronze, and you used a super dreamer again, the star will be empty
 stb       r3, 0(r28)
 
 .Return:

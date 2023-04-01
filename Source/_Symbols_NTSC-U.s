@@ -215,6 +215,8 @@
 
 .set eventFunc__4TicoFUl, 0x80366740
 
+.set isPowerStarColoured__2MRFv, 0x804D6B40
+
 #Unknown symbols
 .set sub_804E31A0, 0x804E31A0
 .set sub_8048EE60, 0x8048EE60

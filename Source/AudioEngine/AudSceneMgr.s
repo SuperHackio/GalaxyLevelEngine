@@ -17,10 +17,13 @@ stwu      r1, -0x10(r1)
 mflr      r0
 stw       r0, 0x14(r1)
 
-bl isStageFileSelect__2MRFv
+bl isDestroySceneKeepAllSound__2MRFv
 cmpwi r3, 0
 bne .IsNeedStopAllBGM_False
 
+bl isStageFileSelect__2MRFv
+cmpwi r3, 0
+bne .IsNeedStopAllBGM_False
 
 
 
