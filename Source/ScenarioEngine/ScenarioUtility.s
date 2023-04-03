@@ -731,7 +731,8 @@ cmpwi r3, 0
 beq .__B_ForceBronze
 #If we're in the ScenarioSelect, we don't need to check if the SuperDreamer has been used.
 .__B_IsUsedSuperDreamer2:
-bl sub_804D7EE0
+mr r3, r26
+bl .MR_IsSuperDreamerStarBronze
 cmpwi r3, 0
 beq .__B_UseActual
 
@@ -788,7 +789,8 @@ cmpwi r3, 0
 beq .Return
 
 #If used a super dreamer
-bl sub_804D7EE0
+mr r3, r26
+bl .MR_IsSuperDreamerStarBronze
 #li r3, 0   #Store the fact that the star is not yet collected. 'cause it technically isn't
 #Though, if you have the star as bronze, and you used a super dreamer again, the star will be empty
 stb       r3, 0(r28)

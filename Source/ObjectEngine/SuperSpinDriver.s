@@ -45,7 +45,7 @@ b .SuperSpinDriver_Emit
 .GLE ENDADDRESS
 
 
-.GLE ADDRESS .SCENARIO_SWITCH_CONNECTOR
+.GLE ADDRESS .STAFFROLL_CONNECTOR
 
 .SuperSpinDriver_Off:
 stwu      r1, -0x10(r1)

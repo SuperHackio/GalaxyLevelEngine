@@ -284,8 +284,7 @@ bl isFirstStep__2MRFPC9LiveActor
 cmpwi r3, 0
 beq .StageResultObj_AppearWait_NotFirstStep
 
-bl getGameSequenceInGame__20GameSequenceFunctionFv
-bl getPlayResultInStageHolder__18GameSequenceInGameFv
+bl .GLE_GetPlayResultInStageHolder
 mr r30, r3
 
 
@@ -530,8 +529,7 @@ cmpwi r3, 0
 bgt .StageResultObj_exeGameSave_TrySave
 
 #If Obj Arg 0 is set, save all the current data!
-bl getGameSequenceInGame__20GameSequenceFunctionFv
-bl getPlayResultInStageHolder__18GameSequenceInGameFv
+bl .GLE_GetPlayResultInStageHolder
 
 
 

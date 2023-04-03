@@ -173,7 +173,10 @@ PageTitle_Format:
     .string "AllStarList_Title%d"
     
 NoBootOut_DemoFormat:
-    .string "NoBootOut%d" AUTO
+    .string "NoBootOut%d"
+    
+__GLE_DEBUG_MODE:
+    .string "Debug" AUTO
     
     
 Static_PreviousStage:

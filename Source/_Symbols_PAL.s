@@ -269,6 +269,9 @@
 .set sub_8005A350, 0x8005A350
 .set sub_8004F640, 0x8004F640
 .set startGameDataSaveSequence__20GameSequenceFunctionFbbb, 0x804D5DA0
+.set sub_801440F0, 0x801440F0
+.set sub_804D7C40, 0x804D7C40
+.set requestChangeStageDreamer__2MRFP7UNKNOWNl, 0x804D5AA0
 .set unk_807D57D8, 0x807DAED8
 .set unk_807D2AB4, 0x807D81B4
 .set BgmChangeArea_AreaMgr_Str, 0x8066F7C0

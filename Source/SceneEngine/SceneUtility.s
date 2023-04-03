@@ -1374,6 +1374,15 @@ addi      r1, r1, 0x20
 blr
 
 #================================================
+#GLE::getPlayResultInStageHolder
+.GLE_GetPlayResultInStageHolder:
+mflr r0
+bl getGameSequenceInGame__20GameSequenceFunctionFv
+bl getPlayResultInStageHolder__18GameSequenceInGameFv
+mtlr r0
+blr
+#================================================
+
 .GLE PRINTADDRESS
 .RequestChangeStageAfterMiss:
 stwu      r1, -0x60(r1)
@@ -1830,6 +1839,16 @@ mtlr      r0
 addi      r1, r1, 0x20
 blr
 
+.GLE PRINTADDRESS
+#GLE::isEnableDebug()
+.GLE_IsEnableDebug:
+lis r3, __GLE_DEBUG_MODE@ha
+addi r3, r3, __GLE_DEBUG_MODE@l
+li r4, 1
+#b .MR_GetGameSetting
+#fallthrough
+
+.GLE PRINTADDRESS
 #================== GameSettings
 #Strings are in SceneStrings.s
 .MR_GetGameSetting:

@@ -141,8 +141,7 @@ bl .MR_ApplyStarMask
 
 .GLE PRINTADDRESS
 
-bl getGameSequenceInGame__20GameSequenceFunctionFv
-bl getPlayResultInStageHolder__18GameSequenceInGameFv
+bl .GLE_GetPlayResultInStageHolder
 li r4, 0
 stb r4, 0x43(r3)
 
@@ -154,8 +153,7 @@ bl hasPowerStar__16GameDataFunctionFPCcl
 cmpwi r3, 0
 bne .NoBootOut_SetPowerStar
 
-bl getGameSequenceInGame__20GameSequenceFunctionFv
-bl getPlayResultInStageHolder__18GameSequenceInGameFv
+bl .GLE_GetPlayResultInStageHolder
 li r4, 1
 stb r4, 0x43(r3)
 
