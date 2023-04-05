@@ -157,12 +157,26 @@ bl .GLE_GetPlayResultInStageHolder
 li r4, 1
 stb r4, 0x43(r3)
 
+bl getClearedPowerStarId__20GameSequenceFunctionFv
+bl .MR_IsSuperDreamerStarBronze
+cmpwi r3, 0
+bne .NoBootOut_SetPowerStarBronze
+
 .NoBootOut_SetPowerStar:
 bl getClearedPowerStarId__20GameSequenceFunctionFv
 mr r4, r3
 bl getClearedStageName__20GameSequenceFunctionFv
 bl setPowerStar__16GameDataFunctionFPCcl
+b .NoBootOut_ReviveScenarioSwitch
 
+.NoBootOut_SetPowerStarBronze:
+bl getClearedPowerStarId__20GameSequenceFunctionFv
+mr r4, r3
+bl getClearedStageName__20GameSequenceFunctionFv
+bl setBronzeStar__16GameDataFunctionFPCcl
+
+
+.NoBootOut_ReviveScenarioSwitch:
 #Finally fixing this. Reactivate all ScnearioSwitch objects!
 bl .ScenarioSwitch_ReviveAll
 

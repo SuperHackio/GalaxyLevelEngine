@@ -140,11 +140,26 @@ bl .__endStage_IsStarBronze
 .__endStage_IsStarBronze:
 subi r4, r28, 1
 lwz r3, 0x88(r27)
+
+#r3 = Flags value
+#r4 = PowerStarID
+.__Decide_IsBronze:
 sraw r4, r3, r4
 rlwinm r3, r4, 0, 31, 31
 mr r0, r3   #The game wants it in r0 each time phew
 blr
 
+
+
+
+.GLE ADDRESS sub_804D8690 +0x70
+bl .__sub_804D8690_SetStarBronze
+.GLE ENDADDRESS
+
+.__sub_804D8690_SetStarBronze:
+subi r4, r28, 1
+lwz r3, 0x88(r30)
+b .__Decide_IsBronze
 
 .SUPERDREAMER_CONNECTOR:
 .GLE ENDADDRESS
