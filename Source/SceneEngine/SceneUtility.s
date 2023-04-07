@@ -170,7 +170,7 @@ bne .MR_RequestMoveStage_NotScenarioSelect
 
 #2022-02-22: Oh wow you somehow listened before I even put this on github
 mr r3, r31
-bl changeToScenarioSelect__20GameSequenceFunctionFPCc
+bl requestChangeScenarioSelect__20GameSequenceFunctionFPCc
 b .MR_RequestMoveStage_Return
 
 
@@ -220,7 +220,7 @@ mr r3, r31
 mr r4, r30
 mr r5, r23 #Note: Idk if giving a value other than -1 actually matters or not | Note on 2022-01-27 - YES THIS MATTERS.
 addi r6, r1, 0x0C
-bl changeSceneStage__20GameSequenceFunctionFPCcllP10JMapIdInfo
+bl requestChangeStage__20GameSequenceFunctionFPCcllRC10JMapIdInfo
 
 #Here used to be where the game state would get changed, but that wouldn't work here because internally
 #we did not change stages yet. Code to change states will run automatically as soon as possible.
@@ -1453,7 +1453,7 @@ mr r4, r3
 addi      r3, r29, 0x40
 mr r5, r28
 addi r6, r1, 0x08
-bl changeSceneStage__20GameSequenceFunctionFPCcllP10JMapIdInfo
+bl requestChangeStage__20GameSequenceFunctionFPCcllRC10JMapIdInfo
 bl forceCloseSystemWipeCircle__2MRFv
 bl .MR_SystemCircleWipeToCenter
 b requestChangeStageAfterMiss_Return

@@ -1108,7 +1108,7 @@ lis r3, Game@ha
 addi      r3, r3, Game@l
 li        r6, 0
 li        r7, 0
-bl        startStageBGMFromStageName__2MRFPCcPCclbb
+bl        startStageBGMFromStageName__2MRFP25GameSystemSceneControllerPCclbb
 
 .StartHubworldMusic_Return:
 addi      r11, r1, 0x20

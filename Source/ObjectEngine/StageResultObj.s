@@ -356,7 +356,7 @@ lwz r3, 0x98(r29)
 rlwinm.  r0,r3,0,29,29
 beq .StageResultObj_NoSaveMedal
 
-bl        tryCollectTicoCoinSaved__20GameSequenceFunctionFv
+bl        collectTicoCoinIfSaved__20GameSequenceFunctionFv
 lbz       r0, 0x61(r30)
 cmpwi     r0, 0
 beq       loc_804D8748

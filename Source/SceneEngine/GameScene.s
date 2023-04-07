@@ -153,8 +153,8 @@ b GameScene_Init_Return
 loc_80451644:
 #Load some more stuff after a scenario has been selected
 bl initAfterScenarioSelected__13SceneFunctionFv
-bl sub_80458B80
 bl startActorFileLoadScenario__13SceneFunctionFv
+bl startActorFileLoadPostCreation__13SceneFunctionFv
 
 bl .MR_StartLoadingIcon
 
@@ -338,7 +338,7 @@ mr        r31, r3
 bl        getSceneMgr__7AudWrapFv
 bl        startScene__11AudSceneMgrFv
 
-bl        isAwaitPadMovement__20GameSequenceFunctionFv
+bl        isPadMode__20GameSequenceFunctionFv
 cmpwi     r3, 0
 beq       loc_8045183C
 addi      r3, r1, 0x0C
@@ -346,8 +346,8 @@ addi      r4, r1, 0x08
 bl        getDreamerPadData__2MRFPPvPl
 lwz       r3, 0x0C(r1)
 lwz       r4, 0x08(r1)
-bl        initializePadRecorder__2MRFPvUl
-bl        tryStartPadRecorder__2MRFv
+bl        prepareReplay__2MRFPCcUl
+bl        startReplayPad__2MRFv
 
 loc_8045183C:
 
