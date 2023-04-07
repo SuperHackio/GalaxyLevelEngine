@@ -316,6 +316,13 @@ li r4, 0x50
 b .ScenarioMode_AssignCompleteIcon
 
 .ScenarioMode_NotCompleteAllScenario:
+#Interuption - Bronze Stars will have no crown
+addi r3, r1, 0x08
+lwz r4, 0xB50(r1)
+bl hasPowerStarAsBronze__20GalaxyStatusAccessorCFl
+cmpwi r3, 0
+bne .ScenarioMode_NotCompleteNormalScenario
+
 addi r3, r1, 0x08
 lwz r4, 0xB50(r1)
 bl hasPowerStar__20GalaxyStatusAccessorCFl
