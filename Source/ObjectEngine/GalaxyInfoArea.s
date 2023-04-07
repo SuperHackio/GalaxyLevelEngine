@@ -85,6 +85,7 @@ addi      r1, r1, 0x10
 blr
 
 #==============================
+.GLE PRINTADDRESS
 .GalaxyInfoArea_Movement:
 stwu      r1, -0x100(r1)
 mflr      r0
@@ -196,20 +197,54 @@ lwz r6, 0x20(r31)
 bl getCsvDataS32__2MRFPlPC8JMapInfoPCcl
 
 .GalaxyInfoArea_Movement_SkipStarNum:
+#NEW to GLE-V3:
+#Obj Arg 1 >= 0 -> Use Remaining
+#If set, will count down the stars you need. People were misinformed on how this worked in GLE-V2, but I think it's good to have both options.
+
+lwz r3, 0x24(r31)
+cmpwi r3, 0
+blt .GalaxyInfoArea_Movement_SkipArg1
+bl getPowerStarNum__2MRFv
+lwz r5, 0x08(r1) #Load the requested PowerStarNum
+sub r5, r5, r3
+stw r5, 0x08(r1) #Overwrite it. This makes the following code think there's only 1 star needed. Genius!
+
+.GalaxyInfoArea_Movement_SkipArg1:
 mr r3, r29
 lis r4, GalaxyName@ha
 addi r4, r4, GalaxyName@l
-lwz r5, 0x08(r1)
+lwz r5, 0x08(r1) #Load the requested PowerStarNum
 li r6, 0
 bl setTextBoxArgNumberRecursive__2MRFP11LayoutActorPCcll
 
+
+#If we need the 1 star, but a 1 star doesn't exist,
+#we'll try for a non-1 star. If that doesn't exist,
+#We'll just use the default.
+lwz r4, 0x08(r1)
+cmpwi r4, 1
+bgt .GalaxyInfoArea_Movement_UseAMulti
+
+.GalaxyInfoArea_Movement_UseASingle:
 lwz r3, 0x48(r31)
 bl .MR_getGalaxyNameOnCurrentLanguageOrNULL
 cmpwi r3, 0
+lwz r4, 0x48(r31)
+bne .GalaxyInfoArea_Movement_UseACustomHidden
+
+.GalaxyInfoArea_Movement_UseAMulti:
+lwz r3, 0x48(r31)
+addi r3, r3, 1
+bl .MR_getGalaxyNameOnCurrentLanguageOrNULL
+cmpwi r3, 0
+lwz r4, 0x48(r31)
+addi r4, r4, 1
 beq .GalaxyInfoArea_Movement_DefaultHidden
 
+
+.GalaxyInfoArea_Movement_UseACustomHidden:
 mr r3, r29
-lwz r4, 0x48(r31)
+#lwz r4, 0x48(r31) #r4 is now loaded above
 li r5, 4
 li r6, 1
 bl .GalaxySelectInfo_show
@@ -389,7 +424,7 @@ GalaxyInfoArea_Unknown:
     
 #Galaxies can have a specific message and banner
 GalaxyInfoArea_UnknownSpecific_Format:
-    .string "UnknownGalaxy_%s"
+    .string "1UnknownGalaxy_%s"
 
 GalaxyInfoArea_Star:
     .string "Star"
