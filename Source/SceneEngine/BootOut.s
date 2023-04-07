@@ -137,6 +137,9 @@ mr r3, r31
 lwz       r3, 0x11C(r3)
 bl kill__9LiveActorFv
 
+mr r3, r31
+bl invalidateHitSensors__2MRFP9LiveActor
+
 bl .MR_ApplyStarMask
 
 .GLE PRINTADDRESS
@@ -343,6 +346,7 @@ blr
 
 
 
+.GLE PRINTMESSAGE ---- NBOStarPtr ----
 .GLE PRINTADDRESS
 #Wow another GLE TRASH appearance
 #Must come after everything due to how GLE TRASH works...or rather, doesn't work.... heh
