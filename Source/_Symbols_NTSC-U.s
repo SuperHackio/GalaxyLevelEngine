@@ -640,14 +640,29 @@
 .set CareTaker_BranchFuncStar, 0x806B7C18
 .set CareTaker_AnimeFunc, 0x806B7C24
 
-
+#StaffRollDemoObj stuff
+.set unk_807D1E78, 0x807D1E78
+.set sub_801452F0, 0x801452F0
+.set sub_801452E0, 0x801452E0
+.set sub_801452D0, 0x801452D0
+.set sub_801452C0, 0x801452C0
+.set sub_80145270, 0x80145270
+.set isAtPageFlip__9StaffRollFv, 0x80492640
+.set sub_80492C40, 0x80492C40
+.set unk_807D585C, 0x807D585C
+.set sub_80492CB0, 0x80492CB0
+.set unk_807D5834, 0x807D5834
+.set sub_80492BF0, 0x80492BF0
+.set unk_807D5858, 0x807D5858
 
 #TicoFat stuff
 .set TicoFat_ObjName, 0x806B3D78
 .set TicoFat_ObjEntry, 0x80649D80
 
 
-
+.set sub_803D0B10, 0x803D0B10
+.set sub_803CB130, 0x803CB130
+.set sub_803DB350, 0x803DB350
 
 #New Chunking stuff
 .set WorldmapDataStart, 0x80700960

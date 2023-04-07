@@ -344,6 +344,78 @@ addi      r1, r1, 0x120
 blr
 
 
+#New GLE-V3:
+#The option to lose powerups.
+#The default was decided to be that you keep your powerup
+
+.GLE ADDRESS sub_803D0B10 +0x100
+b .MarioPowerupClear_ExtA
+.MarioPowerupClear_ExtA_Return:
+.GLE ENDADDRESS
+
+.MarioPowerupClear_ExtA:
+#mr        r3, r31
+#bl        getSensorHost__2MRFPC9HitSensor
+#bl isHiddenModel__2MRFPC9LiveActor
+#cmpwi r3, 0   #If the star is killed, do not remove powerup regardless
+#bne .MarioPowerupClear_ExtA_NoClearPowerup
+
+
+#First Check the Boo Mushroom. We need to clear that noe regardless
+bl isPlayerElementModeTeresa__2MRFv
+cmpwi r3, 0
+bne .MarioPowerupClear_ExtA_YesClearPowerup
+
+mr        r3, r31
+bl        getSensorHost__2MRFPC9HitSensor
+lwz r3, 0x90(r3)
+bl .IsScenarioNoBootOut
+cmpwi r3, 1
+beq .MarioPowerupClear_ExtA_NoClearPowerup
+
+.MarioPowerupClear_ExtA_YesClearPowerup:
+mr        r3, r30
+lbz       r4, 0x08(r1)
+bl sub_803CB130
+
+.MarioPowerupClear_ExtA_NoClearPowerup:
+b .MarioPowerupClear_ExtA_Return
+
+
+
+
+.GLE ADDRESS tryRushInRush__10MarioActorFv +0xEC
+b .MarioPowerupClear_ExtB
+.MarioPowerupClear_ExtB_Return:
+.GLE ENDADDRESS
+
+.MarioPowerupClear_ExtB:
+#mr        r3, r30
+#bl        getSensorHost__2MRFPC9HitSensor
+#bl isHiddenModel__2MRFPC9LiveActor
+#cmpwi r3, 0   #If the star is killed, do not remove powerup regardless
+#bne .MarioPowerupClear_ExtB_NoClearPowerup
+
+#First Check the Boo Mushroom. We need to clear that noe regardless
+bl isPlayerElementModeTeresa__2MRFv
+cmpwi r3, 0
+bne .MarioPowerupClear_ExtB_YesClearPowerup
+
+mr        r3, r30
+bl        getSensorHost__2MRFPC9HitSensor
+lwz r3, 0x90(r3)
+bl .IsScenarioNoBootOut
+cmpwi r3, 1
+beq .MarioPowerupClear_ExtB_NoClearPowerup
+
+.MarioPowerupClear_ExtB_YesClearPowerup:
+mr        r3, r28
+lbz       r4, 0x08(r1)
+bl sub_803CB130
+
+.MarioPowerupClear_ExtB_NoClearPowerup:
+b .MarioPowerupClear_ExtB_Return
+
 
 
 .GLE PRINTMESSAGE ---- NBOStarPtr ----
