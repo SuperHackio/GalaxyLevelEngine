@@ -1,8 +1,8 @@
 #This is a list of files that are always loaded.
 #Want to add an entry? make sure you add it at the bottom of the list
 #====Entry format====
-#.int Unknown1
-#.int Unknown2
+#.int Heap Type
+#.int Load Time Type
 #.int String Label (Filename)
 
 .GLE ADDRESS cStationedFileInfo__31@unnamed@StationedFileInfo_cpp@
