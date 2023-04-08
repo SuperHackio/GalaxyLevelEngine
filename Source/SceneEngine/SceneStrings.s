@@ -175,6 +175,9 @@ PageTitle_Format:
 NoBootOut_DemoFormat:
     .string "NoBootOut%d"
     
+ResourceMask_Str:
+    .string "ResourceMask"
+    
 __GLE_DEBUG_MODE:
     .string "Debug" AUTO
     

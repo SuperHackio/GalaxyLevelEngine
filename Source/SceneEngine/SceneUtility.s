@@ -2113,5 +2113,6 @@ blr
 
 .GLE PRINTMESSAGE EndWorldmapCode
 .GLE PRINTADDRESS
+.SCENEUTILITY_CONNECTOR:
 .GLE ENDADDRESS
 #End of the worldmap code for now

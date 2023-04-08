@@ -136,10 +136,147 @@ b .InitListInfo
 .GLE ENDADDRESS
 
 
+#These belong here probably
+.GLE ADDRESS sub_8045AA60 +0x18C
+nop
+.GLE ENDADDRESS
+
+.GLE ADDRESS sub_8045AA60 +0xDC
+nop
+nop
+nop
+nop
+.GLE ENDADDRESS
+
+
+
+.GLE ADDRESS sub_8045AA60 +0x1D8
+b .ArchiveHotswapping
+.ArchiveHotswapping_ReturnNoSwap:
+.GLE ENDADDRESS
+.GLE ADDRESS sub_8045AA60 +0x208
+.ArchiveHotswapping_ReturnYesSwap:
+.GLE ENDADDRESS
+
+.GLE ADDRESS .SCENEUTILITY_CONNECTOR
+.ArchiveHotswapping:
+addi      r3, r1, 0x18
+lis r4, ResourceMask_Str@ha
+addi r4, r4, ResourceMask_Str@l
+bl searchItemInfo__8JMapInfoCFPCc
+cmpwi r3, 0    #If the field is not present, just proceed as normal and pretend nothing happened
+blt .ArchiveHotswapping_NoSwap
+
+mr        r5, r3
+mr        r4, r21
+addi      r3, r1, 0x18
+addi      r6, r1, 0x14
+bl        getValueFast__8JMapInfoCFiiPPCc
+
+lwz r3, 0x14(r1)
+lis r4, NULLSTRING@ha
+addi r4, r4, NULLSTRING@l
+bl isEqualString__2MRFPCcPCc
+cmpwi r3, 0
+bne .ArchiveHotswapping_NoSwap
+
+
+.ArchiveHotswapping_DoSwap:
+#First up
+#Tell the file loader to load the mask instead of the actual file
+#this is done normally
+cmpwi     r27, 0
+mr        r4, r25
+beq       loc_8045AC4C 
+mr        r4, r23
+b         loc_8045AC58
+
+loc_8045AC4C:
+cmpwi     r26, 0
+beq       loc_8045AC58
+mr        r4, r24
+loc_8045AC58:
+lwz r3, 0x14(r1)
+li        r5, 0
+li        r6, 1
+bl        mountAsyncArchive__2MRFPCcP7JKRHeap
+
+lwz r3, 0x14(r1)
+bl .GLE_GetFileHolderFileEntry
+stw r3, 0x0C(r1)
+
+cmpwi r3, 0  #Is this even possible?
+nop
+
+mr r3, r30
+bl .GLE_CreateFileHash
+lwz r4, 0x0C(r1)
+stw r3, 0x00(r4)
+
+#Hash replaced, Awesome.
+#Now we need to update the read path that's stored
+lwz       r3, sInstance__29SingletonHolder_10FileLoader_ - STATIC_R13(r13)
+lwz r4, 0x14(r1)
+bl getRequestFileInfoConst__10FileLoaderCFPCc
+addi r3, r3, 0x08
+mr r4, r30
+bl strcpy
+
+b .ArchiveHotswapping_ReturnYesSwap
+
+.ArchiveHotswapping_NoSwap:
+cmpwi     r27, 0
+b .ArchiveHotswapping_ReturnNoSwap
 
 
 
 
 
 
+
+
+#r3 = Const Char* Filepath string
+.GLE_GetFileHolderFileEntry:
+stwu      r1, -0x110(r1)
+mflr      r0
+stw       r0, 0x114(r1)
+
+mr        r5, r3
+li        r4, 0x100
+addi      r3, r1, 0x08
+li        r6, 0
+bl        convertPathToEntrynumConsideringLanguage__2MRFPCc
+
+lwz       r3, sInstance__29SingletonHolder_10FileLoader_ - STATIC_R13(r13)
+lwz       r3, 0x24(r3)
+addi      r4, r1, 0x08
+bl findEntry__10FileHolderCFPCc
+
+lwz       r0, 0x114(r1)
+mtlr      r0
+addi      r1, r1, 0x110
+blr
+
+#r3 = Const Char* Filepath string
+.GLE_CreateFileHash:
+stwu      r1, -0x110(r1)
+mflr      r0
+stw       r0, 0x114(r1)
+
+mr        r5, r3
+li        r4, 0x100
+addi      r3, r1, 0x08
+li        r6, 0
+bl        convertPathToEntrynumConsideringLanguage__2MRFPCc
+
+addi      r3, r1, 0x08
+bl getHashCodeLower__2MRFPCc
+
+lwz       r0, 0x114(r1)
+mtlr      r0
+addi      r1, r1, 0x110
+blr
+
+
+.GLE ENDADDRESS
 

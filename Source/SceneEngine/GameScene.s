@@ -526,23 +526,6 @@ li r3, 0
 li r3, 0
 .GLE ENDADDRESS
 
-
-
-
-#TODO?
-#This likely doesn't belong here....
-#But Idk what file it should go in
-.GLE ADDRESS sub_8045AA60 +0x18C
-nop
-.GLE ENDADDRESS
-
-.GLE ADDRESS sub_8045AA60 +0xDC
-nop
-nop
-nop
-nop
-.GLE ENDADDRESS
-
 .GLE ADDRESS exePowerStarGetDemo__22GameStageClearSequenceFv +0xB8
 bl .exePowerStarGetDemo_Ex
 .GLE ENDADDRESS

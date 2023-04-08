@@ -663,6 +663,9 @@
 .set sub_803D0B10, 0x803D0B10
 .set sub_803CB130, 0x803CB130
 .set sub_803DB350, 0x803DB350
+.set convertPathToEntrynumConsideringLanguage__2MRFPCc, 0x80025460
+.set sInstance__29SingletonHolder_10FileLoader_, 0x807D0D9C
+.set mountAsyncArchive__2MRFPCcP7JKRHeap, 0x80025AF0
 
 #New Chunking stuff
 .set WorldmapDataStart, 0x80700960
