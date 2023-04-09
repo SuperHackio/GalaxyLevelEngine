@@ -38,7 +38,28 @@ lwz r4, 0x08(r1)
 cmpw r3, r4
 blt .BCSVCheckReturnFalse
 
+
 .skipStarNum:
+mr r3, r31
+lis r4, TicoCoinNum@ha
+addi r4, r4, TicoCoinNum@l
+bl isExistItemInfo__8JMapInfoFPCc
+cmpwi r3, 0
+beq .skipMedalNum
+
+addi r3, r1, 0x08
+lis r5, TicoCoinNum@ha
+addi r5, r5, TicoCoinNum@l
+bl LOCAL_GetFieldInt
+
+bl calcTicoCoinNum__16GameDataFunctionFv
+lwz r4, 0x08(r1)
+cmpw r3, r4
+blt .BCSVCheckReturnFalse
+
+
+
+.skipMedalNum:
 #Here used to be the flag check but now you can have many flags to check
 
 #Loop 1 Time
@@ -1789,6 +1810,9 @@ Invert:
     
 PowerStarNum:
     .string "PowerStarNum"
+    
+TicoCoinNum:
+    .string "TicoCoinNum"
 
 FlagName_Format:
     .string "FlagName%d"
