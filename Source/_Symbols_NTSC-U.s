@@ -487,8 +487,6 @@
 
 #Other symbols...
 .set STATIC_INIT_LIST, 0x80643D20
-.set STATIC_R2, 0x807DECA0
-.set STATIC_R13, 0x807D7320
 .set UnknownGameScene_Init_NameObj_Thingy, 0x806EF934
 .set cBgmSettingInfo__13AudBgmSetting, 0x80645DA0
 
@@ -658,6 +656,8 @@
 #TicoFat stuff
 .set TicoFat_ObjName, 0x806B3D78
 .set TicoFat_ObjEntry, 0x80649D80
+.set sub_80368FA0, 0x80368FA0
+.set sub_803691E0, 0x803691E0
 
 
 .set sub_803D0B10, 0x803D0B10

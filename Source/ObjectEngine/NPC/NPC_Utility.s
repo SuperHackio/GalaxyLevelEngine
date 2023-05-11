@@ -1354,12 +1354,216 @@ blr
 
 
 #====== TicoFatCoin ======
-#???????????
+#Changed to have a new Obj Arg (Obj arg 0) which determines the Save Data ID to use.
+#These Save Data IDs are global
+#Obj arg goes in 0x1D0
 
+.GLE ADDRESS createNameObj<11TicoFatCoin>__14NameObjFactoryFPCc_P7NameObj +0x14
+li r3, 0x1D8   #Increase Memory
+.GLE ENDADDRESS
+
+.GLE ADDRESS init__11TicoFatCoinFRC12JMapInfoIter +0xC8
+b .TicoCoinFat_InitExt
+.TicoCoinFat_InitExt_Return:
+.GLE ENDADDRESS
+
+.TicoCoinFat_InitExt:
+bl getJMapInfoArg1NoInit__2MRFRC12JMapInfoIterPl
+
+#An actual rare use of the "WithInit" version???
+mr        r3, r30
+addi      r4, r29, 0x1D0
+bl getJMapInfoArg0WithInit__2MRFRC12JMapInfoIterPl
+
+mr        r3, r30
+addi      r4, r29, 0x1D4
+bl getJMapInfoArg2WithInit__2MRFRC12JMapInfoIterPb
+b .TicoCoinFat_InitExt_Return
+
+
+
+.GLE ADDRESS initAfterPlacement__11TicoFatCoinFv
+b .TicoCoinFat_NewInitAfterPlacement
+.GLE ENDADDRESS
+
+.TicoCoinFat_NewInitAfterPlacement:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+stw       r31, 0x0C(r1)
+mr        r31, r3
+lbz r4, 0x1D4(r31)
+cmpwi r4, 0
+bne .TicoCoinFat_NewInitAfterPlacement_Return
+
+bl        .GLE_getTicoFatCoinFromStorage
+lwz r4, 0x164(r31)
+cmpw r3, r4
+blt       .TicoCoinFat_NewInitAfterPlacement_Return
+mr        r3, r31
+bl        callMakeActorAppearedAllGroupMember__2MRFPC9LiveActor
+mr        r3, r31
+bl        onSwitchA__2MRFP9LiveActor
+
+lwz       r12, 0(r31)
+mr        r3, r31
+lwz       r12, 0x38(r12)
+mtctr     r12
+bctrl
+
+.TicoCoinFat_NewInitAfterPlacement_Return:
+lwz       r0, 0x14(r1)
+lwz       r31, 0x0C(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
+
+
+.GLE ADDRESS sub_80368FA0 +0x54
+lbz r4, 0x1D4(r31)
+.GLE ENDADDRESS
+
+.GLE ADDRESS sub_803691E0
+stwu      r1, -0x10(r1)
+mflr      r0
+cmpwi     r4, 0
+stw       r0, 0x14(r1)
+stw       r31, 0x0C(r1)
+mr        r31, r3
+bne       loc_8036921C
+#bl        .GLE_IsEnableDebug
+li r3, 0
+cmpwi     r3, 0
+bne       loc_80369210
+mr r3, r31
+lwz r4, 0x164(r31)
+bl        .GLE_setTicoFatCoinFromStorage
+
+loc_80369210:
+mr        r3, r31
+bl        callAppearAllGroupMember__2MRFPC9LiveActor
+b         loc_80369228
+                
+loc_8036921C:
+bl        callMakeActorAppearedAllGroupMember__2MRFPC9LiveActor
+mr        r3, r31
+bl        onSwitchA__2MRFP9LiveActor
+                
+loc_80369228:
+lwz       r0, 0x14(r1)
+lwz       r31, 0x0C(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
+.GLE ASSERT __cl__57TalkMessageFuncM<P11TicoFatCoin,M11TicoFatCoinFPCvPvUl_b>CFUl
+.GLE ENDADDRESS
+
+
+#r3 = TicoCoinFat*
+.GLE_getTicoFatCoinFromStorage:
+stwu      r1, -0x150(r1)
+mflr      r0
+stw       r0, 0x154(r1)
+addi      r11, r1, 0x150
+bl _savegpr_29
+
+mr r31, r3
+
+bl getCurrentStageName__2MRFv
+mr r5, r3
+lwz r6, 0x1D0(r31)
+addi r3, r1,0x0C
+li r4, 0x110
+bl .GLE_getTicoFatCoinStorageName
+
+bl getGameEventValueChecker__16GameDataFunctionFv
+addi r4, r1,0x0C
+bl getValue__21GameEventValueCheckerCFPCc
+
+addi      r11, r1, 0x150
+bl _restgpr_29
+lwz       r0, 0x154(r1)
+mtlr      r0
+addi      r1, r1, 0x150
+blr
+
+
+#r3 = TicoCoinFat*
+#r4 = int Coin Num Fed (usually this is the same as the set number of coins)
+.GLE_setTicoFatCoinFromStorage:
+stwu      r1, -0x150(r1)
+mflr      r0
+stw       r0, 0x154(r1)
+addi      r11, r1, 0x150
+bl _savegpr_29
+
+mr r31, r3
+mr r30, r4
+
+bl getCurrentStageName__2MRFv
+mr r5, r3
+lwz r6, 0x1D0(r31)
+addi r3, r1,0x0C
+li r4, 0x110
+bl .GLE_getTicoFatCoinStorageName
+
+bl getGameEventValueChecker__16GameDataFunctionFv
+addi r4, r1,0x0C
+mr r5, r30
+bl setValue__21GameEventValueCheckerFPCcUs
+
+addi      r11, r1, 0x150
+bl _restgpr_29
+lwz       r0, 0x154(r1)
+mtlr      r0
+addi      r1, r1, 0x150
+blr
+
+
+#r3 = Char* Dest
+#r4 = int DestSize
+#r5 = Const Char* StageName
+#r6 = int ID
+.GLE_getTicoFatCoinStorageName:
+mr r7, r6
+mr r6, r5
+lis       r5, TicoFatCoin_EventValue_Format@ha
+addi      r5, r5, TicoFatCoin_EventValue_Format@l
+b .GLE_getTicoFatStorageName
+
+TicoFatCoin_EventValue_Format:
+    .string "TicoFatCoin[%s_%d]" AUTO
 
 
 #====== TicoFatStarPiece ======
 #???????????
+
+#r3 = Char* Dest
+#r4 = int DestSize
+#r5 = Const Char* StageName
+#r6 = int ID
+.GLE_getTicoFatStarPieceStorageName:
+mr r7, r6
+mr r6, r5
+lis       r5, TicoFatStarPiece_EventValue_Format@ha
+addi      r5, r5, TicoFatStarPiece_EventValue_Format@l
+b .GLE_getTicoFatStorageName
+
+TicoFatStarPiece_EventValue_Format:
+    .string "TicoFatStarPiece[%s_%d]" AUTO
+
+
+
+#==============================
+#r3 = Char* Dest
+#r4 = int DestSize
+#r5 = Format
+#r6 = Const Char* StageName
+#r7 = int ID
+.GLE_getTicoFatStorageName:
+crclr     4*cr1+eq
+b       snprintf
+
 
 
 

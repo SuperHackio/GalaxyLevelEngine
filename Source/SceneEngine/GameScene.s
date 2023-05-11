@@ -382,6 +382,7 @@ lwz       r31, 0x1C(r1)
 mtlr      r0
 addi      r1, r1, 0x20
 blr
+.GLE PRINTADDRESS
 .GLE ASSERT update__9GameSceneFv
 .GLE ENDADDRESS
 

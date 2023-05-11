@@ -338,8 +338,6 @@
 .set HubworldState_Strings, 0x80701108
 .set MameMuimuiScorer_RemapList, 0x80691740
 .set STATIC_INIT_LIST, 0x80643D20
-.set STATIC_R2, 0x807E43A0
-.set STATIC_R13, 0x807DCA20
 .set UnknownGameScene_Init_NameObj_Thingy, 0x806F5034
 .set cBgmSettingInfo__13AudBgmSetting, 0x80645DA0
 .set InGameActorState_NoStage, 0x807DB2D8
@@ -456,6 +454,8 @@
 .set unk_807D5858, 0x807DAF58
 .set TicoFat_ObjName, 0x806B9478
 .set TicoFat_ObjEntry, 0x80649D80
+.set sub_80368FA0, 0x80368FA0
+.set sub_803691E0, 0x803691E0
 .set sub_803D0B10, 0x803D0B10
 .set sub_803CB130, 0x803CB130
 .set sub_803DB350, 0x803DB350
