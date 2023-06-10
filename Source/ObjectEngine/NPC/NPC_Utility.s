@@ -56,22 +56,22 @@ srawi r31, r4, 0x0C #Get the event type
 rlwinm r30, r4, 0, 20, 31 #Get the parameter value
 
 #== Branch Types ==
-#0x00 = No Branch (Defaults to the LiveActor Specific code, if any!)
-#0x01 = Compare Coins
-#0x02 = Compare Purple Coins
-#0x03 = Compare Starbits
-#0x04 = Compare Health
-#0x05 = Compare Stars
-#0x06 = Compare Powerup (use this if normal flows don't provide access to a given powerup)
-#0x07 = JMapProgress Index. For memory purposes, uses the same BCSV as ScenarioSwitch
-#0x08 = 
-#0x09 = 
-#0x0A = 
-#0x0B = 
-#0x0C = 
-#0x0D = 
-#0x0E = 
-#0x0F = 
+#0x0 = No Branch (Defaults to the LiveActor Specific code, if any!)
+#0x1 = Compare Coins
+#0x2 = Compare Purple Coins
+#0x3 = Compare Starbits
+#0x4 = Compare Health
+#0x5 = Compare Stars
+#0x6 = Compare Powerup (use this if normal flows don't provide access to a given powerup)
+#0x7 = JMapProgress Index. For memory purposes, uses the same BCSV as ScenarioSwitch
+#0x8 = 
+#0x9 = 
+#0xA = 
+#0xB = 
+#0xC = 
+#0xD = 
+#0xE = 
+#0xF = Hooked code
 
 cmpwi r31, 0x01
 blt .BranchFunc_Case_0
@@ -99,6 +99,7 @@ blt .BranchFunc_Case_E
 beq .BranchFunc_Case_F  #very optimal clamping here
 
 .BranchFunc_Case_0:
+b .BranchFunc_Failure
 
 .BranchFunc_Case_1:
 bl getCoinNum__2MRFv
@@ -152,9 +153,13 @@ b .BranchFunc_Return
 .BranchFunc_Case_D:
 
 .BranchFunc_Case_E:
-
-.BranchFunc_Case_F:
 b .BranchFunc_Success
+
+#This one is reserved for hooks
+.BranchFunc_Case_F:
+mr r3, r30
+b .BranchFunc_Success #replace this line with a function call to custom code.
+b .BranchFunc_Return
 
 .BranchFunc_EqualityCompare:
 #requires that r3 has the value to compare
@@ -229,7 +234,7 @@ mr r29, r3
 #0x0C = 
 #0x0D = 
 #0x0E = 
-#0x0F = 
+#0x0F = Hook
 
 cmpwi r31, 0x01
 blt .EventFunc_Case_0
@@ -418,6 +423,10 @@ b .EventFunc_ReturnEventComplete
 .EventFunc_Case_E:
 
 .EventFunc_Case_F:
+mr r3, r30
+mr r4, r29
+b .EventFunc_ReturnEventComplete #replace this line for hook
+b .EventFunc_Return
 
 .EventFunc_ReturnEventComplete:
 li r3, 1 
@@ -736,7 +745,11 @@ addi      r1, r1, 0x20
 blr
 
 
+#===========================================================================================
+#===========================================================================================
 #======================================== NPC FIXES ========================================
+#===========================================================================================
+#===========================================================================================
 #Verious fixes and additions to NPCs.
 
 
@@ -982,7 +995,10 @@ b .LuigiTalkNPC_EventFunc_Vanilla
 
 
 #====== MameMuimuiAttackMan ======
-#N/A
+.GLE ADDRESS init__19MameMuimuiAttackManFRC12JMapInfoIter +0x20C
+mr r3, r30
+bl .MR_RegisterGlobalAnimeFunc
+.GLE ENDADDRESS
 
 
 
@@ -1124,6 +1140,8 @@ b .PenguinMaster_RegisterGlobals_Return
 #Ran out of room
 .GLE ASSERT __sinit_\MarioFacePlanet_cpp
 .GLE ENDADDRESS
+
+
 
 
 
