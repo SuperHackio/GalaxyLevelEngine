@@ -1602,7 +1602,7 @@ b       snprintf
 
 #====== TogepinAttackMan ======
 .GLE ADDRESS init__16TogepinAttackManFRC12JMapInfoIter +0x1BC
-mr r3, r28
+mr r3, r31
 bl .MR_RegisterGlobalAnimeFunc
 .GLE ENDADDRESS
 

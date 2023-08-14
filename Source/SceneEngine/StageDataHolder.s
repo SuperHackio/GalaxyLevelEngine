@@ -150,6 +150,8 @@ nop
 
 
 
+
+
 .GLE ADDRESS sub_8045AA60 +0x1D8
 b .ArchiveHotswapping
 .ArchiveHotswapping_ReturnNoSwap:
@@ -157,6 +159,9 @@ b .ArchiveHotswapping
 .GLE ADDRESS sub_8045AA60 +0x208
 .ArchiveHotswapping_ReturnYesSwap:
 .GLE ENDADDRESS
+
+
+
 
 .GLE ADDRESS .SCENEUTILITY_CONNECTOR
 .ArchiveHotswapping:
@@ -277,6 +282,6 @@ mtlr      r0
 addi      r1, r1, 0x110
 blr
 
-
+.STAGEDATAHOLDER_CONNECTOR:
 .GLE ENDADDRESS
 

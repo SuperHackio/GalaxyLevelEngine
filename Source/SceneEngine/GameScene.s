@@ -381,6 +381,11 @@ lwz       r0, 0x24(r1)
 lwz       r31, 0x1C(r1)
 mtlr      r0
 addi      r1, r1, 0x20
+
+#GameScene::Start hook
+#Or, well, users can also hook the blr just under this.
+nop
+
 blr
 .GLE PRINTADDRESS
 .GLE ASSERT update__9GameSceneFv
