@@ -616,6 +616,8 @@ blr
 
 #========================================================================================
 #========== Power Star Colours ==========
+.GLE PRINTMESSAGE == Power Star Colours ==
+.GLE PRINTADDRESS
 
 #PowerStar::getColorInDemo
 #replacement
@@ -712,9 +714,9 @@ addi r6, r1, 0x08
 bl getValueS32__12ScenarioDataCFPCclPl
 
 cmpwi r3, 0
-beq .ReturnWithBool #if the value is not found
+bne .__B_HasPowerStar #if the value is not found
 
-
+stw r3, 0x08(r1) #r3 will be Zero, which is a Gold Star
 
 #Time to actually figure out what color to use
 #If we are in the stage with an uncollected star,
@@ -765,8 +767,7 @@ b .ReturnWithBool
 
 .__B_UseActual:
 lwz r29, 0x08(r1)
-#b .ReturnWithBool
-
+b .ReturnWithBool
 
 .ReturnWithBool:
 cmpwi     r28, 0
