@@ -167,6 +167,9 @@ mr r3, r31
 addi      r4, r13, unk_807D5F18 - STATIC_R13
 bl initNerve__11LayoutActorFPC5Nerve
 
+#Hook
+nop
+
 lwz       r31, 0x0C(r1)
 lwz       r30, 0x08(r1)
 lwz       r0, 0x14(r1)
@@ -183,6 +186,7 @@ blr
 #MR::startLoadingIcon((void))
 #Waits until the time is right, then
 #Simply sets the nerve to Appear
+.GLE PRINTADDRESS
 .MR_StartLoadingIcon:
 stwu      r1, -0x10(r1)
 mflr      r0
@@ -241,6 +245,9 @@ bl startAnimAndSetFrameAndStop__2MRFP11LayoutActorPCcfUl
 
 bl .MR_GetLoadingLayout
 bl appear__11LayoutActorFv
+
+#Hook
+nop
 
 .startLoadingLayoutReturn:
 lwz       r31, 0x0C(r1)
@@ -396,6 +403,9 @@ addi r4, r4, LoadIcon_Appear@l
 li r5, 0
 bl startAnim__2MRFP11LayoutActorPCcUl
 
+#Hook
+nop
+
 li r3, 1
 stb r3, 0x38(r31)
 
@@ -414,13 +424,43 @@ blr
 
 #NrvLoadingIcon::LoadingIconWait::execute(const(Spine *))
 .LoadingIcon_Wait:
-lwz r3, 0x00(r4)
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+stw       r31, 0x0C(r1)
+
+lwz r31, 0x00(r4)
+
+mr r3, r31
+bl isFirstStep__2MRFPC11LayoutActor
+cmpwi r3, 0
+beq .SkipFirstTime_LoadIcon_Wait
+
+.StartWaitAnim_LoadIcon_Wait:
+mr r3, r31
 lis r4, LoadIcon_Wait@ha
 addi r4, r4, LoadIcon_Wait@l
 li r5, 0
-b startAnimAtFirstStep__2MRFP11LayoutActorPCcUl
-#Quick and easy solution to play the wait animation
-#This nerve doesn't need to end itself, rather, it will be ended when MR::endLoadingIcon((void)) is called
+bl startAnim__2MRFP11LayoutActorPCcUl
+b .LoadingIcon_Wait_Return
+.SkipFirstTime_LoadIcon_Wait:
+
+#Hook
+.GLE PRINTADDRESS
+nop
+
+mr r3, r31
+li r4, 0
+bl isAnimStopped__2MRFPC11LayoutActorUl
+cmpwi r3, 0
+bne .StartWaitAnim_LoadIcon_Wait
+
+.LoadingIcon_Wait_Return:
+lwz       r31, 0x0C(r1)
+lwz       r0, 0x14(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
 
 
 #NrvLoadingIcon::LoadingIconDisappear::execute(const(Spine *))
