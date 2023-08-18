@@ -2111,6 +2111,71 @@ mtlr      r0
 addi      r1, r1, 0x20
 blr
 
+#==============================================
+
+#r3 = GameScene*
+.GLE_GameScene_InitEffect:
+stwu      r1, -0x60(r1)
+mflr      r0
+stw       r0, 0x64(r1)
+addi      r11, r1, 0x60
+bl _savegpr_28
+mr r31, r3
+
+bl makeCurrentGalaxyStatusAccessor__2MRFv
+stw       r3, 0x08(r1)
+
+#Get the GalaxyInfo BCSV File
+addi r3, r1, 0x08
+bl getWorldNo__20GalaxyStatusAccessorCFv
+mr r30, r3
+
+#r3 still has the JMapInfo*
+lis r4, EffectSystem@ha
+addi r4, r4, EffectSystem@l
+bl .isExistEntryFromGalaxyInfo
+cmpwi r3, 0
+beq .GLE_GameScene_InitEffect_DoCallDefault
+
+mr r3, r30
+lis r4, EffectSystem@ha
+addi r4, r4, EffectSystem@l
+li r5, 1
+li r6, 0 #null string*
+bl .getActiveEntryFromGalaxyInfo
+mr r28, r3
+
+mr r3, r30
+lis r4, EffectSystem@ha
+addi r4, r4, EffectSystem@l
+li r5, 3  #New Param01Int
+li r6, 0 #null string*
+bl .getActiveEntryFromGalaxyInfo
+cmpwi r3, 0
+li r29, 0xC00
+beq .GLE_GameScene_InitEffect_DoCall
+mr r29, r28
+mr r28, r3
+b .GLE_GameScene_InitEffect_DoCall
+
+
+.GLE_GameScene_InitEffect_DoCallDefault:
+li r29, 0xC00  #Allocated memory for all particles
+li r28, 0x100  #Max Particles at once
+
+.GLE_GameScene_InitEffect_DoCall:
+mr r3, r29
+mr r4, r28
+bl initEffectSystem__13SceneFunctionFUlUl
+
+addi      r11, r1, 0x60
+bl _restgpr_28
+lwz       r0, 0x64(r1)
+mtlr      r0
+addi      r1, r1, 0x60
+blr
+
+
 .GLE PRINTMESSAGE EndWorldmapCode
 .GLE PRINTADDRESS
 .SCENEUTILITY_CONNECTOR:

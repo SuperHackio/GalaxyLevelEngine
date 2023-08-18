@@ -55,8 +55,7 @@ bl initForNameObj__13SceneFunctionFv
 bl initForLiveActor__13SceneFunctionFv
 
 mr r3, r29
-#TODO: Edit InitEffect to allow users to change the particle storage amounts
-bl initEffect__9GameSceneFv
+bl .GLE_GameScene_InitEffect
 
 li        r3, 0x18      # CameraContext
 bl        createSceneObj__2MRFi

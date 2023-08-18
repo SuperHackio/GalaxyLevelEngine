@@ -865,9 +865,62 @@ addi      r1, r1, 0x10
 blr
 
 #========================================================================================
+#Checks to see if the entry exists
 #r3 = JMapInfo*
 #r4 = Type to search for
-#r5 = Mode - 0 = return bool | 1 = return Param00int | 2 = return Param00Str
+.isExistEntryFromGalaxyInfo:
+stwu      r1, -0x70(r1)
+mflr      r0
+stw       r0, 0x74(r1)
+addi      r11, r1, 0x70
+bl        _savegpr_26
+
+mr r31, r3
+mr r30, r4
+bl getCsvDataElementNum__2MRFPC8JMapInfo
+mr r27, r3
+li r26, 0
+b .isExistEntryFromGalaxyInfo_LoopStart
+
+.isExistEntryFromGalaxyInfo_Loop:
+addi r3, r1, 0x08
+mr r4, r31
+lis r5, Type@ha
+addi r5, r5, Type@l
+mr r6, r26
+bl getCsvDataStr__2MRFPPCcPC8JMapInfoPCcl
+
+#Return 0 if the read failed
+cmpwi r3, 0
+beq .isExistEntryFromGalaxyInfo_Return
+
+
+lwz r3, 0x08(r1)
+mr r4, r30
+bl isEqualString__2MRFPCcPCc
+cmpwi r3, 0
+bne .isExistEntryFromGalaxyInfo_Return
+
+.isExistEntryFromGalaxyInfo_LoopContinue:
+addi r26, r26, 1
+.isExistEntryFromGalaxyInfo_LoopStart:
+cmpw r26, r27
+blt .isExistEntryFromGalaxyInfo_Loop
+
+li r3, 0
+
+.isExistEntryFromGalaxyInfo_Return:
+addi      r11, r1, 0x70
+bl        _restgpr_26
+lwz       r0, 0x74(r1)
+mtlr      r0
+addi      r1, r1, 0x70
+blr
+
+#========================================================================================
+#r3 = JMapInfo*
+#r4 = Type to search for
+#r5 = Mode - 0 = return bool | 1 = return Param00int | 2 = return Param00Str | 3 = Param01int
 #r6 = (Mode = 0) Param00Int int | (Mode = 1) Param00Str char const * (0 = ignore) | (Mode = 2) Param00Int int
 
 .getActiveEntryFromGalaxyInfo:
@@ -921,8 +974,8 @@ beq .getActiveEntryFromGalaxyInfo_LoopContinue
 
 cmpwi r29, 1
 #Just return r3 (1 or 0) if the mode is less than 1 (aka 0, return bool)
-beq .getActiveEntryFromGalaxyInfo_CheckInt
-bgt .getActiveEntryFromGalaxyInfo_CheckStr
+beq .getActiveEntryFromGalaxyInfo_CheckInt00
+bgt .getActiveEntryFromGalaxyInfo_CheckStr00
 
 #Mode 0 = Return bool (on the entry that has a matching int)
 addi r3, r1, 0x0C
@@ -941,10 +994,10 @@ b .getActiveEntryFromGalaxyInfo_Return
 
 
 
-.getActiveEntryFromGalaxyInfo_CheckInt:
+.getActiveEntryFromGalaxyInfo_CheckInt00:
 #Mode 1 = Return Param00Int (on the entry with a matching string)
 cmpwi r28, 0
-beq .SkipStringCheck
+beq .SkipStringCheck00
 
 addi r3, r1, 0x0C
 mr r4, r31
@@ -959,7 +1012,7 @@ bl isEqualString__2MRFPCcPCc
 cmpwi r3, 0
 beq .getActiveEntryFromGalaxyInfo_LoopContinue
 
-.SkipStringCheck:
+.SkipStringCheck00:
 mr r3, r31
 mr r4, r26
 bl isJMapEntryProgressComplete
@@ -975,7 +1028,9 @@ bl getCsvDataS32__2MRFPlPC8JMapInfoPCcl
 lwz r3, 0x0C(r1)
 b .getActiveEntryFromGalaxyInfo_Return
 
-.getActiveEntryFromGalaxyInfo_CheckStr:
+#-----------------
+
+.getActiveEntryFromGalaxyInfo_CheckStr00:
 #Mode 2 = Return Param00Str (on the entry with a matching int)
 addi r3, r1, 0x0C
 mr r4, r31
@@ -998,6 +1053,51 @@ bl getCsvDataStrOrNULL__2MRFPPCcPC8JMapInfoPCcl
 lwz r3, 0x0C(r1)
 b .getActiveEntryFromGalaxyInfo_Return
 
+#-----------------
+
+.getActiveEntryFromGalaxyInfo_CheckInt01:
+#Mode 3 = Return Param01Int IF the field exists (on the entry with a matching string)
+mr r3, r31
+lis r4, PowerStarNum@ha
+addi r4, r4, PowerStarNum@l
+bl isExistItemInfo__8JMapInfoFPCc
+
+cmpwi r3, 0  #return if not found
+beq .getActiveEntryFromGalaxyInfo_Return
+
+cmpwi r28, 0
+beq .SkipStringCheck01
+
+addi r3, r1, 0x0C
+mr r4, r31
+lis r5, Param01Str@ha
+addi r5, r5, Param01Str@l
+mr r6, r26
+bl getCsvDataStrOrNULL__2MRFPPCcPC8JMapInfoPCcl
+
+lwz r3, 0x0C(r1)
+mr r4, r28
+bl isEqualString__2MRFPCcPCc
+cmpwi r3, 0
+beq .getActiveEntryFromGalaxyInfo_LoopContinue
+
+.SkipStringCheck01:
+mr r3, r31
+mr r4, r26
+bl isJMapEntryProgressComplete
+cmpwi r3, 0
+beq .getActiveEntryFromGalaxyInfo_LoopContinue
+
+addi r3, r1, 0x0C
+mr r4, r31
+lis r5, Param01Int@ha
+addi r5, r5, Param01Int@l
+mr r6, r26
+bl getCsvDataS32__2MRFPlPC8JMapInfoPCcl
+lwz r3, 0x0C(r1)
+b .getActiveEntryFromGalaxyInfo_Return
+
+#-----------------
 
 .getActiveEntryFromGalaxyInfo_LoopContinue:
 addi r26, r26, 1
@@ -1833,6 +1933,9 @@ Type:
 Param00Int:
     .string "Param00Int"
     
+Param01Int:
+    .string "Param01Int"
+    
 Param00Str:
     .string "Param00Str"
     
@@ -1843,7 +1946,10 @@ Seeker:
     .string "Seeker"
     
 StarMask:
-    .string "Mask" 
+    .string "Mask"
+    
+EffectSystem:
+    .string "EffectSystem"
     
 SelectBgm:
     .string "SelectBgm"
