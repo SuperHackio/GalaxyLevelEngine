@@ -319,6 +319,10 @@
 
 .set sub_8045E9D0, 0x8045E9D0
 
+.set sub_802DF490, 0x802DF490
+.set sub_802DF430, 0x802DF430
+.set PowerStar_LightStr_Loc, 0x806A860C
+
 #-------------------------------------------------------
 
 #these ones are for the ScenarioSelect's new DPD features

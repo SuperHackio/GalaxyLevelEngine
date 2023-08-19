@@ -828,6 +828,105 @@ addi      r1, r1, 0x70
 blr
 
 #========================================================================================
+#Grand Star Colours (new to GLE-V3)
+.GLE ADDRESS setupColorGrandStar__23@unnamed@PowerStar_cpp@FP9LiveActorb +0x84
+b .GLE_SetupGrandStarColor
+.GLE_SetupGrandStarColor_ReturnLoc:
+.GLE ENDADDRESS
+
+
+.GLE_SetupGrandStarColor:
+stwu      r1, -0x70(r1)
+
+mr        r3, r28
+lis r4, PowerStarColor@ha
+addi r4, r4, PowerStarColor@l
+bl startBrkIfExist__2MRFPC9LiveActorPCc
+cmpwi r3, 0
+beq .GLE_SetupGrandStarColor_ReturnJump
+
+
+xoris     r0, r30, 0x8000
+lis       r5, 0x4330
+lis       r3, FloatConversion@ha
+stw       r0, 0x0C(r1)
+lfd       f1, FloatConversion@l(r3)
+mr        r3, r28
+stw       r5, 0x08(r1)
+lfd       f0, 0x08(r1)
+fsubs     f1, f0, f1
+bl setBrkFrameAndStop__2MRFPC9LiveActorf
+
+mr r3, r28
+lis r4, PowerStarColor@ha
+addi r4, r4, PowerStarColor@l
+bl startBpkIfExist__2MRFPC9LiveActorPCc
+cmpwi r3, 0
+beq .GLE_SetupGrandStarColor_ReturnJump
+
+xoris     r0, r30, 0x8000
+lis       r5, 0x4330
+lis       r3, FloatConversion@ha
+stw       r0, 0x0C(r1)
+lfd       f1, FloatConversion@l(r3)
+mr        r3, r28
+stw       r5, 0x08(r1)
+lfd       f0, 0x08(r1)
+fsubs     f1, f0, f1
+bl setBpkFrameAndStop__2MRFPC9LiveActorf
+
+mr r3, r28
+lis r4, PowerStarColor@ha
+addi r4, r4, PowerStarColor@l
+bl startBtpIfExist__2MRFPC9LiveActorPCc
+cmpwi r3, 0
+beq .GLE_SetupGrandStarColor_ReturnJump
+
+xoris     r0, r30, 0x8000
+lis       r5, 0x4330
+lis       r3, FloatConversion@ha
+stw       r0, 0x0C(r1)
+lfd       f1, FloatConversion@l(r3)
+mr        r3, r28
+stw       r5, 0x08(r1)
+lfd       f0, 0x08(r1)
+fsubs     f1, f0, f1
+bl setBtpFrameAndStop__2MRFPC9LiveActorf
+
+.GLE_SetupGrandStarColor_ReturnJump:
+addi      r1, r1, 0x70
+#Original line
+addi      r11, r1, 0x20
+b .GLE_SetupGrandStarColor_ReturnLoc
+
+
+#Minor bug, since vanilla never had a Green Grand Star, there is no particle effect for It
+#you're free to figure out how to add it yourself, however GLE is pretty strictly prohibited from editing the AutoEffectList.
+#Why? Because I don't want to have to deal with that file causing crashes for people. It's notorious for being...crashy...
+
+.GLE ADDRESS sub_802DF490 +0x08
+stw       r0, 0x14(r1)
+mr        r0, r5
+stw       r31, 0x08(r1)
+mr        r31, r3
+b .PowerStar_Emit_Fix
+.PowerStar_Emit_Fix_TryGreen:
+.GLE ENDADDRESS
+
+.GLE ADDRESS sub_802DF490 +0x3C
+.PowerStar_Emit_Fix_TryBronze:
+.GLE ENDADDRESS
+
+.PowerStar_Emit_Fix:
+cmpwi     r7, 0
+beq .PowerStar_Emit_Fix__y
+b .PowerStar_Emit_Fix_TryBronze
+
+.PowerStar_Emit_Fix__y:
+cmpwi     r6, 2
+b .PowerStar_Emit_Fix_TryGreen
+
+#========================================================================================
 
 
 #GameDataFunction::isOnGalaxyFlagTicoCoin((char const *))

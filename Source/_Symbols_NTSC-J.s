@@ -236,6 +236,9 @@
 .set sub_804D5DF0, 0x804D5DF0
 .set sub_80495E20, 0x80495E20
 .set sub_8045E9D0, 0x8045E9D0
+.set sub_802DF490, 0x802DF490
+.set sub_802DF430, 0x802DF430
+.set PowerStar_LightStr_Loc, 0x806A7DEC
 .set sub_8005E720, 0x8005E720
 .set getDefaultButtonOffsetVec2__15StarPointerUtilFv, 0x8005E820
 .set addStarPointerMovePosition__15StarPointerUtilFPCcPQ29JGeometry8TVec3<f>RCQ29JGeometry8TVec3<f>, 0x8005E830
