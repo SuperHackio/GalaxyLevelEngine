@@ -1377,7 +1377,7 @@ blr
 #Obj arg goes in 0x1D0
 
 .GLE ADDRESS createNameObj<11TicoFatCoin>__14NameObjFactoryFPCc_P7NameObj +0x14
-li r3, 0x1D8   #Increase Memory
+li r3, 0x1DC   #Increase Memory
 .GLE ENDADDRESS
 
 .GLE ADDRESS init__11TicoFatCoinFRC12JMapInfoIter +0xC8
@@ -1396,6 +1396,10 @@ bl getJMapInfoArg0WithInit__2MRFRC12JMapInfoIterPl
 mr        r3, r30
 addi      r4, r29, 0x1D4
 bl getJMapInfoArg2WithInit__2MRFRC12JMapInfoIterPb
+
+mr        r3, r30
+addi      r4, r29, 0x1D8
+bl getJMapInfoArg6WithInit__2MRFRC12JMapInfoIterPl
 b .TicoCoinFat_InitExt_Return
 
 
@@ -1444,10 +1448,10 @@ lbz r4, 0x1D4(r31)
 .GLE ADDRESS sub_803691E0
 stwu      r1, -0x10(r1)
 mflr      r0
-cmpwi     r4, 0
 stw       r0, 0x14(r1)
 stw       r31, 0x0C(r1)
 mr        r31, r3
+cmpwi     r4, 0
 bne       loc_8036921C
 #bl        .GLE_IsEnableDebug
 li r3, 0
@@ -1458,11 +1462,11 @@ lwz r4, 0x164(r31)
 bl        .GLE_setTicoFatCoinFromStorage
 
 loc_80369210:
+loc_8036921C:
 mr        r3, r31
 bl        callAppearAllGroupMember__2MRFPC9LiveActor
 b         loc_80369228
                 
-loc_8036921C:
 bl        callMakeActorAppearedAllGroupMember__2MRFPC9LiveActor
 mr        r3, r31
 bl        onSwitchA__2MRFP9LiveActor
@@ -1487,7 +1491,7 @@ bl _savegpr_29
 
 mr r31, r3
 
-bl getCurrentStageName__2MRFv
+bl .GLE_GetCurrentStageName_Guarantee
 mr r5, r3
 lwz r6, 0x1D0(r31)
 addi r3, r1,0x0C
@@ -1518,7 +1522,7 @@ bl _savegpr_29
 mr r31, r3
 mr r30, r4
 
-bl getCurrentStageName__2MRFv
+bl .GLE_GetCurrentStageName_Guarantee
 mr r5, r3
 lwz r6, 0x1D0(r31)
 addi r3, r1,0x0C
@@ -1553,8 +1557,1442 @@ TicoFatCoin_EventValue_Format:
     .string "TicoFatCoin[%s_%d]" AUTO
 
 
+
+.GLE ADDRESS sub_80368F30 +0x2C
+b .TicoFatCoin_GetInformationMessage
+.TicoFatCoin_GetInformationMessage_Return:
+.GLE ENDADDRESS
+.TicoFatCoin_GetInformationMessage:
+lwz r4, 0x1D8(r31)
+bl .GLE_GetTicoFatMessageOrDefaultStr
+b .TicoFatCoin_GetInformationMessage_Return
+
+
+
+
+
+
+
+
+
+
 #====== TicoFatStarPiece ======
-#???????????
+#TicoFatStarPiece rewrite for GLE
+
+#Obj Arg 0 = ID. Works just like the Coin Hungry Luma. -1 = Always respawn
+#Obj Arg 1 = Required Starbits. Default 100
+
+#Address Remapping
+# TicoFatCoin --> TicoFatStarPiece
+
+# 0x164 int "Required coin num"    --> 0x16C int "Starbit request amount"
+# 0x168 MultiActorCamera* "Flight" --> 0x190 > 0x10  "MultiActorCamera* "Flight"
+# 0x16C CoinSuccState*             --> N/A
+# 0x170 Matrix &                   --> 0x194 Matrix & (new memory)
+# 0x1A0 Matrix &                   --> 0x1C4 Matrix & (new memory)
+
+.GLE ADDRESS createNameObj<16TicoFatStarPiece>__14NameObjFactoryFPCc_P7NameObj +0x14
+li r3, 0x200
+.GLE ENDADDRESS
+
+
+.GLE ADDRESS __ct__16TicoFatStarPieceFPCc +0x5C
+b .TicoFatStarPiece_InitEx
+.TicoFatStarPiece_InitEx_Return:
+.GLE ENDADDRESS
+
+.TicoFatStarPiece_InitEx:
+stw       r4, 0x190(r31)
+addi      r3, r31, 0x194
+bl identity__Q29JGeometry38TMatrix34<Q29JGeometry13SMatrix34C<f>>Fv
+addi      r3, r31, 0x1C4
+bl identity__Q29JGeometry38TMatrix34<Q29JGeometry13SMatrix34C<f>>Fv
+lis r3, .TicoFatStarPiece_ActiveStaticLoc@ha
+addi r3, r3, .TicoFatStarPiece_ActiveStaticLoc@l
+li r0, 0
+stw r0, 0x00(r3)
+
+mr r3, r31
+b .TicoFatStarPiece_InitEx_Return
+
+
+
+#First, write a new init function that uses Obj Args and the custom GLE flag system
+.GLE ADDRESS init__16TicoFatStarPieceFRC12JMapInfoIter
+.TicoFatStarPiece_Init_Replacement:
+stwu      r1, -0x130(r1)
+mflr      r0
+stw       r0, 0x134(r1)
+addi      r11, r1, 0x130
+bl        _savegpr_29
+
+mr r29, r3  #TicoFatStarPiece*
+mr r30, r4  #JMapInfoIter
+lis r31, TicoFatStarPiece_Reaction@ha
+addi r31, r31, TicoFatStarPiece_Reaction@l
+
+addi r3, r1, 0x7C
+addi r4, r31, TicoFatStarPiece_Str - TicoFatStarPiece_Reaction
+bl __ct__12NPCActorCapsFPCc
+addi r3, r1, 0x7C
+bl setDefault__12NPCActorCapsFv
+
+addi r3, r13, TicoFatStarPieceNrvPrep - STATIC_R13
+stw r3, 0x0114(r1)
+li r5, 1
+stw r5, 0xB8(r1)
+li r0, 0
+stb r0, 0x8A(r1)
+stb r0, 0x0111(r1)
+
+mr r3, r29
+mr r4, r30
+addi r5, r1, 0x7C
+addi r6, r31, TicoFatStarPiece_Str - TicoFatStarPiece_Reaction
+li r7, 0
+li r8, 0
+bl initialize__8NPCActorFRC12JMapInfoIterRC12NPCActorCapsPCcPCcb
+
+mr        r3, r29
+bl moveCoordToStartPos__2MRFP9LiveActor
+
+mr        r3, r29
+bl onCalcShadowAll__2MRFP9LiveActor
+
+li        r3, 0x2C
+bl __nw__FUl
+cmpwi     r3, 0
+mr        r4, r3
+beq .TicoFatStarPieceTransformation_FailedNew
+mr        r4, r29
+mr        r5, r30
+bl __ct__30TicoFatStarPieceTransformationFP16TicoFatStarPieceRC12JMapInfoIter
+mr        r4, r3
+
+.TicoFatStarPieceTransformation_FailedNew:
+stw       r4, 0x190(r29)
+
+mr        r3, r29
+addi      r5, r13, TicoFatStarPieceNrvTransform - STATIC_R13
+addi      r6, r31, TicoFatStarPiece_Demo_Str - TicoFatStarPiece_Reaction
+bl initActorState__2MRFP9LiveActorP23ActorStateBaseInterfacePC5NervePCc
+
+mr r3, r30
+addi r4, r29, 0x184    #-1 means "Reset each time the level loads"
+bl getJMapInfoArg0WithInit__2MRFRC12JMapInfoIterPl
+
+li r5, 0x19  #default 25
+stw r5, 0x16C(r29)
+
+mr r3, r30
+addi r4, r29, 0x16C
+bl getJMapInfoArg1NoInit__2MRFRC12JMapInfoIterPl
+
+mr r3, r30
+addi r4, r29, 0x1FC
+bl getJMapInfoArg6WithInit__2MRFRC12JMapInfoIterPl
+
+li        r0, 0
+stw       r0, 0x174(r29)
+
+lwz r3, 0x184(r29)
+cmpwi r3, -1
+li r3, 0
+beq .TicoFatStarPiece_DoRemainingCalc
+#Get the value from the EventValues
+mr r3, r29
+bl .GLE_getTicoFatStarPieceFromStorage
+
+.TicoFatStarPiece_DoRemainingCalc:
+lwz       r4, 0x16C(r29)
+subf      r4, r3, r4
+neg       r0, r4
+orc       r0, r4, r0
+srawi     r0, r0, 0x1F
+andc      r4, r4, r0
+stw       r4, 0x170(r29)
+
+mr        r3, r29
+bl declareStarPieceReceiver__2MRFPC7NameObjl
+
+lfs       f1, TicoFatStarPiece_0f - STATIC_R2(r2)
+lfs       f0, TicoFatStarPiece_220f - STATIC_R2(r2)
+stfs      f1, 0x14(r1)
+stfs      f0, 0x18(r1)
+stfs      f1, 0x1C(r1)
+
+mr        r3, r29
+mr        r4, r30
+addi      r5, r31, TicoFat_Request000 - TicoFatStarPiece_Reaction
+addi      r6, r1, 0x14
+li        r7, 0
+bl initTalkCtrlDirect__8NPCActorFRC12JMapInfoIterPCcRCQ29JGeometry8TVec3<f>PA4_f
+
+lfs       f1, TicoFatStarPiece_0f - STATIC_R2(r2)
+lfs       f0, TicoFatStarPiece_220f - STATIC_R2(r2)
+stfs      f1, 0x08(r1)
+stfs      f0, 0x0C(r1)
+stfs      f1, 0x10(r1)
+
+mr        r3, r29
+mr        r4, r30
+addi      r5, r31, TicoFat_StarPiece000 - TicoFatStarPiece_Reaction
+addi      r6, r1, 0x08
+li        r7, 0
+bl createTalkCtrlDirect__2MRFP9LiveActorRC12JMapInfoIterPCcRCQ29JGeometry8TVec3<f>PA4_f
+stw       r3, 0x168(r29)
+
+lwz       r3, 0x94(r29)
+lfs       f1, TicoFatStarPiece_280f - STATIC_R2(r2)
+bl setDistanceToTalk__2MRFP15TalkMessageCtrlf
+
+lwz       r3, 0x168(r29)
+lfs       f1, TicoFatStarPiece_280f - STATIC_R2(r2)
+bl setDistanceToTalk__2MRFP15TalkMessageCtrlf
+
+lwz       r3, 0x94(r29)
+bl sub_800614B0
+
+lwz       r3, 0x168(r29)
+bl sub_800614B0
+
+lwz       r3, 0x94(r29)
+bl onRootNodeAutomatic__2MRFP15TalkMessageCtrl
+
+addi      r3, r31, TicoFatStarPiece_EventFunc - TicoFatStarPiece_Reaction
+lwz       r6, TicoFatStarPiece_EventFunc - TicoFatStarPiece_Reaction(r31)
+lwz       r5, TicoFatStarPiece_EventFunc+4 - TicoFatStarPiece_Reaction(r31)
+lis r4, TicoFatStarPiece_FunctorPtr@ha
+addi r4, r4, TicoFatStarPiece_FunctorPtr@l
+lwz       r0, TicoFatStarPiece_EventFunc+8 - TicoFatStarPiece_Reaction(r31)
+stw       r4, 0x20(r1)
+addi      r4, r1, 0x20
+stw       r29, 0x24(r1)
+stw       r6, 0x28(r1)
+stw       r5, 0x2C(r1)
+stw       r0, 0x30(r1)
+lwz       r3, 0x94(r29)
+bl registerEventFunc__2MRFP15TalkMessageCtrlRC19TalkMessageFuncBase
+
+lwz       r3, 0x94(r29)
+lwz       r4, 0x170(r29)
+bl setMessageArg__2MRFP15TalkMessageCtrli
+
+lwz       r3, TicoFatCamera_Ptr - STATIC_R13(r13)
+bl declareEventCameraProgrammable__2MRFPCc
+
+addi      r3, r1, 0x48
+bl __ct__14AnimScaleParamFv
+
+lfs f1, TicoFatStarPiece_012 - STATIC_R2(r2)
+lfs f0, TicoFatStarPiece_089999998 - STATIC_R2(r2)
+
+stfs      f1, 0x68(r1)
+stfs      f1, 0x6C(r1)
+stfs      f1, 0x70(r1)
+
+li        r3, 0x1C
+bl __nw__FUl
+cmpwi     r3, 0
+beq .TicoFatStarPiece_AnimScaleController_NewFail
+li        r4, 0
+bl __ct__19AnimScaleControllerFP14AnimScaleParam
+
+.TicoFatStarPiece_AnimScaleController_NewFail:
+stw       r3, 0x144(r29)
+
+lfs f0, TicoFatStarPiece_1000 - STATIC_R2(r2)
+addi r8, r31, TicoFatStarPiece_Spin - TicoFatStarPiece_Reaction
+addi r7, r31, TicoFatStarPiece_Trampled - TicoFatStarPiece_Reaction
+addi r6, r31, TicoFatStarPiece_Pointing - TicoFatStarPiece_Reaction
+addi r5, r31, TicoFatStarPiece_Reaction - TicoFatStarPiece_Reaction
+stw       r8, 0x134(r29)
+stw       r7, 0x138(r29)
+stw       r6, 0x13C(r29)
+stw       r5, 0x140(r29)
+stfs      f0, 0x130(r29)
+
+mr        r3, r29
+addi r4, r31, TicoFatStarPiece_Wait - TicoFatStarPiece_Reaction
+bl getActionName__16TicoFatStarPieceFPCc
+stw       r3, 0x100(r29)
+stw       r3, 0x104(r29)
+
+mr        r3, r29
+addi r4, r31, TicoFatStarPiece_Talk - TicoFatStarPiece_Reaction
+bl getActionName__16TicoFatStarPieceFPCc
+stw       r3, 0x108(r29)
+stw       r3, 0x10C(r29)
+
+addi r4, r31, TicoFatStarPiece_Str - TicoFatStarPiece_Reaction
+addi r7, r13, NULLSTRING - STATIC_R13
+addi r6, r13, NULLSTRING - STATIC_R13
+addi r5, r13, NULLSTRING - STATIC_R13
+addi r0, r13, NULLSTRING - STATIC_R13
+
+stw       r4, 0x34(r1)
+stw       r7, 0x38(r1)
+stw       r6, 0x3C(r1)
+stw       r5, 0x40(r1)
+stw       r0, 0x44(r1)
+
+addi      r3, r1, 0x34
+li        r4, 0
+bl getNPCItemData__2MRFP12NPCActorIteml
+
+mr        r3, r29
+addi      r4, r1, 0x34
+li        r5, 0
+bl equipment__8NPCActorFRC12NPCActorItemb
+
+lwz       r3, 0x98(r29)
+addi      r4, r31, TicoFatGoodsStarPiece - TicoFatStarPiece_Reaction
+bl startAction__2MRFPC9LiveActorPCc
+
+lwz       r3, 0x9C(r29)
+addi      r4, r31, TicoFatGoodsStarPiece - TicoFatStarPiece_Reaction
+bl startAction__2MRFPC9LiveActorPCc
+
+lwz       r3, 0x98(r29)
+lfs f1, TicoFatStarPiece_0f - STATIC_R2(r2)
+bl setBpkFrame__2MRFPC9LiveActorf
+
+lwz       r3, 0x9C(r29)
+lfs f1, TicoFatStarPiece_100 - STATIC_R2(r2)
+bl setBpkFrame__2MRFPC9LiveActorf
+
+mr        r3, r29
+addi      r4, r31, TicoFatStarPiece_Small0 - TicoFatStarPiece_Reaction
+bl startBva__2MRFPC9LiveActorPCc
+
+mr        r3, r29
+addi      r4, r31, TicoFatStarPiece_Normal - TicoFatStarPiece_Reaction
+bl startBrk__2MRFPC9LiveActorPCc
+
+mr        r3, r29
+lfs f1, TicoFatStarPiece_0f - STATIC_R2(r2)
+bl setBrkFrameAndStop__2MRFPC9LiveActorf
+
+mr        r3, r29
+bl        sub_8036AA20
+
+mr        r3, r29
+bl        sub_8036AA90
+
+li        r3, 0x3C
+bl __nw__FUl
+cmpwi     r3, 0
+beq .TicoFatStarPiece_FullnessMeter_NewFail
+mr        r4, r29
+lwz       r5, 0x16C(r29)
+lwz       r0, 0x170(r29)
+subf      r6, r0, r5
+bl __ct__13FullnessMeterFP9LiveActorll
+
+.TicoFatStarPiece_FullnessMeter_NewFail:
+stw       r3, 0x164(r29)
+bl initWithoutIter__7NameObjFv
+
+lwz       r4, 0x170(r29)
+lwz       r0, 0x16C(r29)
+lwz       r3, 0x164(r29)
+subf      r4, r4, r0
+bl setNumber__13FullnessMeterFl
+
+mr        r3, r29
+mr        r4, r30
+lis r5, PlanetaryAppearance_Jp@ha
+addi r5, r5, PlanetaryAppearance_Jp@l
+li        r6, 32
+bl joinToGroupArray__2MRFP9LiveActorRC12JMapInfoIterPCcl
+
+lwz       r12, 0(r29)
+mr        r3, r29
+lwz       r12, 0x30(r12)
+mtctr     r12
+bctrl
+
+addi      r11, r1, 0x130
+bl        _restgpr_29
+lwz       r0, 0x134(r1)
+mtlr      r0
+addi      r1, r1, 0x130
+blr
+.GLE PRINTADDRESS
+.GLE ASSERT 0x80369A10
+.GLE ENDADDRESS
+
+
+#New function
+.TicoFatStarPiece_InitAfterPlacement:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+stw       r31, 0x0C(r1)
+mr        r31, r3
+
+lwz r3, 0x184(r31)
+cmpwi r3, -1  #If we always want it to respawn
+beq loc_80369068
+
+mr r3, r31
+bl .GLE_getTicoFatStarPieceFromStorage
+lwz r4, 0x16C(r31)
+cmpw r3, r4
+blt       loc_80369068
+mr        r3, r31
+bl        callMakeActorAppearedAllGroupMember__2MRFPC9LiveActor
+mr        r3, r31
+bl        onSwitchA__2MRFP9LiveActor
+lwz       r12, 0(r31)
+mr        r3, r31
+lwz       r12, 0x38(r12)
+mtctr     r12
+bctrl
+
+loc_80369068:
+lwz       r0, 0x14(r1)
+lwz       r31, 0x0C(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
+
+.GLE ADDRESS __vt__16TicoFatStarPiece +0x10
+.int .TicoFatStarPiece_InitAfterPlacement
+.GLE ENDADDRESS
+
+.GLE ADDRESS depleteStarPiece__16TicoFatStarPieceFv +0x9C
+bl .TicoFatStarPiece_CalcDepleteStarPieceNum
+mr r31, r3
+nop
+nop
+nop
+nop
+.GLE ENDADDRESS
+
+#r3 = Full request number
+#Returns: How many starbits 1 starbit should count as
+.TicoFatStarPiece_CalcDepleteStarPieceNum:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+stw       r31, 0x0C(r1)
+mr        r31, r3
+
+#    0 -  100 starbits: 1 starbit visual =  1 starbit
+#  100 -  500 starbits: 1 starbit visual =  2 starbits
+#  500 - 1000 starbits: 1 starbit visual =  5 starbits
+# 1000 - 2500 starbits: 1 starbit visual = 10 starbits
+#    2500+    starbits: 1 starbit visual = 15 starbits
+
+cmpwi r31, 100
+li r3, 1
+ble .TicoFatStarPiece_CalcDepleteStarPieceNum_Return
+
+cmpwi r31, 200
+li r3, 2
+ble .TicoFatStarPiece_CalcDepleteStarPieceNum_Return
+
+cmpwi r31, 1000
+li r3, 5
+ble .TicoFatStarPiece_CalcDepleteStarPieceNum_Return
+
+cmpwi r31, 2500
+li r3, 10
+ble .TicoFatStarPiece_CalcDepleteStarPieceNum_Return
+
+cmpwi r31, 5000
+li r3, 15
+
+.TicoFatStarPiece_CalcDepleteStarPieceNum_Return:
+lwz       r0, 0x14(r1)
+lwz       r31, 0x0C(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
+
+
+.GLE ADDRESS getDanceSeTranspose__16TicoFatStarPieceCFv
+b .TicoFatStarPiece_CalcDanceSe_New
+.GLE ENDADDRESS
+
+.TicoFatStarPiece_CalcDanceSe_New:
+lwz       r4, 0x170(r3)
+lwz       r3, 0x16C(r3)
+
+cmpwi r3, 500
+li        r0, 25
+ble .TicoFatStarPiece_CalcDanceSe_New_DoCalc
+
+cmpwi r3, 1000
+li        r0, 50
+ble .TicoFatStarPiece_CalcDanceSe_New_DoCalc
+
+cmpwi r3, 2500
+li        r0, 100
+ble .TicoFatStarPiece_CalcDanceSe_New_DoCalc
+
+li        r0, 250
+
+.TicoFatStarPiece_CalcDanceSe_New_DoCalc:
+subf      r3, r4, r3
+addi      r3, r3, -1
+divw.     r3, r3, r0
+bge       loc_8036AC60
+li        r3, 0
+
+loc_8036AC60:
+cmpwi     r3, 32
+blelr
+li        r3, 32
+blr
+
+
+.GLE ADDRESS depleteStarPiece__16TicoFatStarPieceFv +0x3C
+bl .TicoFatStarPiece_CalcInterval
+.GLE ENDADDRESS
+
+#    0 -  100 starbits: 5 frames per starbit shot
+#  500 - 1000 starbits: 4 frames per starbit shot
+# 1000 - 2500 starbits: 3 frames per starbit shot
+#    2500+    starbits: 1 frame per starbit shot
+
+.TicoFatStarPiece_CalcInterval:
+lwz       r5, 0x16C(r3)
+
+cmpwi r5, 100
+li r4, 5
+blelr
+
+cmpwi r5, 1000
+li r4, 4
+blelr
+
+cmpwi r5, 2500
+li r4, 3
+blelr
+
+li r4, 1
+blr
+
+
+
+
+#Now to fix a rather annoying bug...
+#So, basically, these lumas will fight over the active GlobalEventCamera if they are allowed to be fed.
+#The solution that I have implemented, goes as follows:
+#
+# - Create a static variable which will hold a LiveActor* (pointer to a TicoFatStarPiece, in this case)
+# - If the luma in that pointer does not match the current luma, do not pass 0x8036A290, and do not collect 200 dollars
+# - The currently active luma will be the only one allowed to manage the Global Event Camera.
+# - A luma will register itself to the static variable when mario walks in range, and the variable is not set to Zero. (NullPtr)
+# - If the static variable is set to Zero, pass 0x8036A290.
+
+.GLE ADDRESS control__16TicoFatStarPieceFv +0xCC
+lwz       r3, 0x18C(r31)
+addi      r0, r3, -1
+stw       r0, 0x18C(r31)
+b .TicoFatStarPiece_TryStartEventCamera
+nop
+nop
+.TicoFatStarPiece_Control_ContinueNormal:
+.GLE ENDADDRESS
+
+.GLE ADDRESS control__16TicoFatStarPieceFv +0xFC
+.TicoFatStarPiece_Control_Return:
+.GLE ENDADDRESS
+
+.GLE ADDRESS control__16TicoFatStarPieceFv +0x114
+.TicoFatStarPiece_Control_FullReturn:
+.GLE ENDADDRESS
+
+##
+
+.TicoFatStarPiece_TryStartEventCamera:
+lbz       r0, 0x180(r31)
+cmpwi     r0, 0
+beq .TicoFatStarPiece_TryStartEventCamera_Return_NoActivateFull
+#Don't bother if it's not even activated yet
+
+
+lis r3, .TicoFatStarPiece_ActiveStaticLoc@ha
+addi r3, r3, .TicoFatStarPiece_ActiveStaticLoc@l
+lwz r3, 0x00(r3)
+cmpwi r3, 0 #If it's Zero, it's open!
+beq .TicoFatStarPiece_TryStartEventCamera_Return_Activate
+
+cmpw r3, r31 #If we match, then we are authorized to use it
+beq .TicoFatStarPiece_TryStartEventCamera_Return_Activate
+#Otherwise, just return
+lwz       r3, 0x168(r31)
+lfs       f1, TicoFatStarPiece__1 - STATIC_R2(r2)
+bl isNearPlayer__15TalkMessageCtrlCFf
+cmpwi r3, 0
+bne .TicoFatStarPiece_TryStartEventCamera_Return_NoActivate
+lwz       r3, 0x164(r31)
+bl requestDisappear__13FullnessMeterFv
+
+.TicoFatStarPiece_TryStartEventCamera_Return_NoActivate:
+b .TicoFatStarPiece_Control_Return
+
+.TicoFatStarPiece_TryStartEventCamera_Return_NoActivateFull:
+b .TicoFatStarPiece_Control_FullReturn
+
+.TicoFatStarPiece_TryStartEventCamera_Return_Activate:
+lwz       r3, 0x168(r31)
+lfs       f1, TicoFatStarPiece__1 - STATIC_R2(r2)
+bl isNearPlayer__15TalkMessageCtrlCFf
+cmpwi r3, 0
+lis r5, .TicoFatStarPiece_ActiveStaticLoc@ha
+addi r5, r5, .TicoFatStarPiece_ActiveStaticLoc@l
+beq .TicoFatStarPiece_NoNearPlayer
+
+.TicoFatStarPiece_YesNearPlayer:
+stw r31, 0x00(r5) #Store ourselves if the static is free
+mr r3, r31
+bl invalidateClipping__2MRFP9LiveActor  #Invalidate clipping to ensure that this ticofat will free itself from being fed before it gets clipped
+b .TicoFatStarPiece_Control_ContinueNormal
+
+.TicoFatStarPiece_NoNearPlayer:
+lwz r3, 0x00(r5)
+cmpw r3, r31 # If we are the luma here, we are authorized to clear the static
+bne .TicoFatStarPiece_SkipFreeStatic
+
+.TicoFatStarPiece_FreeStatic:
+li r4, 0
+stw r4, 0x00(r5)  #Free the static if the player is too far away
+
+.TicoFatStarPiece_SkipFreeStatic:
+mr r3, r31
+bl validateClipping__2MRFP9LiveActor
+b .TicoFatStarPiece_Control_ContinueNormal
+
+
+
+
+
+.GLE ADDRESS control__16TicoFatStarPieceFv +0x24
+b .TicoFatStarPiece_TryStartEventCamera_OnComplete
+.TicoFatStarPiece_TryStartEventCamera_OnComplete_Return:
+.GLE ENDADDRESS
+
+.TicoFatStarPiece_TryStartEventCamera_OnComplete:
+lis r5, .TicoFatStarPiece_ActiveStaticLoc@ha
+addi r5, r5, .TicoFatStarPiece_ActiveStaticLoc@l
+lwz r3, 0x00(r5)
+cmpw r3, r31 #If we match, then we are authorized to use it
+bne .TicoFatStarPiece_TryStartEventCamera_SkipCompleteClear
+li r4, 0
+stw r4, 0x00(r5)  #Free the static if the luma is completed!
+lwz       r3, 0x164(r31)
+bl requestDisappear__13FullnessMeterFv
+
+.TicoFatStarPiece_TryStartEventCamera_SkipCompleteClear:
+mr r3, r31
+b .TicoFatStarPiece_TryStartEventCamera_OnComplete_Return
+
+
+
+
+
+
+#We now must replace the second half of the luma execution with a copy of the coin luma's execution
+#we cannot use the exact same code, unfortunately.
+
+
+.GLE ADDRESS control__16TicoFatStarPieceFv +0x40
+b .TicoFatStarPiece_IsNeedSkipControl
+.TicoFatStarPiece_IsNeedSkipControl_No_JumpLoc:
+.GLE ENDADDRESS
+.GLE ADDRESS control__16TicoFatStarPieceFv +0x114
+.TicoFatStarPiece_IsNeedSkipControl_Yes_JumpLoc:
+.GLE ENDADDRESS
+
+
+.TicoFatStarPiece_IsNeedSkipControl:
+mr        r3, r31
+addi      r4, r13, .TicoFatStarPiece_NrvFlight_sInstance - STATIC_R13
+bl isNerve__9LiveActorCFPC5Nerve
+cmpwi r3, 0
+bne .TicoFatStarPiece_IsNeedSkipControl_Yes
+
+mr        r3, r31
+addi      r4, r13, .TicoFatStarPiece_NrvWipeOut_sInstance - STATIC_R13
+bl isNerve__9LiveActorCFPC5Nerve
+cmpwi r3, 0
+bne .TicoFatStarPiece_IsNeedSkipControl_Yes
+
+mr        r3, r31
+addi      r4, r13, .TicoFatStarPiece_NrvWipeHold_sInstance - STATIC_R13
+bl isNerve__9LiveActorCFPC5Nerve
+cmpwi r3, 0
+bne .TicoFatStarPiece_IsNeedSkipControl_Yes
+
+mr        r3, r31
+addi      r4, r13, .TicoFatStarPiece_NrvWipeIn_sInstance - STATIC_R13
+bl isNerve__9LiveActorCFPC5Nerve
+cmpwi r3, 0
+bne .TicoFatStarPiece_IsNeedSkipControl_Yes
+
+mr        r3, r31
+addi      r4, r13, .TicoFatStarPiece_NrvInformation_sInstance - STATIC_R13
+bl isNerve__9LiveActorCFPC5Nerve
+cmpwi r3, 0
+bne .TicoFatStarPiece_IsNeedSkipControl_Yes
+
+mr        r3, r31
+addi      r4, r13, .TicoFatStarPiece_NrvInformationHold_sInstance - STATIC_R13
+bl isNerve__9LiveActorCFPC5Nerve
+cmpwi r3, 0
+bne .TicoFatStarPiece_IsNeedSkipControl_Yes
+
+mr        r3, r31
+addi      r4, r13, .TicoFatStarPiece_NrvEnd_sInstance - STATIC_R13
+bl isNerve__9LiveActorCFPC5Nerve
+cmpwi r3, 0
+bne .TicoFatStarPiece_IsNeedSkipControl_Yes
+
+mr        r3, r31
+addi      r4, r13, .TicoFatStarPiece_NrvNull_sInstance - STATIC_R13
+bl isNerve__9LiveActorCFPC5Nerve
+cmpwi r3, 0
+beq .TicoFatStarPiece_IsNeedSkipControl_No
+
+.TicoFatStarPiece_IsNeedSkipControl_Yes:
+b .TicoFatStarPiece_IsNeedSkipControl_Yes_JumpLoc
+
+.TicoFatStarPiece_IsNeedSkipControl_No:
+mr        r3, r31
+addi      r4, r13, TicoFatStarPieceNrvReaction - STATIC_R13
+bl isNerve__9LiveActorCFPC5Nerve
+b .TicoFatStarPiece_IsNeedSkipControl_No_JumpLoc
+
+
+#Static addresses
+.GLE ADDRESS unk_807D5E10 +0x28
+.GLE TRASH BEGIN
+
+.TicoFatStarPiece_NrvFlight_sInstance:
+.int 0
+
+.TicoFatStarPiece_NrvWipeOut_sInstance:
+.int 0
+
+.TicoFatStarPiece_NrvWipeHold_sInstance:
+.int 0
+
+.TicoFatStarPiece_NrvWipeIn_sInstance:
+.int 0
+
+.TicoFatStarPiece_NrvInformation_sInstance:
+.int 0
+
+.TicoFatStarPiece_NrvInformationHold_sInstance:
+.int 0
+
+.TicoFatStarPiece_NrvEnd_sInstance:
+.int 0
+
+#Granted, this is just a BLR...
+.TicoFatStarPiece_NrvNull_sInstance:
+.int 0
+
+.TicoFatStarPiece_ActiveStaticLoc:
+.int 0
+
+.GLE TRASH END
+.GLE ENDADDRESS
+
+
+.TicoFatStarPiece_STATIC_INIT_EX:
+#stwu      r1, -0x10(r1)
+#mflr      r0
+#stw       r0, 0x14(r1)
+
+lis r5, .TicoFatStarPiece_NrvFlight@ha
+addi r5, r5, .TicoFatStarPiece_NrvFlight@l
+addi r3, r13, .TicoFatStarPiece_NrvFlight_sInstance - STATIC_R13
+
+addi r4, r5, .TicoFatStarPiece_NrvFlight - .TicoFatStarPiece_NrvFlight    #Typical SMG stuff
+stw r4, 0x00(r3)
+
+addi r4, r5, .TicoFatStarPiece_NrvWipeOut - .TicoFatStarPiece_NrvFlight
+stw r4, 0x04(r3)
+
+addi r4, r5, .TicoFatStarPiece_NrvWipeHold - .TicoFatStarPiece_NrvFlight
+stw r4, 0x08(r3)
+
+addi r4, r5, .TicoFatStarPiece_NrvWipeIn - .TicoFatStarPiece_NrvFlight
+stw r4, 0x0C(r3)
+
+addi r4, r5, .TicoFatStarPiece_NrvInformation - .TicoFatStarPiece_NrvFlight
+stw r4, 0x10(r3)
+
+addi r4, r5, .TicoFatStarPiece_NrvInformationHold - .TicoFatStarPiece_NrvFlight
+stw r4, 0x14(r3)
+
+addi r4, r5, .TicoFatStarPiece_NrvEnd - .TicoFatStarPiece_NrvFlight
+stw r4, 0x18(r3)
+
+addi r4, r5, .TicoFatStarPiece_NrvNull - .TicoFatStarPiece_NrvFlight
+stw r4, 0x1C(r3)
+
+#lwz       r0, 0x14(r1)
+#mtlr      r0
+#addi      r1, r1, 0x10
+blr
+
+.GLE ADDRESS sub_8036B860 +0x04
+b kill__23ActorStateBaseInterfaceFv
+.GLE ENDADDRESS
+
+.GLE ADDRESS sub_8036AF90 +0x24
+mr        r3, r31
+addi      r4, r13, .TicoFatStarPiece_NrvFlight_sInstance - STATIC_R13
+bl setNerve__9LiveActorFPC5Nerve
+nop
+nop
+.GLE ENDADDRESS
+
+
+#-----------------------------------
+#VTable
+.TicoFatStarPiece_NrvFlight:
+.int 0
+.int 0
+.int .TicoFatStarPiece_exeFlight
+.int executeOnEnd__5NerveCFP5Spine
+
+.TicoFatStarPiece_NrvWipeOut:
+.int 0
+.int 0
+.int .TicoFatStarPiece_exeWipeOut
+.int executeOnEnd__5NerveCFP5Spine
+
+.TicoFatStarPiece_NrvWipeHold:
+.int 0
+.int 0
+.int .TicoFatStarPiece_exeWipeHold
+.int executeOnEnd__5NerveCFP5Spine
+
+.TicoFatStarPiece_NrvWipeIn:
+.int 0
+.int 0
+.int .TicoFatStarPiece_exeWipeIn
+.int executeOnEnd__5NerveCFP5Spine
+
+.TicoFatStarPiece_NrvInformation:
+.int 0
+.int 0
+.int .TicoFatStarPiece_exeInformation
+.int executeOnEnd__5NerveCFP5Spine
+
+.TicoFatStarPiece_NrvInformationHold:
+.int 0
+.int 0
+.int .TicoFatStarPiece_exeInformationHold
+.int executeOnEnd__5NerveCFP5Spine
+
+.TicoFatStarPiece_NrvEnd:
+.int 0
+.int 0
+.int .TicoFatStarPiece_exeEnd
+.int executeOnEnd__5NerveCFP5Spine
+
+.TicoFatStarPiece_NrvNull:
+.int 0
+.int 0
+.int .TicoFatStarPiece_exeNull
+.int executeOnEnd__5NerveCFP5Spine
+
+#-----------------------------------
+
+.set TicoFatStarPiece_NrvLength, 0x5A
+.TicoFatStarPiece_exeFlight:
+.GLE PRINTADDRESS
+lwz       r3, 0(r4)
+
+stwu      r1, -0x30(r1)
+mflr      r0
+stw       r0, 0x34(r1)
+stw       r31, 0x2C(r1)
+mr        r31, r3
+
+bl isFirstStep__2MRFPC9LiveActor
+cmpwi r3, 0
+beq .TicoFatStarPiece_exeFlight_FirstStepSkip
+
+mr        r3, r31
+li        r4, 0
+bl tryRumblePadMiddle__2MRFPCvl
+
+mr        r3, r31
+bl hideModelAndOnCalcAnim__2MRFP9LiveActor
+
+mr        r3, r31
+bl invalidateShadowAll__2MRFP9LiveActor
+
+mr        r3, r31
+bl invalidateClipping__2MRFP9LiveActor
+
+mr r3, r31
+addi r4, r13, TicoFat_Fly_Str - STATIC_R13
+bl startAction__2MRFPC9LiveActorPCc
+
+mr        r3, r31
+addi r4, r13, TicoFat_Fly_Str - STATIC_R13
+li        r5, -1
+li        r6, -1
+li        r7, -1
+bl startActionSound__2MRFPC9LiveActorPCclll
+
+mr r3, r31
+lwz r4, 0x190(r31)
+lwz r4, 0x10(r4)
+lis r5, TicoFatCoin_FlightJp@ha
+addi r5, r5, TicoFatCoin_FlightJp@l
+li r6, -1
+bl startMultiActorCameraTargetSelf__2MRFPC9LiveActorPC15ActorCameraInfoPCcl
+
+.TicoFatStarPiece_exeFlight_FirstStepSkip:
+mr r3, r31
+lis r4, TicoFatCoin_VolDownBgm@ha
+addi r4, r4, TicoFatCoin_VolDownBgm@l
+li r5, -1
+li r6, -1
+li r7, -1
+bl startActionSound__2MRFPC9LiveActorPCclll
+
+mr        r3, r31
+bl getRailTotalLength__2MRFPC9LiveActor
+fmr       f2, f1
+lfs       f1, TicoFatStarPiece_0f - STATIC_R2(r2)
+mr        r3, r31
+li        r4, TicoFatStarPiece_NrvLength
+bl calcNerveEaseOutValue__2MRFPC9LiveActorlff
+
+mr        r3, r31
+bl setRailCoord__2MRFP9LiveActorf
+
+mr        r3, r31
+bl moveTransToCurrentRailPos__2MRFP9LiveActor
+
+.GLE PRINTADDRESS
+#Make rail direction
+addi r3, r1, 0x14
+mr        r4, r31
+bl calcRailDirection__2MRFPQ29JGeometry8TVec3<f>PC9LiveActor
+addi r3, r1, 0x08
+mr        r4, r31
+bl calcUpVec__2MRFPQ29JGeometry8TVec3<f>PC9LiveActor
+addi      r3, r31, 0xA4
+lis r4, .TicoFatStarPiece_01@ha
+addi r4, r4, .TicoFatStarPiece_01@l
+lfs f1, 0x00(r4)
+lfs f2, TicoFatStarPiece_0f - STATIC_R2(r2)
+mr r4, r3
+addi r5, r1, 0x14
+addi r6, r1, 0x08
+bl AlternateBlendQuatFrontUp
+
+
+mr        r3, r31
+li        r4, TicoFatStarPiece_NrvLength
+bl isGreaterEqualStep__2MRFPC9LiveActorl
+cmpwi     r3, 0
+beq .TicoFatStarPiece_exeFlight_Return
+
+mr        r3, r31
+addi r4, r13, .TicoFatStarPiece_NrvWipeOut_sInstance - STATIC_R13
+bl setNerve__9LiveActorFPC5Nerve
+
+.TicoFatStarPiece_exeFlight_Return:
+lwz       r0, 0x34(r1)
+lwz       r31, 0x2C(r1)
+mtlr      r0
+addi      r1, r1, 0x30
+blr
+
+.TicoFatStarPiece_01:
+.float 0.5
+#######
+
+.TicoFatStarPiece_exeWipeOut:
+lwz       r3, 0(r4)
+
+stwu      r1, -0xA0(r1)
+mflr      r0
+stw       r0, 0xA4(r1)
+addi      r11, r1, 0xA0
+bl        _savegpr_28
+mr        r28, r3
+lis       r31, TicoFatCoin_DataStart@ha
+addi      r31, r31, TicoFatCoin_DataStart@l
+bl isFirstStep__2MRFPC9LiveActor
+cmpwi     r3, 0
+beq .TicoFatStarPiece_exeWipeOut_FirstStepSkip
+
+li        r3, 0x3C
+bl        closeWipeWhiteFade__2MRFl
+mr        r3, r28
+li        r4, 0
+bl        tryRumblePadVeryStrong__2MRFPCvl
+bl        shakeCameraNormal__2MRFv
+mr        r3, r28
+addi      r4, r31, DmTicofatMorphWipeOut - TicoFatCoin_DataStart
+li        r5, -1
+li        r6, -1
+li        r7, -1
+bl        startActionSound__2MRFPC9LiveActorPCclll
+mr        r3, r28
+addi      r4, r31, ScreenEffect - TicoFatCoin_DataStart
+bl        emitEffect__2MRFP9LiveActorPCc
+addi      r4, r28, 0x194
+bl        setHostMtx__12MultiEmitterFPA4_f
+mr        r3, r28
+addi      r4, r31, ScreenEffectLight - TicoFatCoin_DataStart
+bl        emitEffect__2MRFP9LiveActorPCc
+addi      r4, r28, 0x1C4
+bl        setHostMtx__12MultiEmitterFPA4_f
+
+.TicoFatStarPiece_exeWipeOut_FirstStepSkip:
+mr        r3, r28
+addi      r4, r31, TicoFatCoin_VolDownBgm - TicoFatCoin_DataStart
+li        r5, -1
+li        r6, -1
+li        r7, -1
+bl startActionSound__2MRFPC9LiveActorPCclll
+
+#Camera stuff wooo
+addi      r3, r1, 0x74
+bl getCamPos__2MRFv
+
+addi      r30, r1, 0x74
+addi      r4, r28, 0x14
+addi      r3, r1, 0x80
+bl __ct__Q29JGeometry8TVec3<f>FRCQ29JGeometry8TVec3<f>
+
+addi      r29, r1, 0x80
+psq_l     f1, 0(r30), 0, 0
+psq_l     f0, 0(r29), 0, 0
+mr        r3, r29
+psq_l     f2, 8(r29), 1, 0
+ps_sub    f0, f0, f1
+psq_l     f3, 8(r30), 1, 0
+ps_sub    f1, f2, f3
+psq_st    f0, 0(r29), 0, 0
+psq_st    f1, 8(r29), 1, 0
+bl normalizeOrZero__2MRFPQ29JGeometry8TVec3<f>
+
+mr        r4, r29
+addi      r3, r1, 0x2C
+bl __ct__Q29JGeometry8TVec3<f>FRCQ29JGeometry8TVec3<f>
+
+lfs       f2, 0x2C(r1)
+lfs       f3, TicoFatCoin_500 - STATIC_R2(r2)
+lfs       f1, 0x30(r1)
+lfs       f0, 0x34(r1)
+fmuls     f2, f2, f3
+fmuls     f1, f1, f3
+fmuls     f0, f0, f3
+stfs      f2, 0x2C(r1)
+stfs      f1, 0x30(r1)
+stfs      f0, 0x34(r1)
+
+addi      r3, r1, 0x38
+bl getCamPos__2MRFv
+
+addi      r29, r1, 0x44
+addi      r4, r1, 0x38
+mr        r3, r29
+bl __ct__Q29JGeometry8TVec3<f>FRCQ29JGeometry8TVec3<f>
+
+addi      r4, r1, 0x2C
+psq_l     f0, 0(r29), 0, 0
+psq_l     f1, 0(r4), 0, 0
+psq_l     f2, 8(r29), 1, 0
+ps_add    f0, f0, f1
+psq_l     f3, 8(r4), 1, 0
+ps_add    f1, f2, f3
+psq_st    f0, 0(r29), 0, 0
+psq_st    f1, 8(r29), 1, 0
+
+addi      r3, r1, 0x50
+bl getCamYdir__2MRFv
+
+addi      r3, r1, 0x5C
+bl getCamZdir__2MRFv
+
+addi      r3, r1, 0x68
+addi      r4, r1, 0x5C
+bl __mi__Q29JGeometry8TVec3<f>CFv
+
+mr        r6, r29
+addi      r3, r28, 0x194
+addi      r4, r1, 0x68
+addi      r5, r1, 0x50
+bl makeMtxFrontUpPos__2MRFPQ29JGeometry64TPosition3<Q29JGeometry38TMatrix34<Q29JGeometry13SMatrix34C<f>>>RCQ29JGeometry8TVec3<f>RCQ29JGeometry8TVec3<f>RCQ29JGeometry8TVec3<f>
+
+
+addi      r3, r1, 0x08
+bl        getCamYdir__2MRFv
+
+addi      r3, r1, 0x14
+bl        getCamZdir__2MRFv
+
+addi      r3, r1, 0x20
+addi      r4, r1, 0x14
+bl __mi__Q29JGeometry8TVec3<f>CFv
+
+addi      r3, r28, 0x1C4
+addi      r4, r1, 0x20
+addi      r5, r1, 0x08
+addi      r6, r28, 0x14
+bl makeMtxFrontUpPos__2MRFPQ29JGeometry64TPosition3<Q29JGeometry38TMatrix34<Q29JGeometry13SMatrix34C<f>>>RCQ29JGeometry8TVec3<f>RCQ29JGeometry8TVec3<f>RCQ29JGeometry8TVec3<f>
+
+bl isWipeActive__2MRFv
+cmpwi r3, 0
+bne .TicoFatStarPiece_exeWipeOut_Return
+
+mr        r3, r28
+bl stopBck__2MRFPC9LiveActor
+
+mr        r3, r28
+addi      r4, r31, ScreenEffectFog - TicoFatCoin_DataStart
+bl emitEffect__2MRFP9LiveActorPCc
+
+addi      r4, r28, 0x194
+bl setHostMtx__12MultiEmitterFPA4_f
+
+mr        r3, r28
+addi      r4, r31, ScreenEffect - TicoFatCoin_DataStart
+bl deleteEffect__2MRFP9LiveActorPCc
+
+mr        r3, r28
+addi      r4, r13, .TicoFatStarPiece_NrvWipeHold_sInstance - STATIC_R13
+bl setNerve__9LiveActorFPC5Nerve
+
+.TicoFatStarPiece_exeWipeOut_Return:
+addi      r11, r1, 0xA0
+bl        _restgpr_28
+lwz       r0, 0xA4(r1)
+mtlr      r0
+addi      r1, r1, 0xA0
+blr
+
+#######
+
+.TicoFatStarPiece_exeWipeHold:
+lwz       r3, 0(r4)
+
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+stw       r31, 0x0C(r1)
+mr        r31, r3
+bl        isFirstStep__2MRFPC9LiveActor
+cmpwi     r3, 0
+beq       loc_80368E4C
+mr        r3, r31
+lis       r4, DmTicofatMorphWipeIn@ha
+addi      r4, r4, DmTicofatMorphWipeIn@l
+li        r5, -1
+li        r6, -1
+li        r7, -1
+bl        startActionSound__2MRFPC9LiveActorPCclll
+
+loc_80368E4C:
+mr        r3, r31
+lis       r4, TicoFatCoin_VolDownBgm@ha
+addi      r4, r4, TicoFatCoin_VolDownBgm@l
+li        r5, -1
+li        r6, -1
+li        r7, -1
+bl        startActionSound__2MRFPC9LiveActorPCclll
+mr        r3, r31
+li        r4, 0x5A
+bl        isGreaterEqualStep__2MRFPC9LiveActorl
+cmpwi     r3, 0
+beq       loc_80368E88
+mr        r3, r31
+addi      r4, r13, .TicoFatStarPiece_NrvWipeIn_sInstance - STATIC_R13
+bl        setNerve__9LiveActorFPC5Nerve
+
+loc_80368E88:
+lwz       r0, 0x14(r1)
+lwz       r31, 0x0C(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
+
+
+
+.TicoFatStarPiece_exeWipeIn:
+lwz       r3, 0(r4)
+
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+stw       r31, 0x0C(r1)
+mr        r31, r3
+bl        isFirstStep__2MRFPC9LiveActor
+cmpwi     r3, 0
+beq       loc_80368ED0
+mr        r3, r31
+bl        onSwitchA__2MRFP9LiveActor
+li        r3, 0x3C # '<'
+bl        openWipeWhiteFade__2MRFl
+
+loc_80368ED0:
+mr        r3, r31
+li        r4, 0x2E # '.'
+bl        isLessStep__2MRFPC9LiveActorl
+cmpwi     r3, 0
+beq       loc_80368F00
+mr        r3, r31
+lis       r4, TicoFatCoin_VolDownBgm@ha
+addi      r4, r4, TicoFatCoin_VolDownBgm@l # "VolDownBgm"
+li        r5, -1
+li        r6, -1
+li        r7, -1
+bl        startActionSound__2MRFPC9LiveActorPCclll
+
+loc_80368F00:
+bl        isWipeActive__2MRFv
+cmpwi     r3, 0
+bne       loc_80368F18
+mr        r3, r31
+addi      r4, r13, .TicoFatStarPiece_NrvInformation_sInstance - STATIC_R13
+bl        setNerve__9LiveActorFPC5Nerve
+
+loc_80368F18:
+lwz       r0, 0x14(r1)
+lwz       r31, 0x0C(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
+
+
+
+.TicoFatStarPiece_exeInformation:
+lwz       r3, 0(r4)
+
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+stw       r31, 0x0C(r1)
+mr r31, r3
+bl        isFirstStep__2MRFPC9LiveActor
+cmpwi     r3, 0
+beq       loc_80368F68
+
+bl        startAppearPlanetJingle__2MRFv
+lis       r3, InformationGalaxy_Format@ha
+addi      r3, r3, InformationGalaxy_Format@l
+lwz r4, 0x1FC(r31)
+bl        .GLE_GetTicoFatMessageOrDefaultStr
+li        r4, 1
+bl        appearInformationMessage__2MRFPCwb
+
+loc_80368F68:
+bl        isDeadInformationMessage__2MRFv
+cmpwi     r3, 0
+beq       loc_80368F80
+mr        r3, r31
+addi      r4, r13, .TicoFatStarPiece_NrvInformationHold_sInstance - STATIC_R13
+bl        setNerve__9LiveActorFPC5Nerve
+
+loc_80368F80:
+lwz       r0, 0x14(r1)
+lwz       r31, 0x0C(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
+
+.TicoFatStarPiece_exeInformationHold:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+stw       r31, 0x0C(r1)
+lwz       r31, 0(r4)
+li        r4, 0x14
+mr        r3, r31
+bl        isGreaterEqualStep__2MRFPC9LiveActorl
+cmpwi     r3, 0
+beq       loc_80369514
+mr        r3, r31
+addi      r4, r13, .TicoFatStarPiece_NrvEnd_sInstance - STATIC_R13
+bl        setNerve__9LiveActorFPC5Nerve
+
+loc_80369514:
+lwz       r0, 0x14(r1)
+lwz       r31, 0x0C(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
+
+######
+
+.GLE PRINTADDRESS
+.TicoFatStarPiece_exeEnd:
+lwz       r3, 0(r4)
+
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+stw       r31, 0x0C(r1)
+mr        r31, r3
+bl isFirstStep__2MRFPC9LiveActor
+cmpwi r3, 0
+beq .TicoFatStarPiece_exeEnd_SkipFirstStep
+
+mr        r3, r31
+lwz       r4, 0x190(r31)
+lwz       r4, 0x10(r4)
+lis r5, TicoFatCoin_FlightJp@ha
+addi r5, r5, TicoFatCoin_FlightJp@l
+li        r6, 0
+li        r7, -1
+bl endMultiActorCamera__2MRFPC9LiveActorPC15ActorCameraInfoPCcbl
+
+mr        r3, r31
+lis r4, TicoFatStarPiece_TransformJp@ha
+addi r4, r4, TicoFatStarPiece_TransformJp@l
+bl endDemo__2MRFP7NameObjPCc
+
+.TicoFatStarPiece_exeEnd_SkipFirstStep:
+mr        r3, r31
+li        r4, 0x3C
+bl isGreaterEqualStep__2MRFPC9LiveActorl
+cmpwi r3, 0
+beq .TicoFatStarPiece_exeEnd_Return
+
+lwz r3, 0x184(r31)
+cmpwi r3, -1
+beq .TicoFatStarPiece_exeEnd_SkipSaveData
+mr r3, r31
+lwz r4, 0x16C(r31)
+bl .GLE_setTicoFatStarPieceFromStorage
+
+.TicoFatStarPiece_exeEnd_SkipSaveData:
+mr        r3, r31
+bl callAppearAllGroupMember__2MRFPC9LiveActor
+
+mr        r3, r31
+addi      r4, r13, .TicoFatStarPiece_NrvNull_sInstance - STATIC_R13
+bl        setNerve__9LiveActorFPC5Nerve
+
+lwz       r12, 0(r31)
+mr        r3, r31
+lwz       r12, 0x34(r12)
+mtctr     r12
+bctrl   #Kill
+
+.TicoFatStarPiece_exeEnd_Return:
+lwz       r0, 0x14(r1)
+lwz       r31, 0x0C(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
+
+
+#GENIUS FALLTHROUGH????
+.TicoFatStarPiece_exeNull:
+blr
+
+
+#-----------------------------------
+
+.GLE ADDRESS sub_8036A380 +0x24
+lwz       r5, 0x174(r3)
+lwz       r0, 0x170(r3)
+subf      r5, r6, r5
+stw       r5, 0x174(r3)
+subf      r0, r6, r0
+stw       r0, 0x170(r3)
+lwz r0, 0x184(r31)
+cmpwi r0, -1
+b .TicoFatStarPiece_UpdateGameStorage
+.TicoFatStarPiece_UpdateGameStorage_Return:
+.GLE ENDADDRESS
+
+.TicoFatStarPiece_UpdateGameStorage:
+beq .TicoFatStarPiece_UpdateGameStorage_Skip
+
+
+mr r3, r31
+lwz r4, 0x16C(r31)
+lwz r5, 0x170(r31)
+sub r4, r4, r5
+bl .GLE_setTicoFatStarPieceFromStorage
+
+.TicoFatStarPiece_UpdateGameStorage_Skip:
+b .TicoFatStarPiece_UpdateGameStorage_Return
+
+
+
+
+
+#r3 = TicoFatStarPiece*
+.GLE_getTicoFatStarPieceFromStorage:
+stwu      r1, -0x150(r1)
+mflr      r0
+stw       r0, 0x154(r1)
+addi      r11, r1, 0x150
+bl _savegpr_29
+
+mr r31, r3
+
+bl .GLE_GetCurrentStageName_Guarantee
+mr r5, r3
+lwz r6, 0x184(r31)
+addi r3, r1,0x0C
+li r4, 0x110
+bl .GLE_getTicoFatStarPieceStorageName
+
+bl getGameEventValueChecker__16GameDataFunctionFv
+addi r4, r1,0x0C
+bl getValue__21GameEventValueCheckerCFPCc
+
+addi      r11, r1, 0x150
+bl _restgpr_29
+lwz       r0, 0x154(r1)
+mtlr      r0
+addi      r1, r1, 0x150
+blr
+
+
+#r3 = TicoFatStarPiece*
+#r4 = int Starbits Fed
+.GLE_setTicoFatStarPieceFromStorage:
+stwu      r1, -0x150(r1)
+mflr      r0
+stw       r0, 0x154(r1)
+addi      r11, r1, 0x150
+bl _savegpr_29
+
+mr r31, r3
+mr r30, r4
+
+bl .GLE_GetCurrentStageName_Guarantee
+mr r5, r3
+lwz r6, 0x184(r31)
+addi r3, r1,0x0C
+li r4, 0x110
+bl .GLE_getTicoFatStarPieceStorageName
+
+bl getGameEventValueChecker__16GameDataFunctionFv
+addi r4, r1,0x0C
+mr r5, r30
+bl setValue__21GameEventValueCheckerFPCcUs
+
+addi      r11, r1, 0x150
+bl _restgpr_29
+lwz       r0, 0x154(r1)
+mtlr      r0
+addi      r1, r1, 0x150
+blr
+
 
 #r3 = Char* Dest
 #r4 = int DestSize
@@ -1568,7 +3006,13 @@ addi      r5, r5, TicoFatStarPiece_EventValue_Format@l
 b .GLE_getTicoFatStorageName
 
 TicoFatStarPiece_EventValue_Format:
-    .string "TicoFatStarPiece[%s_%d]" AUTO
+    .string "TicoFatStarPiece[%s_%d]"
+    
+InformationGalaxy_Format:
+    .string "InformationGalaxy"
+    
+InformationTicoFat_Format:
+    .string "InformationTicoFat%03d" AUTO
 
 
 
@@ -1583,7 +3027,34 @@ crclr     4*cr1+eq
 b       snprintf
 
 
+.GLE PRINTADDRESS
+#r3 = Default message const char *
+#r4 = int. If -1, the value in r3 is returned
+#Returns: WChar_t*
+.GLE_GetTicoFatMessageOrDefaultStr:
+cmpwi r4, -1
+bne .GLE_GetTicoFatMessageOrDefaultStr_Custom
+b        getGameMessageDirect__2MRFPCc
 
+.GLE_GetTicoFatMessageOrDefaultStr_Custom:
+stwu      r1, -0x150(r1)
+mflr      r0
+stw       r0, 0x154(r1)
+
+mr r6, r4
+addi r3, r1, 0x08
+li r4, 0x120
+lis       r5, InformationTicoFat_Format@ha
+addi      r5, r5, InformationTicoFat_Format@l
+bl .GLE_getTicoFatStorageName
+
+addi r3, r1, 0x08
+bl        getGameMessageDirect__2MRFPCc
+
+lwz       r0, 0x154(r1)
+mtlr      r0
+addi      r1, r1, 0x150
+blr
 
 #====== TicoRail ======
 #This NPC Cannot talk

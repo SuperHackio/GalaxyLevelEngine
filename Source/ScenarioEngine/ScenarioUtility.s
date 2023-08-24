@@ -1707,8 +1707,20 @@ b .getPowerStarNum_Ext_Return
 
 
 
+.GLE_GetCurrentStageName_Guarantee:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
 
+bl makeCurrentGalaxyStatusAccessor__2MRFv
+stw r3, 0x08(r1)
+addi r3, r1, 0x08
+bl getName__20GalaxyStatusAccessorCFv
 
+lwz       r0, 0x14(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
 
 .GLE PRINTMESSAGE EndWorldmapCode
 .GLE PRINTADDRESS

@@ -681,4 +681,74 @@
 #Used by StageResultObj
 .set unk_807D5E10, 0x807D5E10
 
+
+.set sub_800614B0, 0x800614B0
+
+#======= TicoFatStarPiece stuff =======
+.set TicoFatStarPiece_Reaction, 0x806BE618
+.set TicoFatStarPiece_Pointing, 0x806BE624
+.set TicoFatStarPiece_Trampled, 0x806BE630
+.set TicoFatStarPiece_Spin, 0x806BE63C
+.set TicoFatCamera_Jp, 0x806BE648
+.set TicoFatStarPiece_EventFunc, 0x806BE658
+.set TicoFatStarPiece_Str, 0x806BE664
+.set TicoFatStarPieceIntroDemo_Jp, 0x806BE678
+.set TicoFatStarPiece_Demo_Str, 0x806BE698
+.set TicoFat_Request000, 0x806BE6A0
+.set TicoFat_StarPiece000, 0x806BE6B4
+.set TicoFatStarPiece_Wait, 0x806BE6CC
+.set TicoFatStarPiece_Talk, 0x806BE6D4
+.set TicoFatGoodsStarPiece, 0x806BE6DC
+.set TicoFatStarPiece_Small0, 0x806BE6F4
+.set TicoFatStarPiece_Normal, 0x806BE6FC
+.set TicoFatStarPiece_TransformJp, 0x806BE9C8
+
+.set TicoFatStarPiece_FunctorPtr, 0x806BE868
+
+.set TicoFatStarPieceNrvReaction, 0x807D4C50
+.set TicoFatStarPieceNrvPrep, 0x807D4C54
+.set TicoFatStarPieceNrvWait, 0x807D4C58
+.set TicoFatStarPieceNrvPoint, 0x807D4C5C
+.set TicoFatStarPieceNrvEat, 0x807D4C60
+.set TicoFatStarPieceNrvChem, 0x807D4C64
+.set TicoFatStarPieceNrvTransform, 0x807D4C68
+
+.set TicoFatStarPiece_0f, 0x807DF5D4
+.set TicoFatStarPiece_220f, 0x807DF5E4
+.set TicoFatStarPiece_280f, 0x807DF5E8
+.set TicoFatStarPiece_012, 0x807DF618
+.set TicoFatStarPiece_089999998, 0x807DF618
+.set TicoFatStarPiece_1000, 0x807DF620
+.set TicoFatStarPiece_100, 0x807DF624
+.set TicoFatStarPiece__1, 0x807DF5DC
+
+.set TicoFatCoin_500, 0x807DF5CC
+
+.set TicoFatCamera_Ptr, 0x807CFF50
+.set TicoFat_Fly_Str, 0x807CFF48
+
+.set getActionName__16TicoFatStarPieceFPCc, 0x80369A10
+.set sub_8036AA20, 0x8036AA20
+.set sub_8036AA90, 0x8036AA90
+.set depleteStarPiece__16TicoFatStarPieceFv, 0x8036A4B0
+.set sub_8036B860, 0x8036B860
+.set sub_8036AF90, 0x8036AF90
+.set sub_8036A380, 0x8036A380
+
+.set TicoFatCoin_DataStart, 0x806BE390
+.set TicoFatCoin_FlightJp, 0x806BE410
+.set TicoFatCoin_VolDownBgm, 0x806BE43C
+.set DmTicofatMorphWipeOut, 0x806BE448
+.set ScreenEffect, 0x806BE460
+.set ScreenEffectLight, 0x806BE470
+.set ScreenEffectFog, 0x806BE488
+.set DmTicofatMorphWipeIn, 0x806BE498
+.set PlanetaryAppearance_Jp, 0x806BE428
+
+.set AlternateBlendQuatFrontUp, 0x8003CFD0
+.set sub_80368F30, 0x80368F30
+.set getDanceSeTranspose__16TicoFatStarPieceCFv, 0x8036AC40
+.set isEventCameraActive__2MRFPCc, 0x8001D600
+.set endGlobalEventCamera__2MRFPCclb, 0x8001D5B0
+
 .GLE REGION END

@@ -19,7 +19,7 @@ blr
 .int .StageResultObj_STATIC_INIT
 .int .MiniComet_sInit
 .int .InfoDisplayObj_STATIC_INIT
-.int .__DEAD_STATIC
+.int .TicoFatStarPiece_STATIC_INIT_EX
 .int .__DEAD_STATIC
 .int .__DEAD_STATIC
 .int .__DEAD_STATIC

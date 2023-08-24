@@ -1,7 +1,7 @@
 #This file holds code regarding if the player should stay in the level or not
 #There are certainly caveots for having this system...
 
-.GLE ADDRESS sub_804E53B0
+.GLE ADDRESS sub_804F1140
 #This is controlled by a ScenarioSetting. 0 = false, 1 = true.
 #The code for it is in ScenarioSettings.s
 
@@ -429,5 +429,5 @@ b .MarioPowerupClear_ExtB_Return
 #If the above is Zero, then we can just do the normal boot out
 #otherwise, this needs a valid pointer to a PowerStar object.
 .GLE TRASH END
-.GLE ASSERT sub_804E5870
+#.GLE ASSERT sub_804E5870
 .GLE ENDADDRESS
