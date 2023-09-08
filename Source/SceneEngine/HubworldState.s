@@ -741,7 +741,7 @@ bne .DoRegisterEvent
 #mr r3, r26
 #li r4, 1
 #bl .setGameEventFlagFaceShipEvent
-#b .RegisterStarReturnEvents_Loop_Continue
+b .RegisterStarReturnEvents_Loop_Continue  #If the demo is not in the stage, DO NOT REGISTER IT BRUHHH
 
 .DoRegisterEvent:
 mr r3, r31
@@ -1295,6 +1295,7 @@ bne .ReturnStagePair_CheckScenarioSingle
 lwz r3, 0x08(r1)
 bl .GLE_IsEqualNullString
 cmpwi r3, 0
+lwz r3, 0x08(r1) #2023-08-26 what the hell was I thinking by excluding this??
 beq .ReturnStagePair_CheckScenarioMulti
 #Use the results stage:
 bl getClearedStageName__20GameSequenceFunctionFv

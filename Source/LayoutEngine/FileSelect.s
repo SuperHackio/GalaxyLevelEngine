@@ -148,6 +148,9 @@ addi r3, r3, Player_Setting@l
 li r4, 2
 bl .MR_GetGameSetting
 
+cmpwi r3, 0
+beq .SkipPlayer
+
 lis r4, Luigi_Setting@ha
 addi r4, r4, Luigi_Setting@l
 bl isEqualString__2MRFPCcPCc
