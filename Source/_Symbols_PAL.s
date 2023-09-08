@@ -527,4 +527,6 @@
 .set getDanceSeTranspose__16TicoFatStarPieceCFv, 0x8036AC40
 .set isEventCameraActive__2MRFPCc, 0x8001D600
 .set endGlobalEventCamera__2MRFPCclb, 0x8001D5B0
+.set AddMailStarPiece, 0x806BF0AC
+.set getMarioStartHealth__2MRFv, 0x804D7130
 .GLE REGION END

@@ -1722,6 +1722,26 @@ mtlr      r0
 addi      r1, r1, 0x10
 blr
 
+
+
+
+
+
+#r3 = GalaxyStatusAccessor*
+.GLE_GetTotalScenarioNoFromGalaxyStatusAccessor:
+lwz       r3, 0(r3)
+#fallthrough
+
+#r3 = ScenarioData*
+.GLE_GetTotalScenarioNoFromScenarioData:
+lwz       r3, 4(r3)
+b getCsvDataElementNum__2MRFPC8JMapInfo
+
+
+.GLE ADDRESS __ct__25GameDataSomeGalaxyStorageFRC20GalaxyStatusAccessor +0x2C
+bl .GLE_GetTotalScenarioNoFromGalaxyStatusAccessor
+.GLE ENDADDRESS
+
 .GLE PRINTMESSAGE EndWorldmapCode
 .GLE PRINTADDRESS
 .SCENARIO_UTILITY_CONNECTOR:
