@@ -379,6 +379,16 @@ b .EventFunc_ReturnEventComplete
 .EventFunc_Case_7:
 mr r3, r30
 bl addStarPiece__2MRFi
+
+#Sound effect!
+mr r3, r29
+lis r4, AddMailStarPiece@ha
+addi r4, r4, AddMailStarPiece@l
+li r5, -1
+li r6, -1
+li r7, -1
+bl startActionSound__2MRFPC9LiveActorPCclll
+
 b .EventFunc_ReturnEventComplete
 
 .EventFunc_Case_8:
@@ -944,6 +954,47 @@ stwu      r1, -0x10(r1)
 b .KinopioBank_EventFunc_Vanilla
 
 
+#Time to fix the issue where vanilla Bank Toad's branches cannot be used
+
+.KinopioBank_RecalcHighCheck:
+subi r0, r4, 4  #once the first 4 options are out of the way, we're good.
+cmpwi r0, 0
+blt .__KinopioBank_Jump_Return_1
+b .KinopioBank_RecalcHighCheck_ReturnA
+
+#returns one
+.__KinopioBank_Jump_Return_1:
+b .KinopioBank_BranchFunc_Return_1_Loc
+
+#return value must be in r3
+.__KinopioBank_Jump_Return:
+b .KinopioBank_BranchFunc_Return_Loc
+
+
+.GLE ADDRESS branchFunc__11KinopioBankFUl +0x8C
+b .KinopioBank_RecalcHighCheck
+nop
+.KinopioBank_RecalcHighCheck_ReturnA:
+.GLE ENDADDRESS
+
+.GLE ADDRESS branchFunc__11KinopioBankFUl +0x10C
+.KinopioBank_BranchFunc_Return_1_Loc:
+.GLE ENDADDRESS
+
+.GLE ADDRESS branchFunc__11KinopioBankFUl +0x110
+.KinopioBank_BranchFunc_Return_Loc:
+.GLE ENDADDRESS
+
+
+
+.KinopioBank_RecalcStarpiece:
+subi r0, r4, 3  #Yes this is different from above because this is a zero indexed list
+b .KinopioBank_RecalcStarpiece_Return
+
+.GLE ADDRESS branchFunc__11KinopioBankFUl +0xA8
+b .KinopioBank_RecalcStarpiece
+.KinopioBank_RecalcStarpiece_Return:
+.GLE ENDADDRESS
 
 #====== KinopioPostman ======
 #-- NPC Removed from the game --
@@ -1592,7 +1643,7 @@ b .TicoFatCoin_GetInformationMessage_Return
 # 0x1A0 Matrix &                   --> 0x1C4 Matrix & (new memory)
 
 .GLE ADDRESS createNameObj<16TicoFatStarPiece>__14NameObjFactoryFPCc_P7NameObj +0x14
-li r3, 0x200
+li r3, 0x204
 .GLE ENDADDRESS
 
 
@@ -1607,10 +1658,13 @@ addi      r3, r31, 0x194
 bl identity__Q29JGeometry38TMatrix34<Q29JGeometry13SMatrix34C<f>>Fv
 addi      r3, r31, 0x1C4
 bl identity__Q29JGeometry38TMatrix34<Q29JGeometry13SMatrix34C<f>>Fv
+
 lis r3, .TicoFatStarPiece_ActiveStaticLoc@ha
 addi r3, r3, .TicoFatStarPiece_ActiveStaticLoc@l
 li r0, 0
 stw r0, 0x00(r3)
+
+stw r0, 0x200(r31)
 
 mr r3, r31
 b .TicoFatStarPiece_InitEx_Return
@@ -1689,6 +1743,10 @@ addi r4, r29, 0x16C
 bl getJMapInfoArg1NoInit__2MRFRC12JMapInfoIterPl
 
 mr r3, r30
+addi r4, r29, 0x200
+bl getJMapInfoArg2NoInit__2MRFRC12JMapInfoIterPl
+
+mr r3, r30
 addi r4, r29, 0x1FC
 bl getJMapInfoArg6WithInit__2MRFRC12JMapInfoIterPl
 
@@ -1698,10 +1756,22 @@ stw       r0, 0x174(r29)
 lwz r3, 0x184(r29)
 cmpwi r3, -1
 li r3, 0
-beq .TicoFatStarPiece_DoRemainingCalc
+beq .TicoFatStarPiece_DoResetCheck
+
+.TicoFatStarPiece_UseStorageForRemainingCalc:
 #Get the value from the EventValues
 mr r3, r29
 bl .GLE_getTicoFatStarPieceFromStorage
+
+.TicoFatStarPiece_DoResetCheck:
+lwz r4, 0x200(r29)
+cmpwi r4, 0
+beq .TicoFatStarPiece_DoRemainingCalc
+
+lwz       r4, 0x16C(r29)
+cmpw r3, r4
+beq .TicoFatStarPiece_DoRemainingCalc
+li r3, 0 #This special mode lets it work like it does in SMG1. You must complete it for it to save
 
 .TicoFatStarPiece_DoRemainingCalc:
 lwz       r4, 0x16C(r29)
@@ -1940,6 +2010,7 @@ bl .GLE_getTicoFatStarPieceFromStorage
 lwz r4, 0x16C(r31)
 cmpw r3, r4
 blt       loc_80369068
+
 mr        r3, r31
 bl        callMakeActorAppearedAllGroupMember__2MRFPC9LiveActor
 mr        r3, r31
