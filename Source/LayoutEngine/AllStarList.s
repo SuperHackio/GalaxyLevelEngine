@@ -440,8 +440,12 @@ li r4, 1
 #
 #r3 = Current Page Index (NOT ZERO BASED! WE START AT 1 AND NOT 0)
 #r4 = Direction (-1 = Left, 1 = Right)
+#r5 = Disable Z check. Internal use. 0 = No, 1 = yes
 #RETURNS: The index of the next located page. -1 if not found.
 .AllStarList_GetOpenPageNext:
+li r5, 0
+
+.AllStarList_GetOpenPageNextWithZ:
 stwu      r1, -0x40(r1)
 mflr      r0
 stw       r0, 0x44(r1)
@@ -450,6 +454,7 @@ bl _savegpr_25
 
 mr r29, r3
 mr r28, r4
+mr r25, r5
 
 bl MR_GetGalaxyOrderList
 mr r31, r3
@@ -477,6 +482,30 @@ beq .AllStarList_GetOpenPageNext_ReturnNotFound
 
 
 .AllStarList_GetOpenPageNext_BeginSearch:
+#Interruption!
+#If the player is holding [Z], then change the target to be the ends of the lists
+
+cmpwi r25, 0
+bne .AllStarList_GetOpenPageNext_StartSearch_Loc
+
+li r3, 0
+bl testSubPadButtonZ__2MRFl
+cmpwi r3, 0
+beq .AllStarList_GetOpenPageNext_StartSearch_Loc
+
+
+#if we want the first open page, just use Zero lol
+cmpwi r28, -1
+bne .AllStarList_GetOpenPageNext_JumpRight
+li r29, 0
+li r28, 1
+b .AllStarList_GetOpenPageNext_StartSearch_Loc
+
+.AllStarList_GetOpenPageNext_JumpRight:
+addi r29, r30, 1
+li r28, -1
+
+.AllStarList_GetOpenPageNext_StartSearch_Loc:
 li r27, 0 #Page Max Index "i"
 mr r26, r29 #CurrentTarget.
 b .AllStarList_GetOpenPageNext_LoopA_IntroJumpLoc
@@ -924,7 +953,8 @@ bl _savegpr_29
 #Try Show Right Button
 lwz       r3, 0x38(r31)
 li r4, 1
-bl .AllStarList_GetOpenPageNext
+li r5, 1
+bl .AllStarList_GetOpenPageNextWithZ
 cmpwi     r3, 0
 ble       .AppearArrows_ForceRightHide
 
@@ -949,7 +979,8 @@ bl forceToHide__20ButtonPaneControllerFv
 #Try Show Left Button
 lwz       r3, 0x38(r31)
 li r4, -1
-bl .AllStarList_GetOpenPageNext
+li r5, 1
+bl .AllStarList_GetOpenPageNextWithZ
 cmpwi     r3, 0
 ble       .AppearArrows_ForceLeftHide
 
