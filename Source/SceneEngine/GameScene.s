@@ -413,10 +413,24 @@ b .RequestChangeStageAfterMiss
 
 #Called from HubworldState.s
 .EndScenarioSelectBgm:
+lis r3, Static_IsNeedMusicStopFromScenarioSelect@ha
+addi r3, r3, Static_IsNeedMusicStopFromScenarioSelect@l
+lwz r4, 0x00(r3)
+cmpwi r4, 0
+li r4, 0
+stw r4, 0x00(r3)
+beqlr
+
+.EndScenarioSelectBgm_DoStop:
 li r3, 1
 b stopStageBGM__2MRFUl #Needed to end the Scenario Select music
 
-
+.GLE_SetEndScenarioSelectBgm:
+lis r3, Static_IsNeedMusicStopFromScenarioSelect@ha
+addi r3, r3, Static_IsNeedMusicStopFromScenarioSelect@l
+li r4, 1
+stw r4, 0x00(r3)
+blr 
 
 
 

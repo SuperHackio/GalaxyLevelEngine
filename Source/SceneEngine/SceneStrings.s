@@ -178,6 +178,9 @@ NoBootOut_DemoFormat:
 ResourceMask_Str:
     .string "ResourceMask"
     
+KeepHealth_Str:
+    .string "KeepHealth"
+    
 __GLE_DEBUG_MODE:
     .string "Debug" AUTO
     
@@ -195,6 +198,12 @@ Static_PreviousStage:
 Static_ModularPaths:
 .short 0 #Path ID -2 = Use for Return Paths
 .short 0 #Path ID -3 = Use for Entry Paths
+
+Static_IsNeedMusicStopFromScenarioSelect:
+.int 0
+
+Static_PlayerHealthStorage:
+.int 0
 .GLE TRASH END
 
 #You can technically add more modular paths, but the base GLE will only come with these 2

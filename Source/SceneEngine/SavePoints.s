@@ -59,6 +59,8 @@ li r0, 1
 stb r0, 0x12(r3)
 
 .RequestChangeStageAfterTitle_Return:
+bl .GLE_SetHealthToDefault
+
 addi      r11, r1, 0x30
 bl _restgpr_25
 lwz       r0, 0x34(r1)

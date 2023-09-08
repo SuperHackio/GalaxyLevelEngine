@@ -1448,11 +1448,6 @@ mtctr     r12
 bctrl
 .loc_8048F238:
 
-#mr        r3, r30
-#bl 0x8048F000 ;Handles being able to use the DPAD at the stars
-#Removed because I don't fully understand it yet and thus, can't replace it.
-#I will add a replacement in the future
-
 mr r3, r30
 bl .tryDpdSelection__20ScenarioSelectLayoutFv
 
@@ -1561,6 +1556,8 @@ mr        r3, r28
 addi      r4, r13, sInstance__Q223NrvScenarioSelectLayout44ScenarioSelectLayoutNrvAfterScenarioSelected - STATIC_R13
 li        r5, 0x28
 bl        setNerveAtStep__2MRFP11LayoutActorPC5Nervel
+
+bl .GLE_SetEndScenarioSelectBgm
 
 addi      r11, r1, 0x20
 bl        _restgpr_28

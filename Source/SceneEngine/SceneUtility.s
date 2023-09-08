@@ -123,6 +123,30 @@ mr r4, r30
 bl .MR_SetPathsFromJMap
 
 .MR_RequestMoveStageFromJMapInfo_Return:
+
+#deal with health
+bl .GLE_SetHealthToDefault
+
+mr r3, r31
+lis r4, KeepHealth_Str@ha
+addi r4, r4, KeepHealth_Str@l
+bl isExistItemInfo__8JMapInfoFPCc
+cmpwi r3, 0
+beq .MR_RequestMoveStageFromJMapInfo_SkipHealth
+
+addi r3, r1, 0x14
+mr r4, r31
+lis r5, KeepHealth_Str@ha
+addi r5, r5, KeepHealth_Str@l
+mr r6, r30
+bl getCsvDataS32__2MRFPlPC8JMapInfoPCcl
+
+lwz r3, 0x14(r1)
+cmpwi r3, 0
+ble .MR_RequestMoveStageFromJMapInfo_SkipHealth
+bl .GLE_SaveCurrentHealth
+
+.MR_RequestMoveStageFromJMapInfo_SkipHealth:
 addi      r11, r1, 0x60
 bl _restgpr_29
 lwz       r0, 0x64(r1)
@@ -1391,6 +1415,10 @@ stw       r0, 0x64(r1)
 addi      r11, r1, 0x60
 bl _savegpr_25
 
+#Reset the health to 3 health upon death.
+#If this isn't here, you'll be keeping the last stored health value, which is not good.
+bl .GLE_SetHealthToDefault
+
 #First of all, due to Death Overrides, we must first check the StageInfo bcsv file
 #For ease of access, we have .MR_GetDeathOverrideIndex
 bl .MR_GetDeathOverrideIndex
@@ -1507,6 +1535,10 @@ mflr      r0
 stw       r0, 0x64(r1)
 addi      r11, r1, 0x60
 bl _savegpr_25
+
+#Reset the health to 3 health upon death.
+#If this isn't here, you'll be keeping the last stored health value, which is not good.
+bl .GLE_SetHealthToDefault
 
 bl calcCurrentPowerStarNum__16GameDataFunctionFv
 cmpwi r3, 0
@@ -2173,6 +2205,90 @@ bl _restgpr_28
 lwz       r0, 0x64(r1)
 mtlr      r0
 addi      r1, r1, 0x60
+blr
+
+#==============================================
+.GLE PRINTMESSAGE == HEALTH ==
+.GLE PRINTADDRESS
+.GLE_GetCurrentHealth:
+stwu      r1, -0x60(r1)
+mflr      r0
+stw       r0, 0x64(r1)
+addi      r11, r1, 0x60
+bl _savegpr_28
+
+bl .GLE_GetPlayResultInStageHolder
+bl getPlayerHealth__23PlayResultInStageHolderCFv
+mr r31, r3
+
+#If the health defined here is not equal to Max Health (3) then assume we use that instead
+#I've set it up this way in case it's decided to allow changing the max health. Currently the answer to that is a hard NO
+li r4, 3
+cmpw r31, r4
+mr r3, r31
+bne .GLE_GetCurrentHealth_Return
+
+lis r4, Static_PlayerHealthStorage@ha
+addi r4, r4, Static_PlayerHealthStorage@l
+lwz r3, 0x00(r4)
+
+.GLE_GetCurrentHealth_Return:
+addi      r11, r1, 0x60
+bl _restgpr_28
+lwz       r0, 0x64(r1)
+mtlr      r0
+addi      r1, r1, 0x60
+blr
+
+
+.GLE ADDRESS getMarioStartHealth__2MRFv +0x28
+bl .GLE_GetCurrentHealth
+nop
+nop
+.GLE ENDADDRESS
+
+
+#Stores the current health of the player
+.GLE_SaveCurrentHealth:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+
+bl getPlayerLife__2MRFv
+cmpwi r3, 0
+bne .GLE_SaveCurrentHealth_Return
+
+li r3, 3 #cannot save Zero health
+
+.GLE_SaveCurrentHealth_Return:
+lwz       r0, 0x14(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+
+b .GLE_SetHealthStaticDirect
+#is this above part genius???
+
+
+.GLE_SetHealthToDefault:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+
+#IF I ever add the ability to change the max health, that code goes HERE
+li r3, 3
+
+lwz       r0, 0x14(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+#blr
+#Fallthrough
+
+
+#r3 = value to save
+.GLE_SetHealthStaticDirect:
+lis r4, Static_PlayerHealthStorage@ha
+addi r4, r4, Static_PlayerHealthStorage@l
+stw r3, 0x00(r4)
 blr
 
 
