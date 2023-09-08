@@ -11,7 +11,7 @@ nop
 
 #This function normally checks to see if you are in a specific stage or not, and if you are in the specific stages, it just returns 0.
 #Because these specific stages don't stop the music that's playing when you leave them
-#For now, I am going to default this to 1 (with a hardcoded exception for the fileselect), but perhaps this could be deletaged to a ScenarioSetting?
+#For now, I am going to default this to 1 (with a hardcoded exception for the fileselect), but perhaps this could be delegated to a ScenarioSetting?
 .GLE ADDRESS sub_804BA470
 stwu      r1, -0x10(r1)
 mflr      r0
@@ -24,21 +24,27 @@ bne .IsNeedStopAllBGM_False
 bl isStageFileSelect__2MRFv
 cmpwi r3, 0
 bne .IsNeedStopAllBGM_False
-
+li r3, 1
 
 
 #Other conditions go here!
 
+#Hooked conditions go here!
+
+.GLE PRINTMESSAGE == GLE_isDestroySceneKeepAllSound Address ==
+.GLE PRINTADDRESS
+nop
 
 
 
 #default option
-b .IsNeedStopAllBGM_True
+b .IsNeedStopAllBGM_Return
 
 
 .IsNeedStopAllBGM_False:
 li r3, 0
 b .IsNeedStopAllBGM_Return
+
 .IsNeedStopAllBGM_True:
 li r3, 1
 
