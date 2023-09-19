@@ -1006,6 +1006,7 @@ b .KinopioBank_RecalcStarpiece
 
 
 #====== LuigiTalkNpc ======
+#GLE-V3 adds back his ability to spawn stars!
 .GLE ADDRESS init__12LuigiTalkNpcFRC12JMapInfoIter +0x110
 bl .MR_RegisterEventAndGlobalAnimeFunc
 #This leads right into the next GLE ADDRESS right under this
@@ -1017,7 +1018,7 @@ b .LuigiTalkNpcInitJumpLoc
 .GLE ENDADDRESS
 
 .GLE ADDRESS init__12LuigiTalkNpcFRC12JMapInfoIter +0x18C
-.LuigiTalkNpcInitJumpLoc:
+.LuigiTalkNpcInitJumpLoc_Return:
 li r3, 0
 .GLE ENDADDRESS
 
@@ -3155,6 +3156,43 @@ bl .MR_RegisterGlobalAnimeFunc
 
 
 .GLE PRINTADDRESS
+#Had to move this down here
+.LuigiTalkNpcInitJumpLoc:
+mr        r3, r30
+addi r4, r1, 0x54
+bl getJMapInfoArg7NoInit__2MRFRC12JMapInfoIterPb
+cmpwi r3, 0
+ble .LuigiTalkNpcInitJumpLoc_FINISH
+
+lbz r3, 0x54(r1)
+cmpwi r3, 0
+ble .LuigiTalkNpcInitJumpLoc_FINISH
+
+#Shares a TakeOutStar nerve with Rosalina
+li        r3, 0x20
+bl __nw__FUl
+cmpwi r3, 0
+beq .LuigiTalkNpcInitJumpLoc_Failure
+
+mr        r4, r29
+lis r5, .LuigiTalkNPC_TakeOutStar@ha
+addi r5, r5, .LuigiTalkNPC_TakeOutStar@l
+mr r6, r5
+addi      r7, r13, sInstance__Q210NrvRosetta14RosettaNrvWait - STATIC_R13
+li        r8, 0
+bl __ct__11TakeOutStarFP8NPCActorPCcPCcPC5Nervel
+
+.LuigiTalkNpcInitJumpLoc_Failure:
+stw r3, 0x164(r29)
+
+mr        r3, r29
+bl declarePowerStar__2MRFPC7NameObj
+
+.LuigiTalkNpcInitJumpLoc_FINISH:
+b .LuigiTalkNpcInitJumpLoc_Return
+
+.LuigiTalkNPC_TakeOutStar:
+.string "TakeOutStar" AUTO
 #.GLE ASSERT TalkMessageFunc<9Caretaker>__FP9CaretakerM9CaretakerFPCvPvUl_b_51TalkMessageFuncM<P9Caretaker,M9CaretakerFPCvPvUl_b>
 .NPC_UTILITY_CONNECTOR:
 .GLE ENDADDRESS
