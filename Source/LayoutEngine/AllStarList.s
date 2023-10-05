@@ -42,7 +42,9 @@ addi      r31, r31, 1
 
 .CreateStarString_Loop_Start:
 addi      r3, r1, 0x08
-bl getPowerStarNum__20GalaxyStatusAccessorCFv
+#Swapping this out for the newer one that also counts scenarios that have no stars
+#bl getPowerStarNum__20GalaxyStatusAccessorCFv
+bl .GLE_GetTotalScenarioNoFromGalaxyStatusAccessor
 cmpw      r31, r3
 ble       .CreateStarString_Loop
 
@@ -188,6 +190,16 @@ mr r3, r30
 beq .AddStarToStarString_Return
 
 .CreateStarString_StarNotRequireOpenFlag:
+#Interuption!
+#Make sure there's no ForceDisplays
+addi      r3, r1, 0x08
+mr r4, r31
+li r5, 1
+bl GalaxyStatusAccessor__isStarOpen_WithFlag
+cmpwi r3, 0
+mr r3, r30
+bne .AddStarToStarString_Return
+
 addi      r3, r1, 0x08
 mr r4, r31
 bl isStarComet__20GalaxyStatusAccessorCFl

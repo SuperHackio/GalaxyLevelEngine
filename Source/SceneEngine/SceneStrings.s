@@ -118,6 +118,9 @@ Data:
 Data_Enabled:
     .string "o"
     
+Data_Disabled:
+    .string "x"
+    
 Lives:
     .string "Lives"
     

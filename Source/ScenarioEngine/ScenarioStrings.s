@@ -86,6 +86,9 @@ TopNo:
 
 Unlock:
     .string "Unlock"
+
+ForceDisplay:
+    .string "NoDisplay"
     
 End:
     .string "End"

@@ -291,18 +291,20 @@ b __ct__16GalaxySelectInfoFl
 #Used if we only want to load the banner and message
 
 #TODO: Add a binding SOMEWHERE so people can make changes to the layout if they want.
+.GLE PRINTMESSAGE -- GalaxySelectInfo::show(const char* GalaxyName, long, bool SkipDetails) --
+.GLE PRINTADDRESS
 .GalaxySelectInfo_show:
 stwu      r1, -0x80(r1)
 mflr      r0
 stw       r0, 0x84(r1)
 addi      r11, r1, 0x80
 bl        _savegpr_26
-lwz       r0, 0x3C(r3)
 lis       r30, GalaxySelectInfo_WorldMapGalaxyInformation@ha
 addi      r30, r30, GalaxySelectInfo_WorldMapGalaxyInformation@l
 mr        r27, r3
 mr        r28, r4
-mr r26, r6
+mr        r26, r6
+lwz       r0, 0x3C(r27)
 cmpwi     r0, 0
 mr        r29, r5
 beq       loc_804A959C

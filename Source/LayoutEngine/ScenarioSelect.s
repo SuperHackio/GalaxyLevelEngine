@@ -2168,7 +2168,11 @@ b .loc_8048F498
 stwu      r1, -0x10(r1)
 mflr      r0
 stw       r0, 0x14(r1)
-bl getPowerStarNum__20GalaxyStatusAccessorCFv
+#Swapping this out for the new GLE function so that scenarios that do not have a star assigned can still be attempted to show up
+#There's some user logistics that will need to occur here most likely, but ultimately you get more stars for your buck:tm:
+#Of course, we still need to clamp to the max of MaxStars
+#bl getPowerStarNum__20GalaxyStatusAccessorCFv
+bl .GLE_GetTotalScenarioNoFromGalaxyStatusAccessor
 
 cmpwi r3, MaxStars
 ble .GetPowerStarNumOrMax_Return

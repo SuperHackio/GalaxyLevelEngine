@@ -402,6 +402,8 @@ b GalaxyStatusAccessor__isStarOpen
 
 #Custom replacement
 GalaxyStatusAccessor__isStarOpen:
+li r5, 0
+GalaxyStatusAccessor__isStarOpen_WithFlag:
 stwu r1, -0x100(r1)
 mflr      r0
 stw       r0, 0x104(r1)
@@ -410,6 +412,7 @@ bl _savegpr_15
 
 mr r31, r3 #GalaxyStatusAccessor
 mr r30, r4 #Scenario to check
+mr r15, r5 #bool. If set to 1, will take ForceDisplay into account
 
 bl hasPowerStar__20GalaxyStatusAccessorCFl
 cmpwi r3, 1
@@ -449,6 +452,57 @@ bl getCsvDataStr__2MRFPPCcPC8JMapInfoPCcl
 cmpwi r3, 0
 beq GalaxyStatusAccessor__isStarOpen_Return
 
+cmpwi r15, 1
+bne UnlockTypeLoop_JumpToNormal
+
+#interruption: make it so that you can force show/force hide scenarios
+lwz r3, 0x08(r1)
+lis r4, ForceDisplay@ha
+addi r4, r4, ForceDisplay@l
+bl isEqualString__2MRFPCcPCc
+cmpwi r3, 0
+beq UnlockTypeLoop_Continue
+
+addi r3, r1, 0x08
+mr r4, r29
+lis r5, Param00Int@ha
+addi r5, r5, Param00Int@l
+mr r6, r28
+bl getCsvDataS32__2MRFPlPC8JMapInfoPCcl
+
+lwz r3, 0x08(r1)
+cmpw r3, r30
+bne UnlockTypeLoop_Continue
+
+#If we are here, then we can only offer a force show or force hide
+#Works similar to ActorInfo, Param00Str can be "o" or "x" (for "Yes" or "No", respectively. Though this means "Yes, always display" or "No, never display")
+#Of course, in true GLE fashion, it must be approved by a JMapProgress check
+#though, this time because we're only allowing or disallowing the use of this entry, we can simply continue the loop instead of returning the function
+mr r3, r29
+mr r4, r28
+bl isJMapEntryProgressComplete
+cmpwi r3, 0
+beq UnlockTypeLoop_Continue
+
+#OK! this is a valid entry to use. Lets see what the user wants now...
+addi r3, r1, 0x08
+mr r4, r29
+lis r5, Param00Str@ha
+addi r5, r5, Param00Str@l
+mr r6, r28
+bl getCsvDataStr__2MRFPPCcPC8JMapInfoPCcl
+
+lwz r3, 0x08(r1)
+lis r4, Data_Disabled@ha
+addi r4, r4, Data_Disabled@l
+bl isEqualString__2MRFPCcPCc
+#no need to compare! if it is set to "x", we can just always return true.
+b GalaxyStatusAccessor__isStarOpen_Return
+
+
+
+#proceed as normal
+UnlockTypeLoop_JumpToNormal:
 lwz r3, 0x08(r1)
 lis r4, Unlock@ha
 addi r4, r4, Unlock@l

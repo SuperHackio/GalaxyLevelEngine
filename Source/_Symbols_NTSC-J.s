@@ -529,4 +529,5 @@
 .set endGlobalEventCamera__2MRFPCclb, 0x8001D5B0
 .set AddMailStarPiece, 0x806B918C
 .set getMarioStartHealth__2MRFv, 0x804D7130
+.set sInstance__Q210NrvRosetta14RosettaNrvWait, 0x807D4280
 .GLE REGION END
