@@ -741,7 +741,26 @@ bne .DoRegisterEvent
 #mr r3, r26
 #li r4, 1
 #bl .setGameEventFlagFaceShipEvent
-b .RegisterStarReturnEvents_Loop_Continue  #If the demo is not in the stage, DO NOT REGISTER IT BRUHHH
+
+#Okay, if the cutscene doesn't exist in the current map, then we need to see if it has a valid Change Stage.
+#If the change stage is valid, we register it regardless. Otherwise, we skip it(?)
+
+addi r3, r1, 0x08
+mr r4, r30
+lis r5, GalaxyName@ha
+addi r5, r5, GalaxyName@l
+mr r6, r27
+bl getCsvDataStrOrNULL__2MRFPPCcPC8JMapInfoPCcl
+
+cmpwi r3, 0
+beq .RegisterStarReturnEvents_Loop_Continue
+
+lwz r3, 0x08(r1)
+cmpwi r3, 0
+beq .RegisterStarReturnEvents_Loop_Continue #If the string is empty, then we have nowhere to go. we can skip registering this cutscene if it's not found
+#If the string has data, then we can assume we have a stage change, and register the event. The stage change should occur
+
+#b .RegisterStarReturnEvents_Loop_Continue  #Jump if we want to skip the demo
 
 .DoRegisterEvent:
 mr r3, r31
@@ -1220,6 +1239,7 @@ b isEqualString__2MRFPCcPCc
 #
 #If ReturnStageName is empty AND ReturnScenario is -1, then assume true (as the entry is likely not in use)
 .EventRepeatableFields_Loc:
+#0x804e4590
 li r18, 1 #i?
 b .ReturnStagePair_LoopStart
 
