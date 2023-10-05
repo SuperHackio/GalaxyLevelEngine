@@ -2094,8 +2094,37 @@ mtlr      r0
 addi      r1, r1, 0x10
 blr
 
+#=====================================================
 
 .GLE PRINTADDRESS
+#-1 = AutoStart
+#1 = No AutoStart
+.MR_GetRaceTriggerType:
+li r5, 0
+stw r5, 0x08(r1)
+lwz r3, 0x100(r31)
+addi r4, r1, 0x08
+bl getRailArg1NoInit__2MRFPC9LiveActorPl
+
+lwz r4, 0x08(r1)
+cmpwi r4, 1
+blt .GetRaceTriggerType_AutoStart_AfterMiss
+
+li r3, 1
+b .MR_GetRaceTriggerType_Return
+
+.GetRaceTriggerType_AutoStart_AfterMiss:
+mr r3, r31
+bl isNerve__9LiveActorCFPC5Nerve
+b .MR_GetRaceTriggerType_Return
+
+.GLE ADDRESS exeWait__11RaceManagerFv +0x18
+b .MR_GetRaceTriggerType
+.MR_GetRaceTriggerType_Return:
+.GLE ENDADDRESS
+
+#=====================================================
+
 .MR_SystemCircleWipeToCenter:
 stwu      r1, -0x20(r1)
 mflr      r0

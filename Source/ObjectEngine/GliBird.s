@@ -78,6 +78,22 @@ lwz       r0, 0x84(r1)
 mtlr      r0
 addi      r1, r1, 0x80
 blr
+
+#just enough space for this lol
+.tryValidateRaceSensorOrSomething:
+cmpwi r3, 0
+beq .SkipSensorValidate
+bl validateHitSensors__2MRFP9LiveActor
+.SkipSensorValidate:
+b .tryValidateRaceSensorOrSomething_Return
+
+#is this offset really a good idea??
+.GLE ADDRESS renewTime__11RaceManagerFv +0x68
+b .tryValidateRaceSensorOrSomething
+.tryValidateRaceSensorOrSomething_Return:
+.GLE ENDADDRESS
+
+.GLE PRINTADDRESS
 .GLE ASSERT sub_80265470
 .GLE ENDADDRESS
 
