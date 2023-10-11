@@ -85,5 +85,20 @@ mtlr      r0
 addi      r1, r1, 0x10
 blr
 
+#========================================================================================
+
+#Bugfix to have the comet medal counter not show an additional medal when collecting
+#We're overwriting a conviniently placed dummy function for this!
+.GLE ADDRESS appear__9PauseMenuFv +0x78
+b .TicoCoin_PauseMenuFix
+.TicoCoin_PauseMenuFix_Return:
+.GLE ENDADDRESS
+
+.TicoCoin_PauseMenuFix:
+bl getCurrentStageName__2MRFv
+bl isOnGalaxyFlagTicoCoin__16GameDataFunctionFPCc
+xori r3, r3, 1
+b .TicoCoin_PauseMenuFix_Return
+
 .PAUSE_MENU_CONNECTOR:
 .GLE ENDADDRESS
