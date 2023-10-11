@@ -1,12 +1,13 @@
 #======== QuickWarpArea ========
 #An area that will warp the player to another location inside the same galaxy without reloading it.
-#Obj Arg 0 = General Position ID to warp to
+#Obj Arg 0 = General Position ID to warp to. If ObjArg7 is NOT -1, then this defines the searching starting point
 #Obj Arg 1 = Warp Delay (in frames. Default 60)
 #Obj Arg 2 = Closing Wipe Type (-1 = Fade to White, 0 = Fade to Black, 1 = Circle, 2 = Mario, 3 = Bowser, 4 = Game Over) If set to 0, no fade will happen
 #Obj Arg 3 = Closing Wipe Time (in frames)
 #Obj Arg 4 = Opening Wipe Type (-1 = Fade to White, 0 = Fade to Black, 1 = Circle, 2 = Mario. The other two can't Open...) If Arg 2 is set to 0, ignored.
 #Obj Arg 5 = Opening Wipe Time (in frames)
 #Obj Arg 6 = bool. Display LoadIcon? Default False
+#Obj Arg 7 = Max Position ID to look for. -1 to Disable.
 
 
 
@@ -114,12 +115,7 @@ lwz r3, 0x48(r31)
 cmpwi r3, 0
 beq .QuickWarpArea_Movement_Return
 
-#Lol do we even need all these?
-bl forceOpenWipeFade__2MRFv
 bl forceOpenWipeCircle__2MRFv
-bl forceOpenSystemWipeFade__2MRFv
-bl forceOpenSystemWipeWhiteFade__2MRFl
-bl forceOpenSystemWipeMario__2MRFv
 bl forceOpenSystemWipeCircle__2MRFv
 
 #blasted
@@ -231,39 +227,25 @@ b .QuickWarpArea_Movement_Return
 lwz r3, 0x38(r31)
 cmpwi r3, 0
 ble .QuickWarpArea_NoLoadIcon
+cmpwi r3, 2
+beq .QuickWarpArea_NoLoadIcon
 bl .MR_StartLoadingIcon
 
 .GLE PRINTADDRESS
 .QuickWarpArea_NoLoadIcon:
 #ok finally
-#First lets make the name of our target
-addi      r3, r1, 0x08
-li        r4, 0x40
-lis r5, .QuickWarpArea_PositionNameFormat@ha
-addi r5, r5, .QuickWarpArea_PositionNameFormat@l
-lwz r6, 0x20(r31) #Load the Wipe Time
-crclr     4*cr1+eq
-bl        snprintf
-
-
-#Next we need to determine which type of movement we want
-lwz r3, 0x3C(r31)
-cmpwi r3, 0
-blt .QuickWarpArea_AbsoluteWarp
-
-#-- ditched this rip --
-#This is for relative warping... This is gonna be the hardest mathematical challenge yet!
-#addi      r3, r1, 0x08
-#bl setPlayerPos__2MRFPCc
-#li r3, 0 #change state to none
-#stw r3, 0x48(r31)
-#li r3, 1
-#bl onPlayerControl__2MRFb
-#b .QuickWarpArea_Movement_Return
+lwz r3, 0x38(r31)
+cmpwi r3, 1
+ble .QuickWarpArea_AbsoluteWarp
+bl curePlayerElementMode__2MRFv
 
 .QuickWarpArea_AbsoluteWarp:
+#First lets make the name of our target
+mr r3, r31
+addi r4, r1, 0x08
+bl .QuickWarpArea_GetPositionName
 #Put mario at the position and open wipe
-addi      r3, r1, 0x08
+addi r3, r1, 0x08
 bl setPlayerPos__2MRFPCc
 li r3, 3 #change state to wait for the countdown
 stw r3, 0x48(r31)
@@ -336,6 +318,91 @@ blr
 .QuickWarpArea_GetManagerName:
 lis r3, .QuickWarpArea_ManagerName@ha
 addi r3, r3, .QuickWarpArea_ManagerName@l
+blr
+
+
+.FLOAT32_MAX_VALUE:
+.int 0x7F7FFFFF
+.QuickWarpArea_GetPositionName:
+stwu      r1, -0x80(r1)
+mflr      r0
+stw       r0, 0x84(r1)
+addi      r11, r1, 0x80
+bl _savegpr_25
+mr        r31, r3
+mr r30, r4
+
+lwz r3, 0x3C(r31)
+cmpwi r3, -1
+lwz r6, 0x20(r31)
+beq .QuickWarpArea_GetPositionName_MakeName
+#Just completely ignore the searching if ObjArg7 is set to -1
+
+mr r29, r3  #Length
+mr r28, r6, #i
+lwz r27, 0x20(r31) #Id of Closest
+lis r3, .FLOAT32_MAX_VALUE@ha
+addi r3, r3, .FLOAT32_MAX_VALUE@l
+lwz r3, 0x00(r3)
+stw r3, 0x08(r1) #Last calculated distance
+b .QuickWarpArea_GetPositionName_LoopStart
+
+.QuickWarpArea_GetPositionName_Loop:
+mr r3, r30
+li        r4, 0x40
+lis r5, .QuickWarpArea_PositionNameFormat@ha
+addi r5, r5, .QuickWarpArea_PositionNameFormat@l
+mr r6, r28
+crclr     4*cr1+eq
+bl        snprintf
+
+mr r3, r30
+addi r4, r1, 0x0C
+li r5, 0
+bl tryFindNamePos__2MRFPCcPQ29JGeometry8TVec3<f>PQ29JGeometry8TVec3<f>
+cmpwi r3, 0
+beq .QuickWarpArea_GetPositionName_LoopContinue
+
+#Position exists!
+#Take Mario's position 
+bl getPlayerPos__2MRFv
+mr r4, r3
+addi r3, r1, 0x0C
+bl PSVECDistance
+#result in f1
+lfs f2, 0x08(r1)
+fcmpo cr0, f1, f2
+cror      eq, lt, eq
+bne .QuickWarpArea_GetPositionName_LoopContinue
+
+#We found a closer one!
+stfs f1, 0x08(r1)
+mr r27, r28
+
+
+.QuickWarpArea_GetPositionName_LoopContinue:
+addi r28, r28, 1
+.QuickWarpArea_GetPositionName_LoopStart:
+cmpw r28, r29
+ble .QuickWarpArea_GetPositionName_Loop
+
+#Take the ID of the closest
+mr r6, r27
+
+.QuickWarpArea_GetPositionName_MakeName:
+mr r3, r30
+li        r4, 0x40
+lis r5, .QuickWarpArea_PositionNameFormat@ha
+addi r5, r5, .QuickWarpArea_PositionNameFormat@l
+crclr     4*cr1+eq
+bl        snprintf
+
+.QuickWarpArea_GetPositionName_Return:
+addi      r11, r1, 0x80
+bl _restgpr_25
+lwz       r0, 0x84(r1)
+mtlr      r0
+addi      r1, r1, 0x80
 blr
 
 .END_OF_QUICKWARPAREA_CODE:
