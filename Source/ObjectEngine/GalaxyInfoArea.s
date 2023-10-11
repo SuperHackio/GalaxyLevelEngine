@@ -117,9 +117,8 @@ addi r5, r5, GalaxyName@l
 lwz r6, 0x20(r31)
 bl getCsvDataStr__2MRFPPCcPC8JMapInfoPCcl
 
-bl getSceneObjHolder__2MRFv
-li r4, 52
-bl getObj__14SceneObjHolderCFi
+li r3, 52
+bl .GLE_GetSceneObj
 mr r29, r3
 
 .NormalGalaxy_GalaxyInfoArea:

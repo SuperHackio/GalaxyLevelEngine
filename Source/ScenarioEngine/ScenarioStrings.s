@@ -87,6 +87,9 @@ TopNo:
 Unlock:
     .string "Unlock"
 
+GhostAttackGhost:
+    .string "GhostAttackGhost"
+
 ForceDisplay:
     .string "NoDisplay"
     

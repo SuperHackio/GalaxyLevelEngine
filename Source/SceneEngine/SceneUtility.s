@@ -2321,6 +2321,22 @@ stw r3, 0x00(r4)
 blr
 
 
+#Gets a SceneObj. Note this doesn't check to see if it exists first!
+#r3 = SceneObjID
+.GLE_GetSceneObj:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+mr r4, r3
+bl getSceneObjHolder__2MRFv   #Confirmed to only use r3
+bl getObj__14SceneObjHolderCFi
+lwz       r0, 0x14(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
+
+
+
 #=======================================
 
 .GLE_IsNeedCancelActionDueToDeath:

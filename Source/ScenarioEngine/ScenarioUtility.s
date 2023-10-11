@@ -705,9 +705,8 @@ bne .PowerStarIDExists
 lwz       r31, 4(r3)
 
 #Lets find the Power Star ID
-bl getSceneObjHolder__2MRFv
-li r4, 4
-bl getObj__14SceneObjHolderCFi
+li r3, 4
+bl .GLE_GetSceneObj
 lwz r3, 0x14(r3)
 mr r4, r31
 bl findStarID__20PowerStarEventKeeperCFPCc
@@ -1795,6 +1794,106 @@ b getCsvDataElementNum__2MRFPC8JMapInfo
 .GLE ADDRESS __ct__25GameDataSomeGalaxyStorageFRC20GalaxyStatusAccessor +0x2C
 bl .GLE_GetTotalScenarioNoFromGalaxyStatusAccessor
 .GLE ENDADDRESS
+
+
+
+#========================================================================================
+
+.GhostAttackGhost_IsAppear:
+bl getCurrentStageName__2MRFv
+lwz r4, 0xC4(r28)
+bl .GLE_isOpenGhostAttackGhost
+b .GhostAttackGhost_IsAppear_Return
+
+
+.GLE ADDRESS init__16GhostAttackGhostFRC12JMapInfoIter +0x1B8
+b .GhostAttackGhost_IsAppear
+.GhostAttackGhost_IsAppear_Return:
+.GLE ENDADDRESS
+
+.GLE ADDRESS makeActorAppeared__16GhostAttackGhostFv +0x14
+li r3, 1
+.GLE ENDADDRESS
+
+#r3 = const char*  GalaxyName
+#r4 = int  Ghost ID
+.GLE_isOpenGhostAttackGhost:
+stwu r1, -0x100(r1)
+mflr      r0
+stw       r0, 0x104(r1)
+addi      r11, r1, 0x100
+bl _savegpr_15
+
+mr r31, r3  # GalaxyName
+mr r30, r4  # Ghost ID
+
+bl makeGalaxyStatusAccessor__2MRFPCc
+stw r3, 0x08(r1)
+addi r3, r1, 0x08
+bl getWorldNo__20GalaxyStatusAccessorCFv
+mr r29, r3
+
+li r28, 0
+b .isOpenGhostAttackGhost_LoopStart
+
+.isOpenGhostAttackGhost_Loop:
+addi r3, r1, 0x08
+mr r4, r29
+lis r5, Type@ha
+addi r5, r5, Type@l
+mr r6, r28
+bl getCsvDataStr__2MRFPPCcPC8JMapInfoPCcl
+
+cmpwi r3, 0
+beq .isOpenGhostAttackGhost_Return
+
+
+lwz r3, 0x08(r1)
+lis r4, GhostAttackGhost@ha
+addi r4, r4, GhostAttackGhost@l
+bl isEqualString__2MRFPCcPCc
+cmpwi r3, 0
+beq+ .isOpenGhostAttackGhost_LoopContinue
+
+addi r3, r1, 0x08
+mr r4, r29
+lis r5, Param00Int@ha
+addi r5, r5, Param00Int@l
+mr r6, r28
+bl getCsvDataS32__2MRFPlPC8JMapInfoPCcl
+
+lwz r3, 0x08(r1)
+cmpw r3, r30
+beq .isOpenGhostAttackGhost_LoopBreak
+
+
+.isOpenGhostAttackGhost_LoopContinue:
+addi r28, r28, 1
+
+.isOpenGhostAttackGhost_LoopStart:
+mr r3, r29
+bl getCsvDataElementNum__2MRFPC8JMapInfo
+cmpw r28, r3
+blt+ .isOpenGhostAttackGhost_Loop
+
+#unlike Power Stars, Ghosts will default to being unlocked instead of locked
+li r3, 1
+b .isOpenGhostAttackGhost_Return
+
+.isOpenGhostAttackGhost_LoopBreak:
+mr r3, r29
+mr r4, r28
+bl isJMapEntryProgressComplete
+#The above returns 0 and 1 only so we can just return
+
+.isOpenGhostAttackGhost_Return:
+addi      r11, r1, 0x100
+bl _restgpr_15
+lwz r0, 0x104(r1)
+mtlr      r0
+addi      r1, r1, 0x100
+blr
+
 
 .GLE PRINTMESSAGE EndWorldmapCode
 .GLE PRINTADDRESS

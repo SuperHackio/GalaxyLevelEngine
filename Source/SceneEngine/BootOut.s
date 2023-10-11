@@ -180,8 +180,10 @@ bl setBronzeStar__16GameDataFunctionFPCcl
 
 
 .NoBootOut_ReviveScenarioSwitch:
+#== NoBootOut Object Re-activation ==
 #Finally fixing this. Reactivate all ScnearioSwitch objects!
 bl .ScenarioSwitch_ReviveAll
+bl .GLE_TryAppearAllGhost
 
 #Another interruption. Try to start a special cutscene!
 bl .NoBootOut_TryStartDemo
