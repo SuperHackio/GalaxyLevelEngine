@@ -2323,6 +2323,36 @@ blr
 
 #=======================================
 
+.GLE_IsNeedCancelActionDueToDeath:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+
+bl isPlayerDead__2MRFv
+cmpwi r3, 0
+bne .GLE_IsNeedCancelActionDueToDeath_Return
+
+bl getPlayerActor__11MarioAccessFv
+lwz r3, 0x584(r3)
+li r4, 0x23
+bl isStatusActive__5MarioCFUl
+cmpwi r3, 0
+bne .GLE_IsNeedCancelActionDueToDeath_Return
+
+#other conditions?
+
+
+li r3, 0
+
+.GLE_IsNeedCancelActionDueToDeath_Return:
+lwz       r0, 0x14(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
+
+
+#=======================================
+
 .GLE ADDRESS startMinigameBGM__2MRFv
 stwu r1, -0x20(r1)
 mflr      r0

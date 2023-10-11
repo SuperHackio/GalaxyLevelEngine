@@ -104,7 +104,33 @@ addi      r11, r1, 0x80
 bl _savegpr_25
 mr        r31, r3
 
+bl .GLE_IsNeedCancelActionDueToDeath
+cmpwi r3, 0
+beq .QuickWarpArea_Movement_Normal
 
+
+#if we need to cancel the wipe, do so here
+lwz r3, 0x48(r31)
+cmpwi r3, 0
+beq .QuickWarpArea_Movement_Return
+
+#Lol do we even need all these?
+bl forceOpenWipeFade__2MRFv
+bl forceOpenWipeCircle__2MRFv
+bl forceOpenSystemWipeFade__2MRFv
+bl forceOpenSystemWipeWhiteFade__2MRFl
+bl forceOpenSystemWipeMario__2MRFv
+bl forceOpenSystemWipeCircle__2MRFv
+
+#blasted
+bl .MR_SystemCircleWipeToCenter
+
+li r3, 0
+stw r3, 0x48(r31)
+
+b .QuickWarpArea_Movement_Return
+
+.QuickWarpArea_Movement_Normal:
 lwz r3, 0x48(r31)
 cmpwi r3, 1
 beq .QuickWarpArea_WaitForWipe
