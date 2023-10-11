@@ -530,4 +530,5 @@
 .set AddMailStarPiece, 0x806BF0AC
 .set getMarioStartHealth__2MRFv, 0x804D7130
 .set sInstance__Q210NrvRosetta14RosettaNrvWait, 0x807DA1C0
+.set MBGM_MINI_GAME, 0x80662ACC
 .GLE REGION END

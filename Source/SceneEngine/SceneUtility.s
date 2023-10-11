@@ -2321,6 +2321,62 @@ stw r3, 0x00(r4)
 blr
 
 
+#=======================================
+
+.GLE ADDRESS startMinigameBGM__2MRFv
+stwu r1, -0x20(r1)
+mflr      r0
+stw       r0, 0x24(r1)
+addi      r11, r1, 0x20
+bl _savegpr_29
+
+
+#Lets get the GalaxyStatusAccessor of this stage
+bl getCurrentScenarioNo__2MRFv
+mr r29, r3
+bl makeCurrentGalaxyStatusAccessor__2MRFv
+stw r3, 0x08(r1)
+addi r3, r1, 0x08
+bl getWorldNo__20GalaxyStatusAccessorCFv
+mr r31, r3
+lis r4, MinigameBgm@ha
+addi r4, r4, MinigameBgm@l
+li r5, 2
+mr r6, r29
+bl .getActiveEntryFromGalaxyInfo
+cmpwi r3, 0
+bne .CustomMinigameMusic
+
+mr r3, r31
+lis r4, MinigameBgm@ha
+addi r4, r4, MinigameBgm@l
+li r5, 2
+li r6, 0
+bl .getActiveEntryFromGalaxyInfo
+cmpwi r3, 0
+bne .CustomMinigameMusic
+
+#default
+lis r3, MBGM_MINI_GAME@ha
+addi r3, r3, MBGM_MINI_GAME@l
+
+.CustomMinigameMusic:
+li        r4, 0
+bl        startStageBGMIfNotPlaying__2MRFPCcb
+
+
+addi      r11, r1, 0x20
+bl _restgpr_29
+lwz r0, 0x24(r1)
+mtlr      r0
+addi      r1, r1, 0x20
+blr
+#No additional space here!
+.GLE ENDADDRESS
+
+
+
+
 .GLE PRINTMESSAGE EndWorldmapCode
 .GLE PRINTADDRESS
 .SCENEUTILITY_CONNECTOR:

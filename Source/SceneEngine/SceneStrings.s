@@ -33,6 +33,9 @@ ResultPathId:
 EntryPathId:
     .string "EntryPathId"
     
+MinigameBgm:
+    .string "MinigameBgm"
+    
 #Scenario Settings
 #Disables the star chance music.
 NoStarChance:
