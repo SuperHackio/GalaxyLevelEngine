@@ -272,6 +272,24 @@ b .GameEventValueChecker_serialize
 .GLE ENDADDRESS
 
 
+#r3 = const char* Flag to look for
+#returns -1 if not found
+.GLE_IsExistGameEventValue:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+
+mr r4, r3
+#confirmed to not use r4
+bl getGameEventValueChecker__16GameDataFunctionFv
+bl findIndex__21GameEventValueCheckerCFPCc
+
+lwz       r0, 0x14(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
+
+
 #======== Best Score Corrections ========
 #Because the GLE now assigns best scores to scenarios and not galaxies, we need to alter how we format
 #the score strings by adding a scenario no. if the scenario is 0, we'll use the current scenario no.
@@ -354,7 +372,6 @@ Glider_Format:
 BestScore:
     .string "ベストスコア[%s_%d]" AUTO
 .GLE ENDADDRESS
-
 
 #EndWorldmapCode
 .GAME_EVENT_VALUE_CHECKER_CONNECTOR:

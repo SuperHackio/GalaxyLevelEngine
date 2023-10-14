@@ -6,6 +6,7 @@ b .CreateStarString
 .GLE ADDRESS .BGM_SETTING_INFO_CONNECTOR
 
 #Checks to see if the galaxy string has a space - galaxy names won't ever have spaces in them.
+#r3 = const char*
 .IsStarStringScenario:
 b hasStringSpace__2MRFPCc
 
