@@ -456,10 +456,11 @@ cmpwi r15, 1
 bne UnlockTypeLoop_JumpToNormal
 
 #interruption: make it so that you can force show/force hide scenarios
-lwz r3, 0x08(r1)
-lis r4, ForceDisplay@ha
-addi r4, r4, ForceDisplay@l
-bl isEqualString__2MRFPCcPCc
+# lwz r3, 0x08(r1)
+# lis r4, ForceDisplay@ha
+# addi r4, r4, ForceDisplay@l
+# bl isEqualString__2MRFPCcPCc
+li r3, 0
 cmpwi r3, 0
 beq UnlockTypeLoop_Continue
 
@@ -1019,7 +1020,7 @@ blr
 #========================================================================================
 #Checks to see if the entry exists
 #r3 = JMapInfo*
-#r4 = Type to search for
+#r4 = const char* Type to search for
 .isExistEntryFromGalaxyInfo:
 stwu      r1, -0x70(r1)
 mflr      r0
@@ -1694,6 +1695,30 @@ bl getCsvDataStr__2MRFPPCcPC8JMapInfoPCcl
 cmpwi r3, 0
 beq .getPowerStarNum_Ext_LoopBreak
 
+
+#If we force include a scenario, we ignore Star Masks
+lwz r3, 0x0C(r1)
+lis r4, ForceInclude@ha
+addi r4, r4, ForceInclude@l
+bl isEqualString__2MRFPCcPCc
+cmpwi r3, 0
+beq .getPowerStarNum_Ext_TryStarMask
+
+addi r3, r1, 0x0C
+lwz r4, 0x08(r1)
+lis r5, Param00Int@ha
+addi r5, r5, Param00Int@l
+mr r6, r31
+bl getCsvDataS32__2MRFPlPC8JMapInfoPCcl
+
+lwz r3, 0x0C(r1)
+cmpw r3, r28
+bne .getPowerStarNum_Ext_LoopContinue  #Wrong Scenario
+
+b .getPowerStarNum_Ext_LoopBreak
+
+
+.getPowerStarNum_Ext_TryStarMask:
 lwz r3, 0x0C(r1)
 lis r4, StarMask@ha
 addi r4, r4, StarMask@l
@@ -1758,7 +1783,7 @@ li r31, 0
 b .getPowerStarNum_Ext_Return
 
 
-
+#====================================================
 
 .GLE_GetCurrentStageName_Guarantee:
 stwu      r1, -0x10(r1)
@@ -1782,20 +1807,24 @@ blr
 
 #r3 = GalaxyStatusAccessor*
 .GLE_GetTotalScenarioNoFromGalaxyStatusAccessor:
-lwz       r3, 0(r3)
+b getPowerStarNum__20GalaxyStatusAccessorCFv
+#lwz       r3, 0(r3)
 #fallthrough
 
 #r3 = ScenarioData*
 .GLE_GetTotalScenarioNoFromScenarioData:
-lwz       r3, 4(r3)
-b getCsvDataElementNum__2MRFPC8JMapInfo
+b getPowerStarNum__12ScenarioDataCFv
+# lwz       r3, 4(r3)
+# b getCsvDataElementNum__2MRFPC8JMapInfo
 
 
 .GLE ADDRESS __ct__25GameDataSomeGalaxyStorageFRC20GalaxyStatusAccessor +0x2C
 bl .GLE_GetTotalScenarioNoFromGalaxyStatusAccessor
 .GLE ENDADDRESS
 
-
+.GLE ADDRESS isCompletedWithGreen__20GalaxyStatusAccessorCFv +0x1C
+bl .GLE_GetTotalScenarioNoFromScenarioData
+.GLE ENDADDRESS
 
 #========================================================================================
 
@@ -1892,6 +1921,73 @@ bl _restgpr_15
 lwz r0, 0x104(r1)
 mtlr      r0
 addi      r1, r1, 0x100
+blr
+
+
+#======================================================================
+
+#This function is used to determine if a user has forcefully hidden scenarios
+#Uses a GalaxyStatusAccessor
+#r3 = GalaxyStatusAccessor*
+#r4 = Scenario ID
+#returns:
+#    -1 if not forced (entry doesn't exist)
+#     0 if Forced to not exist
+#     1 if forced to exist
+.GLE_GetScenarioExistStatusFromGalaxyStatusAccessor:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+
+bl getWorldNo__20GalaxyStatusAccessorCFv
+bl .GLE_GetScenarioExistStatus
+
+lwz       r0, 0x14(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
+
+
+#This function is used to determine if a user has forcefully hidden scenarios
+#r3 = JMapInfo* GalaxyInfo
+#r4 = Scenario ID
+#returns:
+#    -1 if not forced (entry doesn't exist)
+#     0 if Forced to not exist
+#     1 if forced to exist
+.GLE_GetScenarioExistStatus:
+stwu      r1, -0x70(r1)
+mflr      r0
+stw       r0, 0x74(r1)
+addi      r11, r1, 0x70
+bl        _savegpr_26
+
+mr r31, r3
+mr r30, r4
+
+mr r3, r31
+lis r4, ExistStatus@ha
+addi r4, r4, ExistStatus@l
+li r5, 2
+mr r6, r30
+bl .getActiveEntryFromGalaxyInfo
+
+cmpwi r3, 0
+mr r4, r3
+li r3, -1
+beq .GLE_GetScenarioExistStatus_Return
+
+lis r3, Data_Enabled@ha
+addi r3, r3, Data_Enabled@l
+bl isEqualString__2MRFPCcPCc
+
+
+.GLE_GetScenarioExistStatus_Return:
+addi      r11, r1, 0x70
+bl        _restgpr_26
+lwz       r0, 0x74(r1)
+mtlr      r0
+addi      r1, r1, 0x70
 blr
 
 

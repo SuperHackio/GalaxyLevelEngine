@@ -67,7 +67,10 @@ blr
 #r3 = WChar_T* Destination
 #r4 = Galaxy name
 #r5 = ScenarioNo
+#r6 = Allow ExistStatus
 .AddStarToStarString:
+li r6, 1
+.AddStarToStarString_WithFlag:
 stwu      r1, -0x40(r1)
 mflr      r0
 stw       r0, 0x44(r1)
@@ -77,6 +80,7 @@ bl _savegpr_25
 mr r30, r3
 mr r27, r4
 mr r31, r5
+mr r26, r6
 
 mr        r3, r27
 bl makeGalaxyStatusAccessor__2MRFPCc
@@ -91,6 +95,24 @@ li r7, 0
 bl PowerStar_getColorInStage
 mr r25, r3
 
+cmpwi r26, 0
+beq .AddStarToStarString_Classic
+#Interruption - If the star is supposed to be forcefully hidden or forcefully shown, do that.
+addi      r3, r1, 0x08
+mr r4, r31
+bl .GLE_GetScenarioExistStatusFromGalaxyStatusAccessor
+cmpwi r3, -1
+beq .AddStarToStarString_Classic
+
+#Force Hide
+cmpwi r3, 0
+mr r3, r30
+beq .AddStarToStarString_Return
+
+#Force Show is still subject to unlock conditions
+
+
+.AddStarToStarString_Classic:
 addi      r3, r1, 0x08
 mr r4, r31
 bl hasPowerStar__20GalaxyStatusAccessorCFl
@@ -375,7 +397,8 @@ addi r24, r1, 0x20
 mr r3, r24
 mr r4, r25
 lwz r5, 0xB50(r1)
-bl .AddStarToStarString
+li r6, 0
+bl .AddStarToStarString_WithFlag
 mr r23, r3
 
 subf      r0, r24, r23

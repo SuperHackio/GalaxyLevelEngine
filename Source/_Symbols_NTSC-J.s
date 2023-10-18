@@ -532,4 +532,7 @@
 .set sInstance__Q210NrvRosetta14RosettaNrvWait, 0x807D4280
 .set GhostAttackGhostManager_JpName, 0x806B83B8
 .set MBGM_MINI_GAME, 0x8065CBAC
+.set hasMissedInScene__2MRFv, 0x804D7060
+.set DreamerDeadCountArea_ManagerName, 0x8065CF18
+.set sub_804D31E0, 0x804D31E0
 .GLE REGION END

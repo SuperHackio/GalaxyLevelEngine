@@ -93,6 +93,12 @@ GhostAttackGhost:
 ForceDisplay:
     .string "NoDisplay"
     
+ExistStatus:
+    .string "ExistStatus"
+    
+ForceInclude:
+    .string "ForceInclude"
+    
 End:
     .string "End"
     

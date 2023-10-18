@@ -166,8 +166,211 @@ subi r4, r28, 1
 lwz r3, 0x88(r30)
 b .__Decide_IsBronze
 
+#---------------------------------------------------
+#Also make it so that ObjArg0 not only doubles as Spawn ID and Dreamer file ID, but also now TRIPLES to also include being the Save Data selector. It only makes sense!
+.GLE ADDRESS isMakeAppear__12SuperDreamerCFv +0xA4
+b .GLE_SuperDreamer_isMakeAppearEX
+.GLE_SuperDreamer_isMakeAppearEX_Return:
+.GLE ENDADDRESS
 
+.GLE_SuperDreamer_isMakeAppearEX:
+cmpwi r3, 0
+#if Zero deaths required, just spawn in without bothering
+beq .GLE_SuperDreamer_isMakeAppearEX_JumpLoc
 
+lwz       r3, 0x16C(r30)
+bl .GLE_isExistDreamerDeadCountFromStorage
+cmpwi r3, -1
+beq .GLE_SuperDreamer_isMakeAppearEX_JumpLoc2
+
+lwz       r3, 0x16C(r30)
+bl .GLE_getDreamerDeadCountFromStorage
+lwz       r4, 0x170(r30)
+cmpw r3, r4
+bge .GLE_SuperDreamer_isMakeAppearEX_JumpLoc
+
+.GLE_SuperDreamer_isMakeAppearEX_JumpLoc2:
+li r3, 0
+b .GLE_SuperDreamer_isMakeAppearEX_Return
+
+.GLE_SuperDreamer_isMakeAppearEX_JumpLoc:
+bl isAllowDreamerInStage__20GameSequenceFunctionFv
+b .GLE_SuperDreamer_isMakeAppearEX_Return
+
+#======================================================================================
+#-- DreamerDeadCountArea Rework --
+
+.set MAX_DREAMER_DEAD_COUNT_AREA, 32
+
+.GLE ADDRESS cCreateTable__16AreaObjContainer +0x118
+.int MAX_DREAMER_DEAD_COUNT_AREA
+.GLE ENDADDRESS
+#---------------------------------------------------
+#Custom replacement for MR::incPlayerAndTryScenarioMissNum((bool))
+.GLE_incPlayerAndTryScenarioMissNum:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+stw       r31, 0x0C(r1)
+
+mr        r31, r3
+
+bl incPlayerMissNum__16GameDataFunctionFv
+cmpwi r3, 0
+beq .GLE_incPlayerAndTryScenarioMissNum_SkipToDebateLuigi
+#not sure what this is for to be honest
+cmpwi r31, 0
+bne .GLE_incPlayerAndTryScenarioMissNum_SkipToDebateLuigi
+#Now there's a bunch of stuff in vanilla that we don't need to do here
+#for example, we do not need to do the hubworld check because you otherwise do not lose lives in the hubworld
+#and besides, what if you did wanna put a SuperDreamer on a hubworld for some reason?
+
+bl getPlayerPos__2MRFv
+mr r4, r3
+lis r3, DreamerDeadCountArea_ManagerName@ha
+addi r3, r3, DreamerDeadCountArea_ManagerName@l
+bl getAreaObj__2MRFPCcRCQ29JGeometry8TVec3<f>
+cmpwi r3, 0
+beq .GLE_incPlayerAndTryScenarioMissNum_SkipToDebateLuigi
+
+#Okay! We died inside an area. Quickly check the ObjArg then set the value
+lwz r31, 0x20(r3)
+cmpwi r31, -1
+beq .GLE_incPlayerAndTryScenarioMissNum_SkipToDebateLuigi
+
+mr r3, r31
+bl .GLE_getDreamerDeadCountFromStorage
+addi r3, r3, 1
+li r4, 0
+li r5, 99
+bl clamp__2MRFlll
+mr r4, r3
+mr r3, r31
+bl .GLE_setDreamerDeadCountFromStorage
+
+.GLE_incPlayerAndTryScenarioMissNum_SkipToDebateLuigi:
+#Okay now I know the playable Luigi isn't properly implemented but I will put this here anyways for compatibility purposes
+bl hasMissedInScene__2MRFv
+cmpwi r3, 0
+bne .GLE_incPlayerAndTryScenarioMissNum_Return
+bl sub_804D31E0
+
+.GLE_incPlayerAndTryScenarioMissNum_Return:
+lwz       r0, 0x14(r1)
+lwz       r31, 0x0C(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
+
+.GLE ADDRESS incPlayerAndTryScenarioMissNum__2MRFb
+b .GLE_incPlayerAndTryScenarioMissNum
+.GLE ENDADDRESS
+#---------------------------------------------------
+#r3 = ID
+.GLE_isExistDreamerDeadCountFromStorage:
+stwu      r1, -0x150(r1)
+mflr      r0
+stw       r0, 0x154(r1)
+addi      r11, r1, 0x150
+bl _savegpr_29
+
+mr r31, r3
+
+bl .GLE_GetCurrentStageName_Guarantee
+mr r5, r3
+mr r6, r31
+addi r3, r1,0x0C
+li r4, 0x110
+bl .GLE_getDreamerDeadCountStorageName
+
+addi r3, r1,0x0C
+bl .GLE_IsExistGameEventValue
+
+b .GLE_DreamerDeadCountFromStorage_SHARED
+#addi      r11, r1, 0x150
+#bl _restgpr_29
+#lwz       r0, 0x154(r1)
+#mtlr      r0
+#addi      r1, r1, 0x150
+#blr
+#---------------------------------------------------
+#r3 = ID
+.GLE_getDreamerDeadCountFromStorage:
+stwu      r1, -0x150(r1)
+mflr      r0
+stw       r0, 0x154(r1)
+addi      r11, r1, 0x150
+bl _savegpr_29
+
+mr r31, r3
+
+bl .GLE_GetCurrentStageName_Guarantee
+mr r5, r3
+mr r6, r31
+addi r3, r1,0x0C
+li r4, 0x110
+bl .GLE_getDreamerDeadCountStorageName
+
+bl getGameEventValueChecker__16GameDataFunctionFv
+addi r4, r1,0x0C
+bl getValue__21GameEventValueCheckerCFPCc
+
+b .GLE_DreamerDeadCountFromStorage_SHARED
+#addi      r11, r1, 0x150
+#bl _restgpr_29
+#lwz       r0, 0x154(r1)
+#mtlr      r0
+#addi      r1, r1, 0x150
+#blr
+#---------------------------------------------------
+#r3 = ID
+#r4 = value
+.GLE_setDreamerDeadCountFromStorage:
+stwu      r1, -0x150(r1)
+mflr      r0
+stw       r0, 0x154(r1)
+addi      r11, r1, 0x150
+bl _savegpr_29
+
+mr r31, r3
+mr r30, r4
+
+bl .GLE_GetCurrentStageName_Guarantee
+mr r5, r3
+mr r6, r31
+addi r3, r1,0x0C
+li r4, 0x110
+bl .GLE_getDreamerDeadCountStorageName
+
+bl getGameEventValueChecker__16GameDataFunctionFv
+addi r4, r1,0x0C
+mr r5, r30
+bl setValue__21GameEventValueCheckerFPCcUs
+
+.GLE_DreamerDeadCountFromStorage_SHARED:
+addi      r11, r1, 0x150
+bl _restgpr_29
+lwz       r0, 0x154(r1)
+mtlr      r0
+addi      r1, r1, 0x150
+blr
+#---------------------------------------------------
+#r3 = Char* Dest
+#r4 = int DestSize
+#r5 = Const Char* StageName
+#r6 = int ID
+.GLE_getDreamerDeadCountStorageName:
+mr r7, r6
+mr r6, r5
+lis       r5, DreamerDeadCount_EventValue_Format@ha
+addi      r5, r5, DreamerDeadCount_EventValue_Format@l
+crclr     4*cr1+eq
+b       snprintf
+
+DreamerDeadCount_EventValue_Format:
+    .string "DreamerDeadCount[%s_%d]"
+
+#======================================================================================
 
 
 

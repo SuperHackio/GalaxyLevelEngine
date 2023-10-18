@@ -6,7 +6,7 @@
 #Obj Arg 3 = Closing Wipe Time (in frames)
 #Obj Arg 4 = Opening Wipe Type (-1 = Fade to White, 0 = Fade to Black, 1 = Circle, 2 = Mario. The other two can't Open...) If Arg 2 is set to 0, ignored.
 #Obj Arg 5 = Opening Wipe Time (in frames)
-#Obj Arg 6 = bool. Display LoadIcon? Default False
+#Obj Arg 6 = bool. Display LoadIcon / Remove Powerup? Default to Neither
 #Obj Arg 7 = Max Position ID to look for. -1 to Disable.
 
 
