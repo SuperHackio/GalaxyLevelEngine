@@ -535,4 +535,6 @@
 .set hasMissedInScene__2MRFv, 0x804D7060
 .set DreamerDeadCountArea_ManagerName, 0x8065CF18
 .set sub_804D31E0, 0x804D31E0
+.set sub_80492970, 0x80492970
+.set sub_80492B20, 0x80492B20
 .GLE REGION END

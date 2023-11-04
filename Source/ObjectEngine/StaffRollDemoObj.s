@@ -55,7 +55,7 @@ mr r3, r30
 mr r4, r31
 bl useStageSwitchReadB__2MRFP9LiveActorRC12JMapInfoIter
 
-li        r3, 0xE8
+li        r3, 0x100
 bl        __nw__FUl
 cmpwi     r3, 0
 beq       loc_80144830
@@ -64,6 +64,20 @@ bl        __ct__9StaffRollFv
 loc_80144830:
 stw       r3, 0x90(r30)
 bl        initWithoutIter__7NameObjFv
+
+mr r3, r31
+lwz r4, 0x90(r30)
+addi r4, r4, 0xE8
+li r5, 528  #default delay
+stw r5, 0x00(r4)
+bl getJMapInfoArg0NoInit__2MRFRC12JMapInfoIterPl
+
+mr r3, r31
+lwz r4, 0x90(r30)
+addi r4, r4, 0xEC
+li r5, 729  #default delay
+stw r5, 0x00(r4)
+bl getJMapInfoArg1NoInit__2MRFRC12JMapInfoIterPl
 
 lwz       r5, 0x90(r30)
 lwz       r0, 0xBC(r30)
@@ -312,7 +326,7 @@ stw       r0, 0x14(r1)
 stw       r31, 0xC(r1)
 mr        r31, r3
 
-li r4, 180
+li r4, 180  #The amount of time between the last credit and "The End"
 bl isGreaterStep__2MRFPC11LayoutActorl
 cmpwi r3, 0
 beq .sub_80492C40_Return
@@ -352,6 +366,14 @@ lwz       r31, 0xC(r1)
 mtlr      r0
 addi      r1, r1, 0x10
 blr
+.GLE ENDADDRESS
+
+.GLE ADDRESS sub_80492B20 +0x28
+#lwz r4, 0xE8(r31)
+.GLE ENDADDRESS
+
+.GLE ADDRESS sub_80492970 +0x3C
+#lwz r29, 0xEC(r28)
 .GLE ENDADDRESS
 
 .GLE ADDRESS .SCENARIO_SWITCH_CONNECTOR
