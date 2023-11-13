@@ -279,13 +279,13 @@ beq .StaffRollDemoObj_NrvEnd_Return
 mr r3, r31
 bl onSwitchDead__2MRFP9LiveActor
 
-.StaffRollDemoObj_NrvEnd_Return:
 mr r3, r31
 lwz       r12, 0(r3)
 lwz       r12, 0x38(r12)
 mtctr     r12
 bctrl  #Kill?
 
+.StaffRollDemoObj_NrvEnd_Return:
 lwz       r0, 0x14(r1)
 lwz       r31, 0x0C(r1)
 mtlr      r0
