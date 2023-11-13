@@ -211,6 +211,9 @@ bl appear__9LiveActorFv
 lbz r3, 0xA6(r31)
 cmpwi r3, 0
 ble .StageResultObj_Appear_setNerve_Wait
+#If we skip the results, we need to pause the demo NOW
+mr r3, r31
+bl        pauseTimeKeepDemo__2MRFP9LiveActor
 addi r4, r13, .StageResultObj_NrvGameSave_sInstance - STATIC_R13
 b .StageResultObj_Appear_setNerve
 
@@ -421,7 +424,7 @@ bl        startBckPlayer__2MRFPCcPCc
 
 .StageResultObj_AppearWait_TryStartResults:
 
-lwz r3, WaitStringJapanese - STATIC_R2(r2)
+li r3, 0
 bl isDemoPartLastStep__2MRFPCc
 cmpwi r3, 0
 beq .StageResultObj_AppearWait_Return
@@ -596,7 +599,6 @@ li r4, 15
 bl isGreaterStep__2MRFPC9LiveActorl
 cmpwi r3, 0
 beq .StageResultObj_exeGameSave_Return
-
 
 bl isActiveSaveDataHandleSequence__20GameSequenceFunctionFv
 cmpwi r3, 0
