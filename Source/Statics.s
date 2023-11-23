@@ -9,6 +9,8 @@ blr
 .GLE ADDRESS STATIC_INIT_LIST +0x9C4
 #Take out Lubbas original static init
 .int .__DEAD_STATIC
+#Take out MeisterDemoExitItemRoom static init
+.int .__DEAD_STATIC
 .GLE ENDADDRESS
 
 #I have no idea what I just replaced but it's related to the world map so I don't care!

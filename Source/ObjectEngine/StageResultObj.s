@@ -767,7 +767,7 @@ b .MarioHairAndHatModel_Hide
 .GLE ENDADDRESS
 
 .GLE PRINTADDRESS
-.GLE ASSERT 0x80352F10
+.GLE ASSERT __sinit_\MeisterDemoGrandStarReturn_cpp
 .GLE ENDADDRESS
 
 #=====================================================================
