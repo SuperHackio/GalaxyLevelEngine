@@ -6,21 +6,11 @@
 #Obj Arg 3 = Closing Wipe Time (in frames)
 #Obj Arg 4 = Opening Wipe Type (-1 = Fade to White, 0 = Fade to Black, 1 = Circle, 2 = Mario. The other two can't Open...) If Arg 2 is set to 0, ignored.
 #Obj Arg 5 = Opening Wipe Time (in frames)
-#Obj Arg 6 = bool. Display LoadIcon / Remove Powerup? Default to Neither
+#Obj Arg 6 = bool. Display LoadIcon / Remove Powerup / Toggle Camera. Default to Neither + 
 #Obj Arg 7 = Max Position ID to look for. -1 to Disable.
 
-
-
-
-
-# Old stuff that's not actually programmed in
-#Obj Arg 6 = Spawn type. Same values as a normal mario spawn. Ignored if relative. SCRAPPED
-#Obj Arg 7 = Relative? TODO: Not sure if I wanna include this, but the idea is that we can just teleport mario to the general pos offset based from the center of the area
-#     For example, if mario jumps into the area placed on the ground, he'll spawn above the general position
-#Note: I ended up ditching this as mario's momentum isn't preserved
-
-
-
+#The general positions that are used by this area instance will have a corrosponding Camera ID with the same ID as the general position (the number part is the same)
+#This wil tie the camera to the generalpos hopefully
 
 #QuickWarpArea shares it's area manager with SceneChangeArea
 #Actually this is going to share a lot with SceneChangeArea in general...
@@ -39,7 +29,7 @@ mflr      r0
 stw       r0, 0x14(r1)
 stw       r31, 0x0C(r1)
 mr        r31, r3
-li        r3, 0x50
+li        r3, 0x54
 bl        __nw__FUl
 cmpwi     r3, 0
 beq       .QuickWarpArea_NEW_Return
@@ -66,6 +56,7 @@ addi      r4, r4, .QuickWarpArea_VTable@l
 stw       r4, 0x00(r31)
 li r4, 0
 stw       r4, 0x48(r31) #Flag for making sure we transition properly.
+stw       r4, 0x50(r31) #ActorCameraInfo*
 li r4, 60
 stw       r4, 0x4C(r31) #Open Wipe Delay timer
 mr        r3, r31
@@ -82,26 +73,123 @@ stwu      r1, -0x10(r1)
 mflr      r0
 stw       r0, 0x14(r1)
 stw       r31, 0x0C(r1)
-#stw       r30, 0x08(r1)
+stw       r30, 0x08(r1)
 mr        r31, r3
-#mr r30, r4
+mr r30, r4
 
 bl        init__7AreaObjFRC12JMapInfoIter
 mr        r3, r31
 bl        connectToSceneAreaObj__2MRFP7NameObj
 
+lwz r3, 0x38(r31)
+cmpwi r3, -1
+bne .QuickWarpArea_Init_FlagSkip
+li r3, 0
+stw r3, 0x38(r31)
+
+.QuickWarpArea_Init_FlagSkip:
+#init the camera if it's enabled
+#If it is not enabled, then we leave the pointer as NULL so we know it's disabled
+lwz r3, 0x38(r31)
+rlwinm r3, r3, 0, 29, 29
+cmpwi r3, 0
+ble .QuickWarpArea_Init_Return
+
+#Camera is enabled.
+mr r3, r31
+mr r4, r30
+bl .QuickWarpArea_InitCamera
+
+.QuickWarpArea_Init_Return:
 lwz       r31, 0x0C(r1)
-#lwz       r30, 0x08(r1)
+lwz       r30, 0x08(r1)
 lwz       r0, 0x14(r1)
 mtlr      r0
 addi      r1, r1, 0x10
 blr
+
 #===========================
-.QuickWarpArea_Movement:
-stwu      r1, -0x80(r1)
+
+.GLE PRINTADDRESS
+.QuickWarpArea_InitCamera:
+stwu      r1, -0x100(r1)
 mflr      r0
-stw       r0, 0x84(r1)
-addi      r11, r1, 0x80
+stw       r0, 0x104(r1)
+addi      r11, r1, 0x100
+bl _savegpr_25
+mr        r31, r3
+mr r30, r4
+
+#This is where things get complicated
+#Areas do not have a CameraSetId so we will use the GeneralPosition IDs as Camera IDs
+#This will tie a camera to each GeneralPos. When using the Range operator, all positions must have a camera, or all positions must not have a camera. There is no "some have camera, some don't".
+
+#Also we need to do this all manually. Great...
+li r3, 0x08
+bl __nw__FUl
+stw r3, 0x50(r31)
+#do we really need to check for null here?
+mr r3, r30
+bl getPlacedZoneId__2MRFRC12JMapInfoIter
+
+mr r5, r3
+lwz r3, 0x50(r31)
+li r4, -1
+bl __ct__15ActorCameraInfoFll
+
+#ActorCameraInfo initilized! Though we're not done yet...
+#We also need to initilize the event cameras manually
+#We will initilize one for each of the GeneralPositions that are used (required for the Range operator)
+lwz r3, 0x3C(r31)
+cmpwi r3, -1
+bne .QuickWarpArea_InitCamera_PrepLoop
+#If the Range Operator is off, then just make the loop run once
+lwz r3, 0x20(r31)
+
+.QuickWarpArea_InitCamera_PrepLoop:
+lwz r4, 0x20(r31)
+mr r29, r3  #Length
+mr r28, r4, #i
+b .QuickWarpArea_InitCamera_LoopStart
+
+.QuickWarpArea_InitCamera_Loop:
+#Start by making the Camera name
+#These are just the same as the position name
+addi r3, r1, 0x10
+li        r4, 0x40
+lis r5, .QuickWarpArea_PositionNameFormat@ha
+addi r5, r5, .QuickWarpArea_PositionNameFormat@l
+mr r6, r28
+crclr     4*cr1+eq
+bl        snprintf
+
+lwz r3, 0x50(r31)
+addi r4, r1, 0x10
+bl declareEventCamera__2MRFPC15ActorCameraInfoPCc
+
+.QuickWarpArea_InitCamera_LoopContinue:
+addi r28, r28, 1
+
+.QuickWarpArea_InitCamera_LoopStart:
+cmpw r28, r29
+ble .QuickWarpArea_InitCamera_Loop
+
+
+.QuickWarpArea_InitCamera_Return:
+addi      r11, r1, 0x100
+bl _restgpr_25
+lwz       r0, 0x104(r1)
+mtlr      r0
+addi      r1, r1, 0x100
+blr
+
+#===========================
+
+.QuickWarpArea_Movement:
+stwu      r1, -0x100(r1)
+mflr      r0
+stw       r0, 0x104(r1)
+addi      r11, r1, 0x100
 bl _savegpr_25
 mr        r31, r3
 
@@ -225,33 +313,52 @@ b .QuickWarpArea_Movement_Return
 
 .QuickWarpArea_MovePlayer:
 lwz r3, 0x38(r31)
+rlwinm r3, r3, 0, 31, 31
 cmpwi r3, 0
 ble .QuickWarpArea_NoLoadIcon
-cmpwi r3, 2
-beq .QuickWarpArea_NoLoadIcon
 bl .MR_StartLoadingIcon
 
 .GLE PRINTADDRESS
 .QuickWarpArea_NoLoadIcon:
 #ok finally
 lwz r3, 0x38(r31)
-cmpwi r3, 1
+rlwinm r3, r3, 0, 30, 30
+cmpwi r3, 0
 ble .QuickWarpArea_AbsoluteWarp
 bl curePlayerElementMode__2MRFv
 
 .QuickWarpArea_AbsoluteWarp:
 #First lets make the name of our target
 mr r3, r31
-addi r4, r1, 0x08
+addi r4, r1, 0x20
 bl .QuickWarpArea_GetPositionName
+
+#Warp there
 #Put mario at the position and open wipe
-addi r3, r1, 0x08
+addi r3, r1, 0x20
 bl setPlayerPos__2MRFPCc
+
+#start event camera if enabled
+lwz r3, 0x50(r31)
+cmpwi r3, 0
+beq .QuickWarpArea_SkipCamera
+#We'll be targeting the player here
+addi r3, r1, 0x08
+bl __ct__15CameraTargetArgFv
+addi r3, r1, 0x08
+bl setCameraTargetToPlayer__2MRFP15CameraTargetArg
+
+lwz r3, 0x50(r31)
+addi r4, r1, 0x20
+addi r5, r1, 0x08
+li r6, -1  #what does this do exactly...?
+bl startEventCamera__2MRFPC15ActorCameraInfoPCcRC15CameraTargetArgl
+
+.QuickWarpArea_SkipCamera:
 li r3, 3 #change state to wait for the countdown
 stw r3, 0x48(r31)
 lwz r3, 0x24(r31)
 stw r3, 0x4C(r31) #Set the countdown
-
 b .QuickWarpArea_Movement_Return
 
 
@@ -306,12 +413,28 @@ li r3, 1
 bl onPlayerControl__2MRFb
 #bl pauseOffCameraDirector__2MRFv
 
+lwz r3, 0x50(r31)
+cmpwi r3, 0
+beq .QuickWarpArea_Movement_Return
+
+#Unlock the event camera
+#I really hope this doesn't break...
+mr r3, r31
+addi r4, r1, 0x20
+bl .QuickWarpArea_GetPositionName
+
+lwz r3, 0x50(r31)
+addi r4, r1, 0x20
+li r5, 1  #Needs to be 1 or else the camera resets and that's no good
+li r6, -1
+bl endEventCamera__2MRFPC15ActorCameraInfoPCcbl
+
 .QuickWarpArea_Movement_Return:
-addi      r11, r1, 0x80
+addi      r11, r1, 0x100
 bl _restgpr_25
-lwz       r0, 0x84(r1)
+lwz       r0, 0x104(r1)
 mtlr      r0
-addi      r1, r1, 0x80
+addi      r1, r1, 0x100
 blr
 
 
