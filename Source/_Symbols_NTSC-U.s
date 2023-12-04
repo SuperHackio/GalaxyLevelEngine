@@ -83,7 +83,6 @@
 .set getScenePlayingResult__2MRFv, 0x804D6FE0
 .set endStage__18ScenePlayingResultFv, 0x804C8ED0
 .set setScenePlayingResultStarId__2MRFl, 0x804D6AA0
-.set setStageName__18ScenePlayingResultFPCc, 0x804C8EB0
 .set requestChangeStageAfterStageClear__2MRFv, 0x804D6670
 .set getStageName__18ScenePlayingResultFv, 0x804C8EC0
 
@@ -762,5 +761,7 @@
 .set sub_804D31E0, 0x804D31E0
 .set sub_80492970, 0x80492970
 .set sub_80492B20, 0x80492B20
+
+
 
 .GLE REGION END

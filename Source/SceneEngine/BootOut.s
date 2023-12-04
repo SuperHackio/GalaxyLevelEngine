@@ -319,7 +319,7 @@ li r5, 2
 bl .getActiveEntryFromGalaxyInfo
 
 cmpwi r3, 0
-beq .ChangeStageAfterStageClear
+beq .ChangeStageAfterStageClear_ResetGalaxyName
 
 lis r4, GalaxyScenario_Format@ha
 addi r4, r4, GalaxyScenario_Format@l
@@ -331,11 +331,20 @@ bl sscanf
 #We got the values... hopefully the user added a space between the galaxy name and scenario...
 bl getScenePlayingResult__2MRFv
 addi      r4, r1, 0x0C
-bl setStageName__18ScenePlayingResultFPCc
+bl setStageName__23PlayResultInStageHolderFPCc
 
 lwz r3, 0x08(r1)
 bl setScenePlayingResultStarId__2MRFl
 #Should be it...
+b .ChangeStageAfterStageClear
+
+#Replace the Galaxy name with the current galaxy just in case. Needed for NBO stars that do not use masks
+.ChangeStageAfterStageClear_ResetGalaxyName:
+bl getCurrentStageName__2MRFv
+mr r4, r3
+#confirmed to not use r4
+bl getScenePlayingResult__2MRFv
+bl setStageName__23PlayResultInStageHolderFPCc
 
 .ChangeStageAfterStageClear:
 addi      r11, r1, 0x120

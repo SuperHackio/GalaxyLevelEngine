@@ -56,7 +56,6 @@
 .set getScenePlayingResult__2MRFv, 0x804D6FE0
 .set endStage__18ScenePlayingResultFv, 0x804C8ED0
 .set setScenePlayingResultStarId__2MRFl, 0x804D6AA0
-.set setStageName__18ScenePlayingResultFPCc, 0x804C8EB0
 .set requestChangeStageAfterStageClear__2MRFv, 0x804D6670
 .set getStageName__18ScenePlayingResultFv, 0x804C8EC0
 .set __ct__14WorldMapHolderFv, 0x804E7BC0
