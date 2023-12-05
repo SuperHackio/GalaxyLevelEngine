@@ -2049,49 +2049,56 @@ addi      r1, r1, 0x10
 
 #GLE::resetChangeBgmArea()
 .GLE_ResetChangeBGMArea:
-stwu      r1, -0x10(r1)
+stwu      r1, -0x60(r1)
 mflr      r0
-stw       r0, 0x14(r1)
-stw       r31, 0x0C(r1)
+stw       r0, 0x64(r1)
+addi      r11, r1, 0x60
+bl _savegpr_27
 
 #BgmChangeArea_AreaMgr_Str
 lis r3, BgmChangeArea_AreaMgr_Str@ha
 addi r3, r3, BgmChangeArea_AreaMgr_Str@l
 bl getAreaObjManager__2MRFPCc
-
-
-#Loop time!
-li        r4, 0
-li        r5, 0
-li        r6, 1
-li        r8, 0
-b .GLE_ResetChangeBGMArea_LoopStart
-
-.GLE_ResetChangeBGMArea_Loop:
-lwz       r7, 0x14(r3)
-lwzx      r7, r7, r4
-
-#Reset the area
-stb       r5, 0x48(r7)
-
-.GLE_ResetChangeBGMArea_LoopContinue:
-addi      r8, r8, 1
-addi      r4, r4, 4
-.GLE_ResetChangeBGMArea_LoopStart:
-lwz       r0, 0x1C(r3)
-cmpw      r8, r0
-blt .GLE_ResetChangeBGMArea_Loop
+mr r31, r3
 
 #Revalidate the areas
 bl getSceneMgr__7AudWrapFv
 li r0, 0
 stb r0, 0xC(r3)
 
+#Loop time!
+li        r30, 0
+li        r29, 0
+li        r28, 1
+li        r27, 0
+b .GLE_ResetChangeBGMArea_LoopStart
 
-lwz       r0, 0x14(r1)
-lwz       r31, 0x0C(r1)
+.GLE_ResetChangeBGMArea_Loop:
+lwz       r3, 0x14(r31)
+lwzx      r3, r3, r30
+
+#Reset the area
+stb       r29, 0x48(r3)
+
+lwz       r12, 0(r3)
+lwz       r12, 0x14(r12)
+mtctr     r12
+bctrl
+
+.GLE_ResetChangeBGMArea_LoopContinue:
+addi      r27, r27, 1
+addi      r30, r30, 4
+.GLE_ResetChangeBGMArea_LoopStart:
+lwz       r0, 0x1C(r31)
+cmpw      r27, r0
+blt .GLE_ResetChangeBGMArea_Loop
+
+
+addi      r11, r1, 0x60
+bl _restgpr_27
+lwz       r0, 0x64(r1)
 mtlr      r0
-addi      r1, r1, 0x10
+addi      r1, r1, 0x60
 blr
 
 #=====================================================

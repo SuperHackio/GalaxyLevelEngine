@@ -184,6 +184,8 @@ bl setBronzeStar__16GameDataFunctionFPCcl
 #Finally fixing this. Reactivate all ScnearioSwitch objects!
 bl .ScenarioSwitch_ReviveAll
 bl .GLE_TryAppearAllGhost
+li r3, 0
+bl .GLE_StartCurrentStageBGMAndResetChangeBGMArea
 
 #Another interruption. Try to start a special cutscene!
 bl .NoBootOut_TryStartDemo
