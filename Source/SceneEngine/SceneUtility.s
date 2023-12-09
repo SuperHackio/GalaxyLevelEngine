@@ -1821,7 +1821,9 @@ li r4, 1
 bl .MR_GetGameSetting
 cmpwi r3, 0
 beq .NoWC24Message_StageResultInformer_JumpLoc
-b .YesWC24Message_StageResultInformer:
+
+mr r3, r31
+b .YesWC24Message_StageResultInformer
 
 .NoWC24Message_StageResultInformer_JumpLoc:
 b .NoWC24Message_StageResultInformer_SkipPos
