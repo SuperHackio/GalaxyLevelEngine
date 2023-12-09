@@ -188,6 +188,14 @@ bne .ArchiveHotswapping_NoSwap
 
 .ArchiveHotswapping_DoSwap:
 #First up
+#CHECK to see if the target has already been loaded. If it has been loaded already, DO NOT RELOAD IT.
+#Dying is the only way that this would matter, but that's still rather important!!
+lwz       r3, sInstance__29SingletonHolder_10FileLoader_ - STATIC_R13(r13)
+mr r4, r30
+bl isNeedToLoad__10FileLoaderCFPCc
+cmpwi r3, 0
+beq .ArchiveHotswapping_NoSwap
+
 #Tell the file loader to load the mask instead of the actual file
 #this is done normally
 cmpwi     r27, 0
@@ -282,7 +290,7 @@ li        r6, 0
 bl        convertPathToEntrynumConsideringLanguage__2MRFPCc
 
 addi      r3, r1, 0x08
-bl getBasename__2MRFPCc
+#bl getBasename__2MRFPCc
 bl getHashCodeLower__2MRFPCc
 
 lwz       r0, 0x114(r1)
