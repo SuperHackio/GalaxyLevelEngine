@@ -374,7 +374,7 @@ b .MarioPowerupClear_ExtA
 #bne .MarioPowerupClear_ExtA_NoClearPowerup
 
 
-#First Check the Boo Mushroom. We need to clear that noe regardless
+#First Check the Boo Mushroom. We need to clear that now regardless
 bl isPlayerElementModeTeresa__2MRFv
 cmpwi r3, 0
 bne .MarioPowerupClear_ExtA_YesClearPowerup

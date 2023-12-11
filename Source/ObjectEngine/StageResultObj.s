@@ -59,7 +59,7 @@ stw r3, 0xA0(r31) #Store Coins
 stb r3, 0xA4(r31) #New Comet Medal flag
 stb r3, 0xA5(r31) #Obj Arg 1 "Do not save game" (1 = true)
 stb r3, 0xA6(r31) #Obj Arg 2 "Skip results and only save" (1 = true)
-
+stb r3, 0xA7(r31) #Obj Arg 3 "Save Sequence Type" (0 = Save Confirm Message Only, 1 = Save Confirm Dialogue, 2 = Autosave no Dialogue)
 
 
 
@@ -175,6 +175,14 @@ stw r0, 0x00(r4)
 bl getJMapInfoArg2NoInit__2MRFRC12JMapInfoIterPb
 lbz r3, 0x08(r1)
 stb r3, 0xA6(r31)
+
+mr r3, r30
+addi r4, r1, 0x08
+li r0, 0
+stw r0, 0x00(r4)
+bl getJMapInfoArg3NoInit__2MRFRC12JMapInfoIterPl
+lwz r3, 0x08(r1)
+stb r3, 0xA7(r31)
 
 
 mr        r3, r31
@@ -585,10 +593,32 @@ lbz r3, 0xA5(r31)
 cmpwi r3, 0
 bgt .StageResultObj_exeGameSave_NotFirstStep
 
+.GLE PRINTADDRESS
 #first step
+lbz r3, 0xA7(r31)
+cmpwi r3, 1
+bgt .StageResultObj_SaveType2
+beq .StageResultObj_SaveType1
+
+.StageResultObj_SaveType0:
 li r3, 1
 li r4, 0
 li r5, 0
+b .StageResultObj_SaveTypeSelected
+
+.StageResultObj_SaveType1:
+li r3, 1
+li r4, 1
+li r5, 0
+b .StageResultObj_SaveTypeSelected
+
+.StageResultObj_SaveType2:
+li r3, 0
+li r4, 0
+li r5, 1
+b .StageResultObj_SaveTypeSelected
+
+.StageResultObj_SaveTypeSelected:
 bl startGameDataSaveSequence__20GameSequenceFunctionFbbb
 
 

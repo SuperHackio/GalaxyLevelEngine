@@ -105,6 +105,7 @@ mtlr      r0
 addi      r1, r1, 0x20
 blr
 #======================================
+.GLE PRINTADDRESS
 .SetFlagSwitch_Control:
 stwu      r1, -0x10(r1)
 mflr      r0
