@@ -1455,6 +1455,25 @@ bl getJMapInfoArg6WithInit__2MRFRC12JMapInfoIterPl
 b .TicoCoinFat_InitExt_Return
 
 
+.GLE ADDRESS init__11TicoFatCoinFRC12JMapInfoIter +0x284
+b .TicoCoinFat_Init_FixAppearIfSwAppear
+.TicoCoinFat_Init_FixAppearIfSwAppear_Return:
+.GLE ENDADDRESS
+
+.TicoCoinFat_Init_FixAppearIfSwAppear:
+bl isValidSwitchAppear__2MRFPC9LiveActor
+cmpwi r3, 0
+mr        r3, r29
+lwz       r12, 0(r29)
+beq .TicoCoinFat_Init_FixAppearIfSwAppear_DoAppear
+lwz       r12, 0x38(r12)
+b .TicoCoinFat_Init_FixAppearIfSwAppear_Return
+
+.TicoCoinFat_Init_FixAppearIfSwAppear_DoAppear:
+lwz       r12, 0x30(r12)
+b .TicoCoinFat_Init_FixAppearIfSwAppear_Return
+
+
 
 .GLE ADDRESS initAfterPlacement__11TicoFatCoinFv
 b .TicoCoinFat_NewInitAfterPlacement
@@ -1488,6 +1507,35 @@ bctrl
 .TicoCoinFat_NewInitAfterPlacement_Return:
 lwz       r0, 0x14(r1)
 lwz       r31, 0x0C(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
+
+
+#New APPEAR function to allow appearing hungry lumas
+#surprised this didn't work in vanilla but oh well
+#THIS IS SHARED between both hungry lumas
+.GLE ADDRESS __vt__11TicoFatCoin +0x2C
+.int .TicoCoinFat_Appear_New
+.GLE ENDADDRESS
+
+.TicoCoinFat_Appear_New:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+stw       r31, 0x0C(r1)
+mr        r31, r3
+
+bl isOnSwitchA__2MRFPC9LiveActor
+cmpwi r3, 0
+bne .TicoCoinFat_Appear_New_Return
+
+mr r3, r31
+bl appear__9LiveActorFv
+
+.TicoCoinFat_Appear_New_Return:
+lwz       r31, 0x0C(r1)
+lwz       r0, 0x14(r1)
 mtlr      r0
 addi      r1, r1, 0x10
 blr
@@ -1977,9 +2025,10 @@ addi r5, r5, PlanetaryAppearance_Jp@l
 li        r6, 32
 bl joinToGroupArray__2MRFP9LiveActorRC12JMapInfoIterPCcl
 
-lwz       r12, 0(r29)
+#don't have enough space here to fit all the new stuff oops
 mr        r3, r29
-lwz       r12, 0x30(r12)
+b .TicoFatStarPiece_Init_FixAppearIfSwAppear
+.TicoFatStarPiece_Init_FixAppearIfSwAppear_Return:
 mtctr     r12
 bctrl
 
@@ -1990,8 +2039,23 @@ mtlr      r0
 addi      r1, r1, 0x130
 blr
 .GLE PRINTADDRESS
-.GLE ASSERT 0x80369A10
+.GLE ASSERT init__16TicoFatStarPieceFRC12JMapInfoIter +0x3DC
 .GLE ENDADDRESS
+
+
+.TicoFatStarPiece_Init_FixAppearIfSwAppear:
+bl isValidSwitchAppear__2MRFPC9LiveActor
+cmpwi r3, 0
+mr        r3, r29
+lwz       r12, 0(r29)
+beq .TicoFatStarPiece_Init_FixAppearIfSwAppear_DoAppear
+lwz       r12, 0x38(r12)
+b .TicoFatStarPiece_Init_FixAppearIfSwAppear_Return
+
+.TicoFatStarPiece_Init_FixAppearIfSwAppear_DoAppear:
+lwz       r12, 0x30(r12)
+b .TicoFatStarPiece_Init_FixAppearIfSwAppear_Return
+
 
 
 #New function
@@ -2031,6 +2095,10 @@ blr
 
 .GLE ADDRESS __vt__16TicoFatStarPiece +0x10
 .int .TicoFatStarPiece_InitAfterPlacement
+.GLE ENDADDRESS
+
+.GLE ADDRESS __vt__16TicoFatStarPiece +0x2C
+.int .TicoCoinFat_Appear_New
 .GLE ENDADDRESS
 
 .GLE ADDRESS depleteStarPiece__16TicoFatStarPieceFv +0x9C
