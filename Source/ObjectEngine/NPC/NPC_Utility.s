@@ -1461,6 +1461,10 @@ b .TicoCoinFat_Init_FixAppearIfSwAppear
 .GLE ENDADDRESS
 
 .TicoCoinFat_Init_FixAppearIfSwAppear:
+mr r4, r30
+bl tryRegisterDemoCast__2MRFP9LiveActorRC12JMapInfoIter
+
+mr        r3, r29
 bl isValidSwitchAppear__2MRFPC9LiveActor
 cmpwi r3, 0
 mr        r3, r29
@@ -2044,6 +2048,10 @@ blr
 
 
 .TicoFatStarPiece_Init_FixAppearIfSwAppear:
+mr r4, r30
+bl tryRegisterDemoCast__2MRFP9LiveActorRC12JMapInfoIter
+
+mr        r3, r29
 bl isValidSwitchAppear__2MRFPC9LiveActor
 cmpwi r3, 0
 mr        r3, r29
