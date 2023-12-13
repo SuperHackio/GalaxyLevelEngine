@@ -317,9 +317,13 @@ blr
 .GLE ADDRESS appear__23MarioFaceShipEventStateFv
 .GLE PRINTMESSAGE EventState_Appear
 .GLE PRINTADDRESS
+lbz r0, 0x0A(r3)
+cmpwi r0, 0
+bne .MarioFaceShipEventState_Appear_Extended_JumpLoc
 lbz r0, 0x09(r3)
 cmpwi r0, 0
 beq .MarioFaceShipEventState_Appear_Normal
+.MarioFaceShipEventState_Appear_Extended_JumpLoc:
 b .MarioFaceShipEventState_Appear_Extended
 
 .MarioFaceShipEventState_Appear_Normal:
@@ -1097,6 +1101,12 @@ blr
 li r31, 0
 .GLE ENDADDRESS
 
+## NEW
+#This code is here to handle NBO stars
+.GLE ADDRESS exeStart__29MarioFaceShipInGameActorStateFv +0x4C
+b .MarioFaceShipEventState_HasStartEventOrForced
+.MarioFaceShipEventState_HasStartEventOrForced_Return:
+.GLE ENDADDRESS
 
 .GLE ADDRESS startMarioFaceShipBGM__2MRFv
 stwu      r1, -0x20(r1)
@@ -1349,7 +1359,6 @@ b .ReturnStagePair_Success
 
 
 .MarioFaceShipEventState_Appear_Extended:
-#Do we even still need all this stack junk???
 stwu      r1, -0x90(r1)
 mflr      r0
 stw       r0, 0x94(r1)
@@ -1360,8 +1369,9 @@ mr r31, r3
 #This version is for when we've just changed stage and need to run cutscenes
 
 li r0, 0
-stb r0, 0x09(r3)
-stb r0, 0x08(r3)
+stb r0, 0x09(r31) #GLE - Force Events to occur (Hubworld Events via Stage Change)
+stb r0, 0x0A(r31) #GLE - Force Events to occur (Hubworld Events via NoBootOut Star)
+stb r0, 0x08(r31)
 
 #li r3, 60
 #bl openSystemWipeMario__2MRFl
@@ -1370,11 +1380,76 @@ bl forceCloseWipeFade__2MRFv
 mr r3, r31
 bl startStarReturnEvents__23MarioFaceShipEventStateFv
 
+.MarioFaceShipEventState_Appear_Extended_Return:
 addi      r11, r1, 0x90
 bl        _restgpr_29
 lwz       r0, 0x94(r1)
 mtlr      r0
 addi      r1, r1, 0x90
+blr
+
+
+
+
+.MarioFaceShipEventState_HasStartEventOrForced:
+bl hasFaceShipEvent__2MRFv
+cmpwi r3, 0
+lwz       r3, 0x10(r30)
+li r4, 0
+beq .MarioFaceShipEventState_HasStartEventOrForced_NoForce
+
+lbz r4, 0x0A(r3)
+cmpwi r4, 0
+bne .MarioFaceShipEventState_HasStartEventOrForced_Skip
+
+.MarioFaceShipEventState_HasStartEventOrForced_NoForce:
+stb r4, 0x0A(r3)
+bl sub_804B4C90
+b .MarioFaceShipEventState_HasStartEventOrForced_Return
+
+.MarioFaceShipEventState_HasStartEventOrForced_Skip:
+mr r3, r4
+b .MarioFaceShipEventState_HasStartEventOrForced_Return
+
+
+
+
+.GLE_EnableForceEventsOnHubworldStart:
+li r4, 1
+b .GLE_SetForceEventsOnHubworldStart
+
+.GLE_DisableForceEventsOnHubworldStart:
+li r4, 0
+
+.GLE_SetForceEventsOnHubworldStart:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+
+#confirmed to only use r3
+bl getGameSequenceInGame__20GameSequenceFunctionFv
+lwz       r3, 0x10(r3) #Get Hubworld InGameState
+lwz       r3, 0x10(r3) #Get Hubworld Event State
+stb r4, 0x0A(r3)
+
+lwz       r0, 0x14(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
+
+.GLE_IsForceEventsOnHubworldStart:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+
+bl getGameSequenceInGame__20GameSequenceFunctionFv
+lwz       r3, 0x10(r3) #Get Hubworld InGameState
+lwz       r3, 0x10(r3) #Get Hubworld Event State
+lbz r3, 0x0A(r3) #Get the bool value
+
+lwz       r0, 0x14(r1)
+mtlr      r0
+addi      r1, r1, 0x10
 blr
 
 .HUBWORLD_STATE_CONNECTOR:

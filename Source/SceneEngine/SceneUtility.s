@@ -1734,6 +1734,7 @@ cmpwi r3, 0
 bgt .ChangeStageAfterStageClear_Dont
 
 .ChangeStageAfterStageClear_Force:
+bl .GLE_DisableForceEventsOnHubworldStart
 bl forceCloseSystemWipeCircle__2MRFv
 bl .MR_SystemCircleWipeToCenter
 bl .MR_ChangeStageOnStarGet
@@ -1741,6 +1742,7 @@ b .ChangeStageAfterStageClear_Return
 
 .ChangeStageAfterStageClear_Dont:
 bl .MR_NoBootOut_OnRequestChangeStage
+bl .GLE_EnableForceEventsOnHubworldStart
 
 .ChangeStageAfterStageClear_Return:
 lwz       r0, 0x14(r1)
