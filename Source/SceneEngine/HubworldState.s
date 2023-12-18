@@ -1244,7 +1244,7 @@ b isEqualString__2MRFPCcPCc
 #
 #If a ReturnScenario is -1, ignore it and assume that means "Any Scenario".
 #
-#If a ReturnSCenario is 0, This check will return TRUE when you return with the final star that is
+#If a ReturnScenario is 0, This check will return TRUE when you return with the final star that is
 #availible in the paired ReturnStageName. (If the ReturnStageName is empty, just assume the previously logged completed galaxy)
 #
 #If ReturnStageName is empty AND ReturnScenario is -1, then assume true (as the entry is likely not in use)
@@ -1344,7 +1344,7 @@ b .ReturnStagePair_LoopContinue
 .ReturnStagePair_CheckScenarioSingle:
 bl getClearedPowerStarId__20GameSequenceFunctionFv
 cmpw r3, r4
-bne .ReturnStagePair_Fail #Scenario's do not match. Event will not be activated
+beq .ReturnStagePair_Success_ #If the scenarios match, we're good to go
 
 
 .ReturnStagePair_LoopContinue:
