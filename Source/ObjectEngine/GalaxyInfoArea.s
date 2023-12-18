@@ -303,6 +303,11 @@ addi      r30, r30, GalaxySelectInfo_WorldMapGalaxyInformation@l
 mr        r27, r3
 mr        r28, r4
 mr        r26, r6
+
+lbz r3, 0x41(r27)
+cmpwi r3, 0
+bne loc_804A9680
+
 lwz       r0, 0x3C(r27)
 cmpwi     r0, 0
 mr        r29, r5
@@ -451,8 +456,71 @@ GalaxyInfoArea_VTable:
 .int isInVolume__7AreaObjCFRCQ29JGeometry8TVec3<f>
 .int getAreaPriority__7AreaObjCFv
 .int .GalaxyInfoArea_GetManagerName
+.int 0  #Padding
+
+
+
+
+.GLE ADDRESS __ct__16GalaxySelectInfoFl +0x6C
+b .GalaxySelectInfo_InitTimer
+.GalaxySelectInfo_InitTimer_Return:
+.GLE ENDADDRESS
+
+.GalaxySelectInfo_InitTimer:
+stb       r0, 0x40(r27)
+stb       r4, 0x41(r27)
+b .GalaxySelectInfo_InitTimer_Return
+
+
+.GLE ADDRESS __vt__16GalaxySelectInfo +0x14
+.int .GalaxySelectInfo_DecTimer
+.GLE ENDADDRESS
+
+.GalaxySelectInfo_DecTimer:
+lbz r5, 0x41(r3)
+cmpwi r5, 0
+beq .GalaxySelectInfo_DecTimer_Skip
+
+subi r5, r5, 1
+stb r5, 0x41(r3)
+
+.GalaxySelectInfo_DecTimer_Skip:
+b movement__11LayoutActorFv
+
+
+.GLE PRINTADDRESS
+#r3 = Time Delay. Max 255
+#returns 0 if failed to set timer
+.GLE_TimeoutGalaxySelectInfo:
+stwu      r1, -0x20(r1)
+mflr      r0
+stw       r0, 0x24(r1)
+addi      r11, r1, 0x20
+bl        _savegpr_29
+
+mr r30, r3
+li r3, 52
+bl .GLE_GetSceneObj
+cmpwi r3, 0
+beq .GLE_TimeoutGalaxySelectInfo_Return
+
+stb r30, 0x41(r3)
+lwz       r12, 0(r3)
+lwz       r12, 0x30(r12)
+mtctr     r12
+bctrl
+li r3, 1
+
+.GLE_TimeoutGalaxySelectInfo_Return:
+addi      r11, r1, 0x20
+bl        _restgpr_29
+lwz       r0, 0x24(r1)
+mtlr      r0
+addi      r1, r1, 0x20
+blr
 
 .GLE PRINTMESSAGE EndWorldmapCode
+.GLE PRINTADDRESS
 .GALAXYINFOAREA_CONNECTOR:
 .GLE ENDADDRESS
 

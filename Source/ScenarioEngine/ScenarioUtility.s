@@ -1990,6 +1990,92 @@ mtlr      r0
 addi      r1, r1, 0x70
 blr
 
+#========================================================================================
+
+#Flag stuff
+
+#r3 = JMapInfo* SetFlagSwitch.bcsv pointer (NULL will fetch the BCSV file automatically)
+#r4 = BCSV Index
+#r5 = bool FlagValue
+#r6 = ushort GameEventValue
+.GLE_SetFlagOrGameEventValue:
+stwu      r1, -0x70(r1)
+mflr      r0
+stw       r0, 0x74(r1)
+addi      r11, r1, 0x70
+bl        _savegpr_26
+
+mr r30, r4
+mr r29, r5
+mr r28, r6
+
+cmpwi r3, 0
+bne .GLE_SetFlagOrGameEventValue_HasJMap
+
+lis r3, SetFlagSwitch_BCSVName@ha
+addi r3, r3, SetFlagSwitch_BCSVName@l
+crclr     4*cr1+eq
+bl tryLoadCsvFromZoneInfo__2MRFPCc
+cmpwi r3, 0
+beq .GLE_SetFlagOrGameEventValue_Return #Can't find the file
+
+.GLE_SetFlagOrGameEventValue_HasJMap:
+mr r31, r3
+
+
+addi r3, r1, 0x08
+mr r4, r31
+lis r5, .SetFlagSwitch_FlagName@ha
+addi r5, r5, .SetFlagSwitch_FlagName@l
+mr r6, r30
+bl getCsvDataStrOrNULL__2MRFPPCcPC8JMapInfoPCcl
+
+lwz r3, 0x08(r1)
+cmpwi r3, 0
+beq .SetFlagSwitch_TryEventValue
+#Skip the flag set if it is blank
+
+cmpwi r29, 0
+ble .FlagOff
+
+bl onGameEventFlag__16GameDataFunctionFPCc
+b .SetFlagSwitch_TryEventValue
+
+.FlagOff:
+bl offGameEventFlag__16GameDataFunctionFPCc
+
+
+.SetFlagSwitch_TryEventValue:
+addi r3, r1, 0x08
+mr r4, r31
+lis r5, .SetFlagSwitch_EventValueName@ha
+addi r5, r5, .SetFlagSwitch_EventValueName@l
+mr r6, r30
+bl getCsvDataStrOrNULL__2MRFPPCcPC8JMapInfoPCcl
+
+lwz r3, 0x08(r1)
+cmpwi r3, 0
+beq .GLE_SetFlagOrGameEventValue_Return
+#Skip the Event Value if it's empty
+
+bl getGameEventValueChecker__16GameDataFunctionFv
+lwz r4, 0x08(r1)
+mr r5, r28
+bl setValue__21GameEventValueCheckerFPCcUs
+
+
+
+.GLE_SetFlagOrGameEventValue_Return:
+addi      r11, r1, 0x70
+bl        _restgpr_26
+lwz       r0, 0x74(r1)
+mtlr      r0
+addi      r1, r1, 0x70
+blr
+
+
+
+
 
 .GLE PRINTMESSAGE EndWorldmapCode
 .GLE PRINTADDRESS

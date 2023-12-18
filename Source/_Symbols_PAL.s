@@ -93,7 +93,9 @@
 .set isCompleteAllNormalScenario__20GalaxyStatusAccessorCFv, 0x804D1DE0
 .set getPowerStarNumOwned__20GalaxyStatusAccessorCFv, 0x804D1F70
 .set appearLayout__16GalaxySelectInfoFv, 0x804A9870
+.set control__16GalaxySelectInfoFv, 0x804A97F0
 .set __ct__16GalaxySelectInfoFl, 0x804A9440
+.set __vt__16GalaxySelectInfo, 0x806FF428
 .set changeTexture__16GalaxySelectInfoFPCc, 0x804A9700
 .set createGalaxyCompleteString__2MRFPwiPCcbb, 0x80042170
 .set tryLoadCsvFromZoneInfo__2MRFPCc, 0x8004C580
@@ -537,6 +539,6 @@
 .set sub_80492970, 0x80492970
 .set sub_80492B20, 0x80492B20
 .set sub_804B4C90, 0x804B4C90
-.set hasFaceShipEvent__2MRFv, 0x804D8320
 .set sub_8013A180, 0x8013A180
+.set hasFaceShipEvent__2MRFv, 0x804D8320
 .GLE REGION END

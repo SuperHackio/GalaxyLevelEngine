@@ -27,7 +27,6 @@ lwz       r0, 0x14(r1)
 mtlr      r0
 addi      r1, r1, 0x10
 blr
-#there's 12 lines availible here
 .GLE ASSERT sub_804D7EE0 +0x30
 .GLE ENDADDRESS
 
@@ -127,6 +126,18 @@ addi      r4, r29, 0x1E4
 bl getJMapInfoArg7NoInit__2MRFRC12JMapInfoIterPl
 b .SuperDreamer_Init_ReadArg7_Return
 
+
+.GLE ADDRESS initForNpc__12SuperDreamerFRC12JMapInfoIter +0x88
+b .SuperDreamer_RegisterDemo
+.SuperDreamer_RegisterDemo_Return:
+.GLE ENDADDRESS
+
+.SuperDreamer_RegisterDemo:
+bl registerEventFunc__2MRFP15TalkMessageCtrlRC19TalkMessageFuncBase
+mr        r3, r29
+mr        r4, r30
+bl tryRegisterDemoCast__2MRFP9LiveActorRC12JMapInfoIter
+b .SuperDreamer_RegisterDemo_Return
 
 
 .GLE ADDRESS endStage__18ScenePlayingResultFv +0x44

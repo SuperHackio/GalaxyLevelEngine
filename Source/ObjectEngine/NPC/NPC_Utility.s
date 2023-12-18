@@ -230,7 +230,10 @@ mr r29, r3
 #       (use an NPC switch before calling this, so that a InfoDisplayObj can spawn. Make sure you turn the switch off before turning it back on again or else the info box won't trigger!)
 #       0x00 = Start the nerve
 #       0x01 = Wait for the nerve to complete
-#0x0B = 
+#0x0B = Set GameEventValue. Requires the same BCSV that SetFlagSwitch uses
+#       0xBXYY
+#       X  is the BCSV index (Max 15)
+#       YY is the value to set (Max 255)
 #0x0C = 
 #0x0D = 
 #0x0E = 
@@ -425,6 +428,12 @@ bl        pushNerve__8NPCActorFPC5Nerve
 b .EventFunc_ReturnEventComplete
 
 .EventFunc_Case_B:
+li r3, 0                    #Auto get the BCSV
+srawi r4, r30, 0x08        #Get the BCSV index
+li r5, 0                    #Cannot set flags here
+rlwinm r6, r30, 0, 24, 31 #Get the EventValue
+bl .GLE_SetFlagOrGameEventValue
+b .EventFunc_ReturnEventComplete
 
 .EventFunc_Case_C:
 
@@ -2336,6 +2345,10 @@ lwz       r3, 0x164(r31)
 bl requestDisappear__13FullnessMeterFv
 
 .TicoFatStarPiece_TryStartEventCamera_SkipCompleteClear:
+#Block all GalaxyInfo banners from appearing
+li r3, 120
+bl .GLE_TimeoutGalaxySelectInfo
+
 mr r3, r31
 b .TicoFatStarPiece_TryStartEventCamera_OnComplete_Return
 

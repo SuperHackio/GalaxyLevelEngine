@@ -117,45 +117,11 @@ bl isOnSwitchA__2MRFPC9LiveActor
 cmpwi r3, 0
 beq .SetFlagSwitch_ReturnControl
 
-addi r3, r1, 0x08
-lwz r4, 0x9C(r31)
-lis r5, .SetFlagSwitch_FlagName@ha
-addi r5, r5, .SetFlagSwitch_FlagName@l
-lwz r6, 0x90(r31)
-bl getCsvDataStrOrNULL__2MRFPPCcPC8JMapInfoPCcl
-
-lwz r3, 0x08(r1)
-cmpwi r3, 0
-beq .SetFlagSwitch_TryEventValue
-#Skip the flag set if it is blank
-
-lwz r4, 0x94(r31)
-cmpwi r4, 0
-ble .FlagOff
-
-bl onGameEventFlag__16GameDataFunctionFPCc
-b .SetFlagSwitch_TryEventValue
-
-.FlagOff:
-bl offGameEventFlag__16GameDataFunctionFPCc
-
-.SetFlagSwitch_TryEventValue:
-addi r3, r1, 0x08
-lwz r4, 0x9C(r31)
-lis r5, .SetFlagSwitch_EventValueName@ha
-addi r5, r5, .SetFlagSwitch_EventValueName@l
-lwz r6, 0x90(r31)
-bl getCsvDataStrOrNULL__2MRFPPCcPC8JMapInfoPCcl
-
-lwz r3, 0x08(r1)
-cmpwi r3, 0
-beq .SetFlagSwitch_KillObj
-#Skip the Event Value if it's empty
-
-bl getGameEventValueChecker__16GameDataFunctionFv
-lwz r4, 0x08(r1)
-lwz r5, 0x98(r31)
-bl setValue__21GameEventValueCheckerFPCcUs
+lwz r3, 0x9C(r31)
+lwz r4, 0x90(r31)
+lwz r5, 0x94(r31)
+lwz r6, 0x98(r31)
+bl .GLE_SetFlagOrGameEventValue
 
 .SetFlagSwitch_KillObj:
 lwz       r12, 0(r31)
