@@ -217,7 +217,7 @@ addi      r1, r1, 0x10
 blr
 
 
-
+.GLE PRINTADDRESS
 .NoBootOut_TryStartDemo:
 stwu      r1, -0x100(r1)
 mflr      r0

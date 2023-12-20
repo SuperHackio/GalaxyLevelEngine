@@ -510,8 +510,8 @@ blr
 
 #========================================================
 
-.GLE PRINTADDRESS
-.MR_GetStageMode:
+#[OBSOLETE]
+#.MR_GetStageMode:
 #Reads the StageInfo bcsv to find the Mode entry
 #returns a value that can be passed directly into MR::setGameState((int))
 #Due to reasons, can only read the currently loaded galaxy's mode.
@@ -643,8 +643,11 @@ blr
 stwu      r1, -0x10(r1)
 mflr      r0
 stw       r0, 0x14(r1)
-bl getInitializeStartIdInfo__2MRFv
+bl .GLE_GetPlayResultInStageHolder
+lwz r3, 0x6C(r3)
 lwz r3, 0x04(r3)
+#bl getInitializeStartIdInfo__2MRFv
+#lwz r3, 0x04(r3)
 lwz       r0, 0x14(r1)
 mtlr      r0
 addi      r1, r1, 0x10
@@ -716,7 +719,8 @@ mr r29, r4
 li r26, 0 #function flag
 mr r21, r6
 
-bl .MR_GetStartZoneID
+#bl .MR_GetStartZoneID
+li r3, 0  #ScenarioSettings can only be applied Galaxy-wide
 bl .StageDataHolder_GetScenarioSettings
 cmpwi r3, 0
 
@@ -1253,6 +1257,8 @@ nop
 #TODO: Figure out where all the proper places for MR_OpenCurrentWipe are
 
 #===================================================================
+
+.GLE PRINTADDRESS
 
 .MR_GetDeathOverrideIndex:
 #Gets the current Death Override as specified in the Zone's StageInfo.
