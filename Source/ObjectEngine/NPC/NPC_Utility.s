@@ -281,6 +281,9 @@ beq .EventFunc_Continue  #Make sure it's not 0
 rlwinm r4,r3,0,0,0 #(0x80000000)
 cmpwi r4, 0
 beq .EventFunc_Continue  #Value doesn't corrospond to anything in readable memory if 0
+rlwinm r4,r3,0,1,1 #(0x04000000)
+cmpwi r4, 0
+bne .EventFunc_Continue  #Block bad values like 0xFFFFFFFF
 lwz r5, 0x00(r3)
 lis r4, __vt__11TakeOutStar@ha
 addi r4, r4, __vt__11TakeOutStar@l
