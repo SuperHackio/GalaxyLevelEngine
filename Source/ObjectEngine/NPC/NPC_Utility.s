@@ -276,14 +276,11 @@ addi r28, r29, TAKEOUTSTAR_SEARCHOFFSET #Offset to near the earliest a TakeOutSt
 
 .EventFunc_SearchLoop:
 lwz r3, 0x00(r28)
+bl .GLE_IsValidPointerAddress
 cmpwi r3, 0
-beq .EventFunc_Continue  #Make sure it's not 0
-rlwinm r4,r3,0,0,0 #(0x80000000)
-cmpwi r4, 0
-beq .EventFunc_Continue  #Value doesn't corrospond to anything in readable memory if 0
-rlwinm r4,r3,0,1,1 #(0x04000000)
-cmpwi r4, 0
-bne .EventFunc_Continue  #Block bad values like 0xFFFFFFFF
+beq .EventFunc_Continue
+
+lwz r3, 0x00(r28)
 lwz r5, 0x00(r3)
 lis r4, __vt__11TakeOutStar@ha
 addi r4, r4, __vt__11TakeOutStar@l

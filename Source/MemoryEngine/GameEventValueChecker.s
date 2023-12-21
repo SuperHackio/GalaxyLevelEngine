@@ -353,6 +353,25 @@ lwz       r3, 0xC(r31)
 bl initAfterResourceLoaded__20GameSequenceDirectorFv
 .GLE ENDADDRESS
 
+#r3 = Address to check
+#returns 0 or 1 if the address is a valid pointer
+.GLE_IsValidPointerAddress:
+cmpwi r3, 0
+beq .GLE_IsValidPointerAddress_Return_False  #Make sure it's not 0
+rlwinm r4,r3,0,0,0 #(0x80000000)
+cmpwi r4, 0
+beq .GLE_IsValidPointerAddress_Return_False  #Value doesn't corrospond to anything in readable memory if 0
+rlwinm r4,r3,0,1,1 #(0x40000000)
+cmpwi r4, 0
+bne .GLE_IsValidPointerAddress_Return_False  #Block bad values like 0xFFFFFFFF
+
+.GLE_IsValidPointerAddress_Return_True:
+li r3, 1
+blr
+
+.GLE_IsValidPointerAddress_Return_False:
+li r3, 0
+blr
 
 ValueName:
     .string "ValueName"
