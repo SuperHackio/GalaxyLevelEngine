@@ -563,6 +563,13 @@ blr
 #r3 = JMapInfo*
 #r4 = Setting name
 #r5 = Scenario. The entry with -1 will be used if no scenario specific entry is found
+
+cmpwi r3, 0
+bne .INTERNAL_MR_GetStageInfoEntry
+li r3, -1
+blr
+
+.INTERNAL_MR_GetStageInfoEntry:
 stwu r1, -0x50(r1)
 mflr      r0
 stw       r0, 0x54(r1)
