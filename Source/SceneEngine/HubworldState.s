@@ -649,7 +649,7 @@ stwu      r1, -0x90(r1)
 mflr      r0
 stw       r0, 0x94(r1)
 addi      r11, r1, 0x90
-bl        _savegpr_18
+bl        _savegpr_17
 mr        r31, r3
 bl initEventArray__23MarioFaceShipEventStateFv
 bl MR_GetHubworldEventDataTable
@@ -714,7 +714,12 @@ blt .NoDupeLoop
 #We now check a repeatable field which here is treated as an OR set
 b .EventRepeatableFields_Loc
 
+.ReturnStagePair_TrySuccess:
+
 .ReturnStagePair_Success:
+cmpwi r17, 0 #A valid condition was present, and failed, and no other valid conditions were found, or they also failed
+beq .RegisterStarReturnEvents_Loop_Continue
+
 mr r3, r30
 mr r4, r27
 bl isJMapEntryProgressComplete
@@ -783,7 +788,7 @@ cmpw r27, r3
 blt .RegisterStarReturnEvents_Loop
 
 addi      r11, r1, 0x90
-bl        _restgpr_18
+bl        _restgpr_17
 lwz       r0, 0x94(r1)
 mtlr      r0
 addi      r1, r1, 0x90
@@ -1251,10 +1256,12 @@ b isEqualString__2MRFPCcPCc
 .EventRepeatableFields_Loc:
 #0x804e4590
 li r18, 1 #i?
+li r17, -1
 b .ReturnStagePair_LoopStart
 
 
 .ReturnStagePair_Loop:
+
 #First generate the paired strings
 addi      r3, r1, 0x10
 li        r4, 0x14
@@ -1279,7 +1286,7 @@ mr r3, r30
 addi r4, r1, 0x10
 bl isExistItemInfo__8JMapInfoFPCc
 cmpwi r3, 0 #This means it failed to find the entry
-beq .ReturnStagePair_Success_
+beq .ReturnStagePair_NoSuitableFound
 
 addi r3, r1, 0x08
 mr r4, r30
@@ -1339,7 +1346,7 @@ beq .ReturnStagePair_Fail
 bl sub_804D6B10
 cmpwi r3, 0
 beq .ReturnStagePair_Fail
-b .ReturnStagePair_LoopContinue
+b .ReturnStagePair_Success_
 
 .ReturnStagePair_CheckScenarioSingle:
 bl getClearedPowerStarId__20GameSequenceFunctionFv
@@ -1347,15 +1354,26 @@ cmpw r3, r4
 beq .ReturnStagePair_Success_ #If the scenarios match, we're good to go
 
 
+.ReturnStagePair_Fail:
+cmpwi r17, 1
+beq .ReturnStagePair_Fail_NoSet
+li r17, 0
+.ReturnStagePair_Fail_NoSet:
+
+
 .ReturnStagePair_LoopContinue:
 addi r18, r18, 1
 
 .ReturnStagePair_LoopStart:
 b .ReturnStagePair_Loop
-.ReturnStagePair_Fail:
-b .RegisterStarReturnEvents_Loop_Continue
+
+
 .ReturnStagePair_Success_:
+li r17, 1
 b .ReturnStagePair_Success
+
+.ReturnStagePair_NoSuitableFound:
+b .ReturnStagePair_TrySuccess
 
 
 .MarioFaceShipEventState_Appear_Extended:
