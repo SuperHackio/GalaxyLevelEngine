@@ -1168,6 +1168,16 @@ addi      r11, r1, 0xE0
 b .Penguin_RegisterGlobals_Return
 
 
+
+#Ran out of room
+.GLE ASSERT __sinit_\MarioFacePlanet_cpp
+.GLE ENDADDRESS
+
+
+
+
+
+.GLE ADDRESS .MINI_COMET_CONNECTOR
 #====== PenguinCoach ======
 .GLE ADDRESS init__12PenguinCoachFRC12JMapInfoIter +0x18C
 #Can't reuse the Bob-omb Buddy 'cause different registers
@@ -1178,6 +1188,10 @@ b .PenguinCoach_RegisterGlobals
 .PenguinCoach_RegisterGlobals:
 mr        r3, r31
 bl .MR_RegisterAllGlobalFuncs
+
+mr        r3, r31
+mr        r4, r29
+bl .MR_RegisterTalkToDemo
 
 addi      r11, r1, 0xE0
 b .PenguinCoach_RegisterGlobals_Return
@@ -1195,18 +1209,13 @@ b .PenguinMaster_RegisterGlobals
 mr        r3, r29
 bl .MR_RegisterAllGlobalFuncs
 
+mr        r3, r29
+mr        r4, r30
+bl .MR_RegisterTalkToDemo
+
 addi      r11, r1, 0xD0
 b .PenguinMaster_RegisterGlobals_Return
 
-#Ran out of room
-.GLE ASSERT __sinit_\MarioFacePlanet_cpp
-.GLE ENDADDRESS
-
-
-
-
-
-.GLE ADDRESS .MINI_COMET_CONNECTOR
 #====== Pichan ======
 .GLE ADDRESS init__6PichanFRC12JMapInfoIter +0x158
 mr        r3, r29
