@@ -866,7 +866,7 @@ beq .Return
 
 #If used a super dreamer
 mr r3, r26
-bl .MR_IsSuperDreamerStarBronze
+bl .GLE_CheckIfResultsNeedsBronze
 #li r3, 0   #Store the fact that the star is not yet collected. 'cause it technically isn't
 #Though, if you have the star as bronze, and you used a super dreamer again, the star will be empty
 stb       r3, 0(r28)

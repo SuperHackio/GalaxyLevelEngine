@@ -108,6 +108,12 @@ blr
 
 .GLE ADDRESS .NPC_UTILITY_CONNECTOR
 
+#r3 = Star Id
+.GLE_CheckIfResultsNeedsBronze:
+lis r5, Static_BronzeStarTracker@ha
+addi r5, r5, Static_BronzeStarTracker@l
+lwz r5, 0x00(r5)
+blr  #If it's 1, then the current star in the results holder was bronze
 
 .GLE ADDRESS init__12SuperDreamerFRC12JMapInfoIter +0x90
 b .SuperDreamer_Init_ReadArg7
@@ -172,10 +178,66 @@ blr
 bl .__sub_804D8690_SetStarBronze
 .GLE ENDADDRESS
 
+#This reads the current Bronze star flags to see if we set the save data to be bronze.
+#this does not set the status of a bronze star
 .__sub_804D8690_SetStarBronze:
 subi r4, r28, 1
 lwz r3, 0x88(r30)
 b .__Decide_IsBronze
+
+
+
+
+.GLE ADDRESS sub_804D8690 +0x48
+b .ClearGLEBronzeFlag
+.ClearGLEBronzeFlag_Return:
+.GLE ENDADDRESS
+
+
+.ClearGLEBronzeFlag:
+bl hasPowerStar__16GameDataFunctionFPCcl
+#PRESERVE r3
+lis r5, Static_BronzeStarTracker@ha
+addi r5, r5, Static_BronzeStarTracker@l
+li r4, 0
+lwz r4, 0x00(r5)
+b .ClearGLEBronzeFlag_Return
+
+.GLE ADDRESS sub_804D8690 +0x9C
+b .SetGLEBronzeStarFlag
+.SetGLEBronzeStarFlag_Return:
+.GLE ENDADDRESS
+
+
+.SetGLEBronzeStarFlag:
+bl setBronzeStar__16GameDataFunctionFPCcl
+
+lis r5, Static_BronzeStarTracker@ha
+addi r5, r5, Static_BronzeStarTracker@l
+li r4, 1
+lwz r4, 0x00(r5)
+
+#Here's where things get tricky
+#If we have an NBO star, we need to only clear the bit that we're using to validate the flag
+#otherwise just clear the entire variable
+bl .MR_IsNoBootActive
+cmpwi r3, 0
+beq .SetGLEBronzeStarFlag_ClearAll
+
+.SetGLEBronzeStarFlag_ClearSingle:
+#reusing r4 for this...
+subi r5, r28, 1
+slw r5,r4,r5
+nor r5,r5,r5
+stw r6, 0x88(r30)
+and r5,r6,r5
+stw r5, 0x88(r30)
+b .SetGLEBronzeStarFlag_Return
+
+.SetGLEBronzeStarFlag_ClearAll:
+li r4, 0
+stw r4, 0x88(r30)
+b .SetGLEBronzeStarFlag_Return
 
 #---------------------------------------------------
 #Also make it so that ObjArg0 not only doubles as Spawn ID and Dreamer file ID, but also now TRIPLES to also include being the Save Data selector. It only makes sense!

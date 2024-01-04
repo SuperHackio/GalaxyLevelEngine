@@ -210,6 +210,9 @@ Static_IsNeedMusicStopFromScenarioSelect:
 
 Static_PlayerHealthStorage:
 .int 0
+
+Static_BronzeStarTracker:
+.int 0
 .GLE TRASH END
 
 #You can technically add more modular paths, but the base GLE will only come with these 2
