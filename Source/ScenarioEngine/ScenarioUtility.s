@@ -808,8 +808,19 @@ cmpwi r3, 0
 beq .__B_ForceBronze
 #If we're in the ScenarioSelect, we don't need to check if the SuperDreamer has been used.
 .__B_IsUsedSuperDreamer2:
+
+cmpwi r24, 1
+beq .__B_TestForResults
+
 mr r3, r26
 bl .MR_IsSuperDreamerStarBronze
+b .__B_CheckBronzeOrResults
+
+.__B_TestForResults:
+mr r3, r26
+bl .GLE_CheckIfResultsNeedsBronze
+
+.__B_CheckBronzeOrResults:
 cmpwi r3, 0
 beq .__B_UseActual
 

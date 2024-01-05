@@ -645,10 +645,10 @@ addi r3, r1, 0x08
 .GLE ADDRESS registerStarReturnEvents__23MarioFaceShipEventStateFPv
 .GLE PRINTMESSAGE RegisterStarReturnEvents
 .GLE PRINTADDRESS
-stwu      r1, -0x90(r1)
+stwu      r1, -0x100(r1)
 mflr      r0
-stw       r0, 0x94(r1)
-addi      r11, r1, 0x90
+stw       r0, 0x104(r1)
+addi      r11, r1, 0x100
 bl        _savegpr_17
 mr        r31, r3
 bl initEventArray__23MarioFaceShipEventStateFv
@@ -787,11 +787,11 @@ bl getCsvDataElementNum__2MRFPC8JMapInfo
 cmpw r27, r3
 blt .RegisterStarReturnEvents_Loop
 
-addi      r11, r1, 0x90
+addi      r11, r1, 0x100
 bl        _restgpr_17
-lwz       r0, 0x94(r1)
+lwz       r0, 0x104(r1)
 mtlr      r0
-addi      r1, r1, 0x90
+addi      r1, r1, 0x100
 blr
 .GLE ASSERT registerStartEvents__23MarioFaceShipEventStateFPv
 .GLE ENDADDRESS
