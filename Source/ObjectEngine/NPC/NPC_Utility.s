@@ -1189,10 +1189,6 @@ b .PenguinCoach_RegisterGlobals
 mr        r3, r31
 bl .MR_RegisterAllGlobalFuncs
 
-mr        r3, r31
-mr        r4, r29
-bl .MR_RegisterTalkToDemo
-
 addi      r11, r1, 0xE0
 b .PenguinCoach_RegisterGlobals_Return
 
