@@ -1,30 +1,34 @@
 # Galaxy Level Engine
 Welcome to the future of Super Mario Galaxy 2 hacking, the Galaxy Level Engine!
 
+https://www.youtube.com/watch?v=VMpaJVzLOGo
 https://www.youtube.com/watch?v=wyFxaiIbbZE
 
 ## What is it?
 The Galaxy Level Engine is a low level engine for making SMG2 mods with. It provides a ton of functionality that you would otherwise not have.
 
-The latest version is GLE-V2
+The latest version is GLE-V3
 
 ### Primary features
-- Up to 8 Power Stars
+- Up to 8 Power Stars in the ScenarioSelect at once
 - Power Stars can be any colour you want
-- More control over Star Unlock Conditions
-- Make your own Hubworld (World maps no longer exist)
+- More control over Star Unlock Conditions (e.g Comet unlocks)
+- Make your own Hubworlds (World maps no longer exist)
+- More options for NPC text control
+- NoBootOut Stars that do not kick you out of the level you're in when collecting them
 
 ## How do I use it?
 For downloads, please visit the [Releases](https://github.com/SuperHackio/GalaxyLevelEngine/releases) page. On that page, you can download:
 - The files and Riivolution Memory Patches required to make it work
 - An example hack, called the GLE Template Hack, which serves as a demonstration of features, and set of examples.
 
-There is also a [Setup Guide](https://github.com/SuperHackio/GalaxyLevelEngine/wiki/SetupGuide) in the Wiki.<br/>Most things in the GLE are documented on the [Wiki](https://github.com/SuperHackio/GalaxyLevelEngine/wiki), so if you get stuck it is reccomended that you read through it.
+There is also a [Setup Guide](https://github.com/SuperHackio/GalaxyLevelEngine/wiki/Start-a-new-GLE-mod) in the Wiki.<br/>Most things in the GLE are documented on the [Wiki](https://github.com/SuperHackio/GalaxyLevelEngine/wiki), so if you get stuck it is reccomended that you read through it.
 
 ## Is it region free?
-Starting in GLE-V2, the Galaxy Level Engine has support for NTSC-U, PAL, and NTSC-J.
 
-GLE-V1 is NTSC-U only.
+- GLE-V3: Supports all 5 regions of SMG2, NTSC-U, PAL, NTSC-J, NTSC-K, and NTSC-W.
+- GLE-V2: Supports the 3 Major regions of SMG2, NTSC-U, PAL, and NTSC-J.
+- GLE-V1: Supports NTSC-U only.
 
 ## How can I contribute?
 If you would like to suggest a feature, please open a [Feature Request](https://github.com/SuperHackio/GalaxyLevelEngine/issues/new?assignees=&labels=&template=feature_request.md&title=)
