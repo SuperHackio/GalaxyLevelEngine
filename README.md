@@ -7,7 +7,7 @@ https://www.youtube.com/watch?v=wyFxaiIbbZE
 ## What is it?
 The Galaxy Level Engine is a low level engine for making SMG2 mods with. It provides a ton of functionality that you would otherwise not have.
 
-The latest version is GLE-V3
+The latest version is GLE-V3 (Patch 1)
 
 ### Primary features
 - Up to 8 Power Stars in the ScenarioSelect at once
