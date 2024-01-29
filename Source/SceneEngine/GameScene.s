@@ -169,7 +169,8 @@ addi r3, r3, AllCompleteMessage@l
 li r4, 1
 bl .MR_GetGameSetting
 cmpwi r3, 0
-beq .NoWC24
+nop #beq .NoWC24
+
 
 li r3, 0x98 # WiiMessageBoardEmailSender
 bl createSceneObj__2MRFi
@@ -470,8 +471,8 @@ blr
 
 
 .requestGalaxyMove_Ex:
-bl .GetSceneStartID
-bl setRestartMarioNo__2MRFRC10JMapIdInfo
+# bl .GetSceneStartID
+# bl setRestartMarioNo__2MRFRC10JMapIdInfo
 addi      r11, r1, 0x20
 b .requestGalaxyMove_Ex_Return
 
@@ -515,7 +516,7 @@ b .requestGalaxyMove_Ex
 .GLE ENDADDRESS
 
 .GLE ADDRESS init__18ScenePlayingResultFv +0x64
-bl .GetSceneStartID
+#bl .GetSceneStartID
 .GLE ENDADDRESS
 
 

@@ -148,7 +148,8 @@ addi      r4, r13, .StaffRollDemoObj_NrvRun_sInstance - STATIC_R13
 bl setNerve__9LiveActorFPC5Nerve
 
 mr        r3, r31
-bl startStarPointerModeEnding__2MRFPv
+#bl startStarPointerModeEnding__2MRFPv
+nop
 
 lwz       r0, 0x14(r1)
 lwz       r31, 0x0C(r1)

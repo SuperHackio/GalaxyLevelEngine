@@ -32,11 +32,14 @@ bl getStageDataHolder__2MRFv
 mr r4, r31
 bl getStageDataHolderFromZoneId__15StageDataHolderFi
 
+cmpwi r3, 0
+beq .StageDataHolder_GetListJMapInfo_Return
+
 addi      r4, r3, 0xF8
 mr r5, r30
 bl findJmpInfoFromArray__15StageDataHolderCFPCQ22MR26AssignableArray<8JMapInfo>PCc
 #Returns 0 if BCSV is not found
-
+.StageDataHolder_GetListJMapInfo_Return:
 lwz       r31, 0x0C(r1)
 lwz       r30, 0x08(r1)
 lwz       r0, 0x14(r1)
@@ -45,7 +48,8 @@ addi      r1, r1, 0x10
 blr
 
 
-
+.GLE PRINTMESSAGE == GLE::RequestMoveStageFromJMapInfo ==
+.GLE PRINTADDRESS
 #Note for Aurum or someone with symbol map access, address 0x8004C860 is the wrong function. It should be "getValue_Ul___8JMapInfoCFiPCcPl_Cb"
 .MR_RequestMoveStageFromJMapInfo:
 #Reads a BCSV Entry and warps the player there
@@ -154,6 +158,8 @@ mtlr      r0
 addi      r1, r1, 0x60
 blr
 
+.GLE PRINTMESSAGE == GLE::RequestMoveStage ==
+.GLE PRINTADDRESS
 .MR_RequestMoveStage:
 #Makes the game start the level change process
 #r3 = Destination Stage Name
@@ -174,6 +180,7 @@ mr r30, r4
 mr r29, r5
 mr r28, r6
 mr r24, r8
+li r23, 0
 
 #Always check for changing players
 mr r3, r7
@@ -193,9 +200,7 @@ bne .MR_RequestMoveStage_NotScenarioSelect
 #specifically to the ScenarioSelect of the galaxy
 
 #2022-02-22: Oh wow you somehow listened before I even put this on github
-mr r3, r31
-bl requestChangeScenarioSelect__20GameSequenceFunctionFPCc
-b .MR_RequestMoveStage_Return
+li r23, 1
 
 
 .MR_RequestMoveStage_NotScenarioSelect:
@@ -217,6 +222,25 @@ mr r5, r3
 addi r3, r1, 0x0C
 mr r4, r28
 bl __ct__10JMapIdInfoFll
+
+addi r3, r1, 0x0C
+bl setRestartMarioNo__2MRFRC10JMapIdInfo
+
+lwz       r3, sInstance__29SingletonHolder_10GameSystem_ - STATIC_R13(r13)
+lwz       r3, 0x24(r3)
+addi      r3, r3, 0x8C
+lwz       r3, 0x88(r3)
+addi r4, r1, 0x0C
+bl __as__10JMapIdInfoFRC10JMapIdInfo
+
+cmpwi r23, 0
+beq .MR_RequestMoveStage_NoPleaseDont
+
+mr r3, r31
+bl requestChangeScenarioSelect__20GameSequenceFunctionFPCc
+b .MR_RequestMoveStage_Return
+
+.MR_RequestMoveStage_NoPleaseDont:
 
 #Make corrections for hidden/seeker stars
 li r23, -1
@@ -618,6 +642,9 @@ bl getCsvDataS32__2MRFPlPC8JMapInfoPCcl
 lwz r3, 0x08(r1)
 
 cmpwi r3, -1
+bne .CheckNotDefault
+#do not save the default if it has already been saved
+cmpwi r27, -1
 bne .CheckNotDefault
 mr r27, r28 #Save the default
 
@@ -1990,7 +2017,8 @@ nop
 .ResetForGameOver:
 
 bl forceCloseSystemWipeFade__2MRFv
-bl resetPlayResultInStageHolder__2MRFv
+#THIS IS NO LONGER NEEDED due to the Restart Syncing that MoveStage does.
+#bl resetPlayResultInStageHolder__2MRFv
 
 lis r3, PlayerLeft_Setting@ha
 addi r3, r3, PlayerLeft_Setting@l

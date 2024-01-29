@@ -139,7 +139,6 @@ mr r4, r30
 bl isJMapEntryProgressComplete
 b .BranchFunc_Return
 
-
 .BranchFunc_Case_8:
 
 .BranchFunc_Case_9:
@@ -1178,6 +1177,7 @@ b .Penguin_RegisterGlobals_Return
 
 
 .GLE ADDRESS .MINI_COMET_CONNECTOR
+
 #====== PenguinCoach ======
 .GLE ADDRESS init__12PenguinCoachFRC12JMapInfoIter +0x18C
 #Can't reuse the Bob-omb Buddy 'cause different registers

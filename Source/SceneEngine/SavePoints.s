@@ -221,3 +221,8 @@ EntireLevelFlag:
     .string "EntireLevelFlag" AUTO
 
 .GLE ENDADDRESS
+
+.GLE ADDRESS isView120StarsEnding__8UserFileCFv
+li r3, 1
+blr
+.GLE ENDADDRESS

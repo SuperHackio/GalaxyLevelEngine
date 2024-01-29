@@ -107,6 +107,11 @@ lbz r3, 0x1C(r31)
 cmpwi r3, 0
 beq .RestartArea_Movement_Return
 
+#WHY DOES THIS NEED TO BE HERE????
+bl isScenarioSelecting__2MRFv
+cmpwi r3, 0
+bne .RestartArea_Movement_Return
+
 bl getPlayerPos__2MRFv
 mr        r4, r3
 mr        r3, r31

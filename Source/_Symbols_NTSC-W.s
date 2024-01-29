@@ -541,4 +541,5 @@
 .set sub_804B4C90, 0x804B4D00
 .set sub_8013A180, 0x8013A180
 .set hasFaceShipEvent__2MRFv, 0x804D83B0
+.set cInitializeStartIdInfo__23_unnamed_SceneUtil_cpp_, 0x8073C830
 .GLE REGION END

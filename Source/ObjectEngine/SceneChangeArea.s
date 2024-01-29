@@ -84,7 +84,7 @@ mtlr      r0
 addi      r1, r1, 0x10
 blr
 
-
+.GLE PRINTADDRESS
 SceneChangeArea_Movement:
 stwu      r1, -0x40(r1)
 mflr      r0
