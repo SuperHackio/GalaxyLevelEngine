@@ -1551,6 +1551,7 @@ mr r4, r3
 addi      r3, r29, 0x40
 mr        r5, r28
 addi      r6, r1, 0x08
+.GLE PRINTADDRESS
 #Surprise! We're not using the GLE's usual level change function
 bl sub_804D8510
 

@@ -882,7 +882,7 @@ b .HoneyBee_RegisterGlobals_Return
 
 
 #====== HoneyQueen ======
-.GLE ADDRESS init__10HoneyQueenFRC12JMapInfoIter +0x1D8
+.GLE ADDRESS init__10HoneyQueenFRC12JMapInfoIter +0x394
 #Can't reuse the Bob-omb Buddy 'cause different registers
 b .HoneyQueen_RegisterGlobals
 .HoneyQueen_RegisterGlobals_Return:
@@ -892,7 +892,7 @@ b .HoneyQueen_RegisterGlobals
 mr        r3, r31
 bl .MR_RegisterAllGlobalFuncs
 
-addi      r11, r1, 0xE0
+addi      r11, r1, 0xD0
 b .HoneyQueen_RegisterGlobals_Return
 
 
