@@ -557,15 +557,16 @@ addi      r4, r28, RaceTime - ScenarioSelectLayout
 li        r5, 0
 bl setPaneAnimFrameAndStop__2MRFP11LayoutActorPCcfUl
 
-#Don't ask me what this does I have no idea
+# This used to be broken because it positioned the ScenarioSelectSky at 0,0,0 instead of the intended 0,0,-10000.0
+# but at least I fixed it in GLE-V4!!!
 lis       r3, FloatTable@ha
-lfs       f0, FloatTable@l(r3)
 lwz       r4, 0x6C(r31)
+lfs       f0, FloatTable@l(r3)
 addi      r3, r3, FloatTable@l
 stfs      f0, 0x14(r4)
-lfs       f0, 0(r3)
-stfs      f0, 0x18(r4)
 lfs       f0, 0x04(r3)
+stfs      f0, 0x18(r4)
+lfs       f0, 0x08(r3)
 stfs      f0, 0x1C(r4)
 lfs       f0, SkyBgMatrixThing - STATIC_R2(r2) #10.0f
 lwz       r3, 0x6C(r31)
@@ -577,7 +578,6 @@ lwz       r12, 0(r3)
 lwz       r12, 0x2C(r12)
 mtctr     r12
 bctrl
-
 
 lwz       r3, 0x6C(r31)
 addi      r4, r28, ScenarioSelectSky - ScenarioSelectLayout
