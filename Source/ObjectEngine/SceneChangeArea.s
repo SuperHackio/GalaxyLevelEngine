@@ -16,7 +16,7 @@
 #First thing's first, the original game only allocated proper memory for 8 of these areas only!
 #That simply won't be enough...
 .GLE ADDRESS cCreateTable__16AreaObjContainer +0x304
-.int 0x00000040 #Create 64 slots. Should be more than enough (up from 48 in GLE-V2)
+.int 0x00000050 #Create 80 slots. Should be more than enough (up from 48 in GLE-V2, up from 64 in GLE-V3)
 .GLE ENDADDRESS
 
 #=================================================
