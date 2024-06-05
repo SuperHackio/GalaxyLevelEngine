@@ -36,6 +36,9 @@ EntryPathId:
 MinigameBgm:
     .string "MinigameBgm"
     
+str_DisplayState:
+    .string "DisplayState"
+    
 #Scenario Settings
 #Disables the star chance music.
 NoStarChance:

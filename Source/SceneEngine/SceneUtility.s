@@ -690,6 +690,112 @@ blr
 
 
 
+# == Repeatable fields ==
+#This section is for optimizing the reading of repeatable fields
+
+
+#r3 = (pointer to) 0x08 bytes stack memory
+#r4 = const char* Repeatable Field Format
+.GLE_createRepeatableIter:
+li r5, 0
+stw r5, 0x00(r3) #s32
+stw r4, 0x04(r3) #const char*
+blr
+
+# Advances the iter to the next one, and returns the values
+#r3 = RepeatableIter*
+#r4 = char[]* Destination
+#r5 = size of Destination
+#r6 = JMapInfo* BCSV
+#returns:
+#  r3 = 0 or 1 if it exists
+#  the Destination value will be filled in with the formatted string
+.GLE_repeatableIter_GoNext:
+lwz r8, 0x00(r3)
+addi r8, r8, 1
+stw r8, 0x00(r3)
+#epic fallthrough
+
+
+# Will only get the current value and won't increment
+#r3 = RepeatableIter*
+#r4 = char[]* Destination
+#r5 = size of Destination
+#r6 = JMapInfo* BCSV
+#returns:
+#  r3 = 0 or 1 if it exists
+#  the Destination value will be filled in with the formatted string
+.GLE_repeatableIter_GetName:
+stwu r1, -0x20(r1)
+mflr      r0
+stw       r0, 0x24(r1)
+addi      r11, r1, 0x20
+bl _savegpr_29
+
+mr r31, r3
+mr r30, r4
+mr r29, r6
+
+mr r3, r30
+mr r4, r5
+lwz r5, 0x04(r31)
+lwz r6, 0x00(r31)
+crclr     4*cr1+eq
+bl        snprintf
+
+mr r3, r29
+mr r4, r30
+bl isExistItemInfo__8JMapInfoFPCc
+
+addi      r11, r1, 0x20
+bl _restgpr_29
+lwz r0, 0x24(r1)
+mtlr      r0
+addi      r1, r1, 0x20
+blr
+
+
+
+#r3 = void* The address the output goes to
+#r4 = JMapInfo* BCSV
+#r5 = const char* Current Field. This would be the same as what you pass to .GLE_repeatableIter_GoNext in r4.
+#r6 = int BCSV Index
+#r7 = Data Type. BCSV Data Types (1:1 mapped to the enum)
+.GLE_repeatableIter_GetValue:
+cmpwi r7, 0
+beq .GLE_repeatableIter_GetValue_Int
+cmpwi r7, 2
+beq .GLE_repeatableIter_GetValue_Float
+cmpwi r7, 4
+beq .GLE_repeatableIter_GetValue_Short
+cmpwi r7, 5
+beq .GLE_repeatableIter_GetValue_Byte
+cmpwi r7, 6
+beq .GLE_repeatableIter_GetValue_String
+
+bl OSPanic
+
+.GLE_repeatableIter_GetValue_Int:
+#All registers correctly setup!
+b getCsvDataS32__2MRFPlPC8JMapInfoPCcl
+
+.GLE_repeatableIter_GetValue_Float:
+#All registers correctly setup!
+b getCsvDataF32__2MRFPfPC8JMapInfoPCcl
+
+.GLE_repeatableIter_GetValue_Short:
+#All registers correctly setup!
+b getCsvDataS16__2MRFPsPC8JMapInfoPCcl
+
+.GLE_repeatableIter_GetValue_Byte:
+#All registers correctly setup!
+b getCsvDataU8__2MRFPUcPC8JMapInfoPCcl
+
+.GLE_repeatableIter_GetValue_String:
+#All registers correctly setup!
+b getCsvDataStrOrNULL__2MRFPPCcPC8JMapInfoPCcl
+
+
 #This section will be for the Scenario Settings
 #As of GLE-V2, the Scenario Settings have moved!
 #They are now inside the map file, and are loaded only when the stage is loaded.

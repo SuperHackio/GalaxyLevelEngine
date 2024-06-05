@@ -96,23 +96,43 @@ bl PowerStar_getColorInStage
 mr r25, r3
 
 cmpwi r26, 0
-beq .AddStarToStarString_Classic
-#Interruption - If the star is supposed to be forcefully hidden or forcefully shown, do that.
+beq .AddStarToStarString_SkipDisplayState
+#This part was re-written from GLE-V3
+
+# If we are here, then we are allowing DisplayState to override this
 addi      r3, r1, 0x08
 mr r4, r31
-bl .GLE_GetScenarioExistStatusFromGalaxyStatusAccessor
-cmpwi r3, -1
-beq .AddStarToStarString_Classic
+bl .GLE_GetStarDisplayStateFromAccessor
 
-#Force Hide
 cmpwi r3, 0
-mr r3, r30
-beq .AddStarToStarString_Return
+ble .AddStarToStarString_SkipDisplayState
+cmpwi r3, 4
+bge .AddStarToStarString_SkipDisplayState
 
-#Force Show is still subject to unlock conditions
+cmpwi r3, 1
+beq .CreateStarString_Return_NoIcon
+
+cmpwi r3, 2
+bne .AddStarToStarString_TryMode3
+# force hide until Unlocked
+addi      r3, r1, 0x08
+mr r4, r31
+#JMapProgress
+cmpwi r3, 0
+beq .CreateStarString_Return_NoIcon
+b .AddStarToStarString_SkipDisplayState
+
+.AddStarToStarString_TryMode3:
+cmpwi r3, 3
+# force hide until collected
+addi      r3, r1, 0x08
+mr r4, r31
+bl hasPowerStar__20GalaxyStatusAccessorCFl
+cmpwi r3, 0
+beq .CreateStarString_Return_NoIcon
 
 
-.AddStarToStarString_Classic:
+.AddStarToStarString_SkipDisplayState:
 addi      r3, r1, 0x08
 mr r4, r31
 bl hasPowerStar__20GalaxyStatusAccessorCFl
@@ -209,19 +229,17 @@ addi      r3, r1, 0x08
 mr r4, r31
 bl isOpenScenario__20GalaxyStatusAccessorCFl
 cmpwi r3, 0
-mr r3, r30
-beq .AddStarToStarString_Return
+beq .CreateStarString_Return_NoIcon
 
 .CreateStarString_StarNotRequireOpenFlag:
 #Interuption!
 #Make sure there's no ForceDisplays
-addi      r3, r1, 0x08
-mr r4, r31
-li r5, 1
-bl GalaxyStatusAccessor__isStarOpen_WithFlag
-cmpwi r3, 0
-mr r3, r30
-bne .AddStarToStarString_Return
+#addi      r3, r1, 0x08
+#mr r4, r31
+#li r5, 1
+#bl GalaxyStatusAccessor__isStarOpen_WithFlag
+#cmpwi r3, 0
+#bne .CreateStarString_Return_NoIcon
 
 addi      r3, r1, 0x08
 mr r4, r31
@@ -245,14 +263,17 @@ b .CreateStarString_ApplyPowerStar
 
 .CreateStarString_StarIsOpen:
 li r4, 0x6E
+b .CreateStarString_ApplyPowerStar
 
+.CreateStarString_Return_NoIcon:
+mr r3, r30
+b .AddStarToStarString_Return
 
 .CreateStarString_ApplyPowerStar:
 mr r3, r30
 bl addPictureFontCode__2MRFPwi
 
 .AddStarToStarString_Return:
-
 addi      r11, r1, 0x40
 bl _restgpr_25
 lwz       r0, 0x44(r1)

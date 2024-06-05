@@ -17,7 +17,7 @@ stwu      r1, -0x140(r1)
 mflr      r0
 stw       r0, 0x144(r1)
 addi r11, r1, 0x140
-bl _savegpr_23
+bl _savegpr_29
 
 mr r31, r3 #JMapInfo
 mr r30, r4 #Index
@@ -57,155 +57,178 @@ lwz r4, 0x08(r1)
 cmpw r3, r4
 blt .BCSVCheckReturnFalse
 
-
-
 .skipMedalNum:
+#New to GLE-V4: You can check for specific comet medals via TicoCoinTarget' repeatable fields
 #Here used to be the flag check but now you can have many flags to check
+#The first instance of the new RepeatableIter. Hopefully it makes programming this easier...
+addi      r3, r1, 0x08
+lis r4, TicoCoinTarget_Format@ha
+addi r4, r4, TicoCoinTarget_Format@l
+bl .GLE_createRepeatableIter
 
-#Loop 1 Time
-li r28, 1 #i?
-b .BCSVEventValueLoopStart
+#we're ready to get started
+b .BCSVTicoCoinTargetLoopStart
 
-.BCSVEventValueLoop:
-addi      r3, r1, 0x0C
-li        r4, 0x40
-lis r5, EventValueName_Format@ha
-addi r5, r5, EventValueName_Format@l
-mr        r6, r28
-crclr     4*cr1+eq
-bl        snprintf
+.BCSVTicoCoinTargetLoop:
+addi      r3, r1, 0x10
+mr        r4, r31
+addi      r5, r1, 0x14
+mr        r6, r30
+li        r7, 6
+bl .GLE_repeatableIter_GetValue
 
-mr r3, r31
-addi r4, r1, 0x0C
-bl isExistItemInfo__8JMapInfoFPCc
-cmpwi r3, 0 #This means it failed to find the entry
-beq .EventNoCheck
+lwz r3, 0x10(r1)
+cmpwi r3, 0
+beq .BCSVTicoCoinTargetLoopStart #If the string is empty/NULL
 
-addi r3, r1, 0x08
-addi r5, r1, 0x0C
-bl LOCAL_GetFieldStringOrNULL
-
-#Get the existing value before making a new string
-bl getGameDataHolder
-lwz r4, 0x08(r1)
-cmpwi r4, 0
-beq .BCSVEventValueLoopContinue #If the string is empty/NULL
-bl getGameEventValue__14GameDataHolderCFPCc
-mr r27, r3
-
-addi      r3, r1, 0x0C
-li        r4, 0x30
-lis r5, EventValue_Format@ha
-addi r5, r5, EventValue_Format@l
-mr        r6, r28
-crclr     4*cr1+eq
-bl        snprintf
-
-mr r3, r31
-addi r4, r1, 0x0C
-bl isExistItemInfo__8JMapInfoFPCc
-cmpwi r3, 0 #This is an error.
+bl isOnGalaxyFlagTicoCoin__16GameDataFunctionFPCc
+cmpwi r3, 0
 beq .BCSVCheckReturnFalse
 
-addi r3, r1, 0x08
-addi r5, r1, 0x0C
-bl LOCAL_GetFieldInt
+.BCSVTicoCoinTargetLoopStart:
+addi      r3, r1, 0x08
+addi      r4, r1, 0x14
+li        r5, 0x40
+mr        r6, r31
+bl .GLE_repeatableIter_GoNext
+cmpwi r3, 0
+bne .BCSVTicoCoinTargetLoop
 
-lwz r4, 0x08(r1)
-cmpw r27, r4
+#In GLE-V4, this was re-written to use the new RepeatableIter
+#Due to the nature of this condition, we have to use two iterators at once. Wowie!
+addi      r3, r1, 0x08
+lis r4, EventValueName_Format@ha
+addi r4, r4, EventValueName_Format@l
+bl .GLE_createRepeatableIter
+
+addi      r3, r1, 0x10
+lis r4, EventValue_Format@ha
+addi r4, r4, EventValue_Format@l
+bl .GLE_createRepeatableIter
+
+b .NEW_BCSVEventValueLoopStart
+
+.NEW_BCSVEventValueLoop:
+addi      r3, r1, 0x18
+mr        r4, r31
+addi      r5, r1, 0x20
+mr        r6, r30
+li        r7, 6
+bl .GLE_repeatableIter_GetValue
+
+lwz r3, 0x18(r1)
+cmpwi r3, 0
+beq .NEW_BCSVEventValueLoopStart #If the string is empty/NULL
+
+addi      r3, r1, 0x1C
+mr        r4, r31
+addi      r5, r1, 0x40
+mr        r6, r30
+li        r7, 0
+bl .GLE_repeatableIter_GetValue
+
+bl getGameDataHolder
+lwz r4, 0x18(r1)
+bl getGameEventValue__14GameDataHolderCFPCc
+lwz r4, 0x1C(r1)
+cmpw r3, r4
 blt .BCSVCheckReturnFalse
 
-.BCSVEventValueLoopContinue:
-addi r28, r28, 1
-.BCSVEventValueLoopStart:
-b .BCSVEventValueLoop
-
-
-.EventNoCheck:
-#Loop 2 Time
-li r28, 1 #i?
-b .BCSVEventLoopStart
-
-.BCSVEventLoop:
-addi      r3, r1, 0x0C
-li        r4, 0x30
-lis r5, FlagName_Format@ha
-addi r5, r5, FlagName_Format@l
-mr        r6, r28
-crclr     4*cr1+eq
-bl        snprintf
-
-mr r3, r31
-addi r4, r1, 0x0C
-bl isExistItemInfo__8JMapInfoFPCc
-cmpwi r3, 0 #This means it failed to find the entry
-beq .CheckScenario
-
-addi r3, r1, 0x08
-addi r5, r1, 0x0C
-bl LOCAL_GetFieldStringOrNULL
-
-lwz r3, 0x08(r1)
+.NEW_BCSVEventValueLoopStart:
+addi      r3, r1, 0x08
+addi      r4, r1, 0x20
+li        r5, 0x20
+mr        r6, r31
+bl .GLE_repeatableIter_GoNext
 cmpwi r3, 0
-beq .BCSVEventLoopContinue #Continue if the flag is empty
+beq .NEW_BCSVEventValueLoop_End #No more fields
 
-lwz r3, 0x08(r1)
+addi      r3, r1, 0x10
+addi      r4, r1, 0x40
+li        r5, 0x20
+mr        r6, r31
+bl .GLE_repeatableIter_GoNext
+cmpwi r3, 0 #If this is Zero, it's an error.
+beq .BCSVCheckReturnFalse
+
+b .NEW_BCSVEventValueLoop
+.NEW_BCSVEventValueLoop_End:
+
+#This also got changed in GLE-V4
+addi      r3, r1, 0x08
+lis r4, FlagName_Format@ha
+addi r4, r4, FlagName_Format@l
+bl .GLE_createRepeatableIter
+
+#we're ready to get started
+b .BCSVFlagNameLoopStart
+
+.BCSVFlagNameLoop:
+addi      r3, r1, 0x10
+mr        r4, r31
+addi      r5, r1, 0x14
+mr        r6, r30
+li        r7, 6
+bl .GLE_repeatableIter_GetValue
+
+lwz r3, 0x10(r1)
+cmpwi r3, 0
+beq .BCSVFlagNameLoopStart #If the string is empty/NULL
+
 bl isOnGameEventFlag__16GameDataFunctionFPCc
 cmpwi r3, 0
 beq .BCSVCheckReturnFalse
 
-.BCSVEventLoopContinue:
-addi r28, r28, 1
-.BCSVEventLoopStart:
-b .BCSVEventLoop
+.BCSVFlagNameLoopStart:
+addi      r3, r1, 0x08
+addi      r4, r1, 0x14
+li        r5, 0x40
+mr        r6, r31
+bl .GLE_repeatableIter_GoNext
+cmpwi r3, 0
+bne .BCSVFlagNameLoop
 
 
-.CheckScenario:
-#Loop 3 time
-li r28, 1 #i?
-b .BCSVCheckLoopStart
-.BCSVCheckLoop:
-addi      r3, r1, 0x0C
-li        r4, 0x40
-lis r5, RequireScenarioName_Format@ha
-addi r5, r5, RequireScenarioName_Format@l
-mr        r6, r28
-crclr     4*cr1+eq
-bl        snprintf
+#Again, this got changed in GLE-V4
+addi      r3, r1, 0x08
+lis r4, RequireScenarioName_Format@ha
+addi r4, r4, RequireScenarioName_Format@l
+bl .GLE_createRepeatableIter
 
-mr r3, r31
-addi r4, r1, 0x0C
-bl isExistItemInfo__8JMapInfoFPCc
-cmpwi r3, 0 #This means it failed to find the entry
-li r3, 1
-beq .BCSVCheckReturn
+#we're ready to get started
+b .BCSVRequireScenarioNameLoopStart
 
-addi r3, r1, 0x08
-addi r5, r1, 0x0C
-bl LOCAL_GetFieldStringOrNULL
+.BCSVRequireScenarioNameLoop:
+addi      r3, r1, 0x10
+mr        r4, r31
+addi      r5, r1, 0x14
+mr        r6, r30
+li        r7, 6
+bl .GLE_repeatableIter_GetValue
 
-lwz r4, 0x08(r1)
-cmpwi r4, 0
-beq .BCSVCheckLoopContinue #Continue if the string is NULL
+lwz r3, 0x10(r1)
+cmpwi r3, 0
+beq .BCSVRequireScenarioNameLoopStart #If the string is empty/NULL
+
 
 #Replaced with a function moment
-lwz r3, 0x08(r1)
-addi r4, r1, 0x0C
+#lwz r3, 0x08(r1) #r3 is already what we want
+addi r4, r1, 0x54
 bl .GLE_GetGalaxyAndScenarioFromString
 
 #Github #50
 #Should hopefully make it simpler to require full galaxies
 
-addi      r3, r1, 0x10
-lwz r4, 0x0C(r1)
+addi      r3, r1, 0x58
+lwz r4, 0x54(r1)
 cmpwi r4, -1
-bne .RequireScenarioName_CheckForAll
+ble .RequireScenarioName_CheckForAll
 
 #Check if you have any star from this galaxy
 bl getPowerStarNumOwnedInStage__2MRFPCc
 cmpwi r3, 0
 beq .BCSVCheckReturnFalse
-b .BCSVCheckLoopContinue
+b .BCSVRequireScenarioNameLoopStart
 
 .RequireScenarioName_CheckForAll:
 cmpwi r4, 0
@@ -215,25 +238,30 @@ bgt .RequireScenarioName_SingleScenario
 bl isGalaxyCompletedWithGreen__2MRFPCc
 cmpwi r3, 0
 beq .BCSVCheckReturnFalse
-b .BCSVCheckLoopContinue
-
+b .BCSVRequireScenarioNameLoopStart
 
 .RequireScenarioName_SingleScenario:
 bl hasPowerStar__16GameDataFunctionFPCcl
 cmpwi r3, 0
 beq .BCSVCheckReturnFalse
 
-.BCSVCheckLoopContinue:
-addi r28, r28, 1
-.BCSVCheckLoopStart:
-b .BCSVCheckLoop #aka while(true)
+.BCSVRequireScenarioNameLoopStart:
+addi      r3, r1, 0x08
+addi      r4, r1, 0x14
+li        r5, 0x40
+mr        r6, r31
+bl .GLE_repeatableIter_GoNext
+cmpwi r3, 0
+bne .BCSVRequireScenarioNameLoop
+
+li r3, 1
+b .BCSVCheckReturn
 
 .BCSVCheckReturnFalse:
 li r3, 0
 
 .BCSVCheckReturn:
-
-mr r23, r3
+mr r29, r3
 #Normally ew'd be done here, but now with Invert support we need to check to see if
 #The user is asking if the condition is NOT met
 mr r3, r31
@@ -252,13 +280,13 @@ lwz r4, 0x08(r1)
 cmpwi r4, 1
 blt .skipInvert
 
-xori r23, r23, 1 #Flip the bit so 0 becomes 1 and 1 becomes 0
+xori r29, r29, 1 #Flip the bit so 0 becomes 1 and 1 becomes 0
 
 .skipInvert:
-mr r3, r23
+mr r3, r29
 
 addi r11, r1, 0x140
-bl _restgpr_23
+bl _restgpr_29
 lwz       r0, 0x144(r1)
 mtlr      r0
 addi      r1, r1, 0x140
@@ -271,10 +299,16 @@ mr r4, r31
 mr r6, r30
 b getCsvDataS32__2MRFPlPC8JMapInfoPCcl
 
-LOCAL_GetFieldStringOrNULL:
-mr r4, r31
-mr r6, r30
-b getCsvDataStrOrNULL__2MRFPPCcPC8JMapInfoPCcl
+#[OBSOLETE] No longer needed, as RepeatableIter does all the work
+#LOCAL_GetFieldStringOrNULL:
+#mr r4, r31
+#mr r6, r30
+#b getCsvDataStrOrNULL__2MRFPPCcPC8JMapInfoPCcl
+
+
+
+
+
 
 #r3 = const char *
 #r4 = void*
@@ -1084,8 +1118,8 @@ blr
 #========================================================================================
 #r3 = JMapInfo*
 #r4 = Type to search for
-#r5 = Mode - 0 = return bool | 1 = return Param00int | 2 = return Param00Str | 3 = Param01int
-#r6 = (Mode = 0) Param00Int int | (Mode = 1) Param00Str char const * (0 = ignore) | (Mode = 2) Param00Int int
+#r5 = Mode - 0 = return bool | 1 = return Param00int | 2 = return Param00Str | 3 = Param01int | 3 = Param01int (Alt)
+#r6 = (Mode = 0) Param00Int int | (Mode = 1) Param00Str char const * (0 = ignore) | (Mode = 2) Param00Int int | (Mode = 3) Param01Str [Crashes if not present] | (Mode = 4) Param00Int int
 
 .getActiveEntryFromGalaxyInfo:
 stwu      r1, -0x70(r1)
@@ -1139,7 +1173,10 @@ beq .getActiveEntryFromGalaxyInfo_LoopContinue
 cmpwi r29, 1
 #Just return r3 (1 or 0) if the mode is less than 1 (aka 0, return bool)
 beq .getActiveEntryFromGalaxyInfo_CheckInt00
-bgt .getActiveEntryFromGalaxyInfo_CheckStr00
+cmpwi r29, 2
+beq .getActiveEntryFromGalaxyInfo_CheckStr00
+#Modes 3 & 4 are shared
+bgt .getActiveEntryFromGalaxyInfo_CheckInt01
 
 #Mode 0 = Return bool (on the entry that has a matching int)
 addi r3, r1, 0x0C
@@ -1222,8 +1259,8 @@ b .getActiveEntryFromGalaxyInfo_Return
 .getActiveEntryFromGalaxyInfo_CheckInt01:
 #Mode 3 = Return Param01Int IF the field exists (on the entry with a matching string)
 mr r3, r31
-lis r4, PowerStarNum@ha
-addi r4, r4, PowerStarNum@l
+lis r4, Param01Int@ha
+addi r4, r4, Param01Int@l
 bl isExistItemInfo__8JMapInfoFPCc
 
 cmpwi r3, 0  #return if not found
@@ -1231,6 +1268,9 @@ beq .getActiveEntryFromGalaxyInfo_Return
 
 cmpwi r28, 0
 beq .SkipStringCheck01
+
+cmpwi r29, 4
+beq .DoInt00CheckForInt01
 
 addi r3, r1, 0x0C
 mr r4, r31
@@ -1244,14 +1284,21 @@ mr r4, r28
 bl isEqualString__2MRFPCcPCc
 cmpwi r3, 0
 beq .getActiveEntryFromGalaxyInfo_LoopContinue
+b .SkipStringCheck01
+
+.DoInt00CheckForInt01:
+addi r3, r1, 0x0C
+mr r4, r31
+lis r5, Param00Int@ha
+addi r5, r5, Param00Int@l
+mr r6, r26
+bl getCsvDataS32__2MRFPlPC8JMapInfoPCcl
+
+lwz r3, 0x0C(r1)
+cmpw r3, r28
+bne .getActiveEntryFromGalaxyInfo_LoopContinue
 
 .SkipStringCheck01:
-mr r3, r31
-mr r4, r26
-bl isJMapEntryProgressComplete
-cmpwi r3, 0
-beq .getActiveEntryFromGalaxyInfo_LoopContinue
-
 addi r3, r1, 0x0C
 mr r4, r31
 lis r5, Param01Int@ha
@@ -1942,31 +1989,38 @@ blr
 #r3 = GalaxyStatusAccessor*
 #r4 = Scenario ID
 #returns:
-#    -1 if not forced (entry doesn't exist)
-#     0 if Forced to not exist
-#     1 if forced to exist
-.GLE_GetScenarioExistStatusFromGalaxyStatusAccessor:
+#     0 Default Behaviour
+#     1 Always force hide
+#     2 force hide until collected
+#     3 force hide until unlocked
+#     4 Always force show
+.GLE_GetStarDisplayStateFromAccessor:
+lis r5, str_DisplayState@ha
+addi r5, r5, str_DisplayState@l
+b .GLE_GetStarStateFromAccessor
+
+
+#r3 = GalaxyStatusAccessor*
+#r4 = Scenario ID
+#r5 = String to look for
+.GLE_GetStarStateFromAccessor:
 stwu      r1, -0x10(r1)
 mflr      r0
 stw       r0, 0x14(r1)
 
 bl getWorldNo__20GalaxyStatusAccessorCFv
-bl .GLE_GetScenarioExistStatus
+bl .GLE_GetStarState
 
 lwz       r0, 0x14(r1)
 mtlr      r0
 addi      r1, r1, 0x10
 blr
 
-
-#This function is used to determine if a user has forcefully hidden scenarios
+#Consider inlining...
 #r3 = JMapInfo* GalaxyInfo
 #r4 = Scenario ID
-#returns:
-#    -1 if not forced (entry doesn't exist)
-#     0 if Forced to not exist
-#     1 if forced to exist
-.GLE_GetScenarioExistStatus:
+#r5 = String to look for
+.GLE_GetStarState:
 stwu      r1, -0x70(r1)
 mflr      r0
 stw       r0, 0x74(r1)
@@ -1977,23 +2031,11 @@ mr r31, r3
 mr r30, r4
 
 mr r3, r31
-lis r4, ExistStatus@ha
-addi r4, r4, ExistStatus@l
-li r5, 2
+mr r4, r5
+li r5, 4
 mr r6, r30
 bl .getActiveEntryFromGalaxyInfo
 
-cmpwi r3, 0
-mr r4, r3
-li r3, -1
-beq .GLE_GetScenarioExistStatus_Return
-
-lis r3, Data_Enabled@ha
-addi r3, r3, Data_Enabled@l
-bl isEqualString__2MRFPCcPCc
-
-
-.GLE_GetScenarioExistStatus_Return:
 addi      r11, r1, 0x70
 bl        _restgpr_26
 lwz       r0, 0x74(r1)
@@ -2365,8 +2407,8 @@ blr
 
 .GLE ADDRESS sub_804E8E30
 #no idea what this function does but it can crash the AllStarList so away it goes!
-li r3, 1
-blr
+#li r3, 1
+#blr
 .GLE ENDADDRESS
 
 
@@ -2391,6 +2433,9 @@ PowerStarNum:
     
 TicoCoinNum:
     .string "TicoCoinNum"
+    
+TicoCoinTarget_Format:
+    .string "TicoCoinTarget%d"
 
 FlagName_Format:
     .string "FlagName%d"
