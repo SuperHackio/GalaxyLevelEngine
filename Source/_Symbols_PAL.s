@@ -542,4 +542,7 @@
 .set sub_8013A180, 0x8013A180
 .set hasFaceShipEvent__2MRFv, 0x804D8320
 .set cInitializeStartIdInfo__23_unnamed_SceneUtil_cpp_, 0x8072DDF0
+.set sub_8008A390, 0x8008A390
+.set GalaxyName_FileSelect, 0x80671670
+.set UseResource_SoundScenario1, 0x8067167C
 .GLE REGION END

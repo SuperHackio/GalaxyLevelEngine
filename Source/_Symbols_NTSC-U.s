@@ -769,4 +769,8 @@
 .set cInitializeStartIdInfo__23_unnamed_SceneUtil_cpp_, 0x807286F0
 
 
+.set sub_8008A390, 0x8008A390
+.set GalaxyName_FileSelect, 0x8066BF70
+.set UseResource_SoundScenario1, 0x8066BF7C
+
 .GLE REGION END

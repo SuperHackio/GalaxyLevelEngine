@@ -66,24 +66,38 @@ blr
 
 
 
-.GLE ADDRESS sub_804BC260 +0x20
-nop
+.GLE ADDRESS sub_8008A390
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+stw       r31, 0x0C(r1)
+stw       r30, 0x08(r1)
+mr        r30, r3
+
+lis       r3, GalaxyName_FileSelect@ha
+addi      r3, r3, GalaxyName_FileSelect@l
+lis       r4, UseResource_SoundScenario1@ha
+addi      r4, r4, UseResource_SoundScenario1@l
+crclr     4*cr1+eq
+bl        tryCreateStageUseResourceCsvParser__2MRFPCcPCce
+stw       r3, 0(r30)
+
+lwz       r31, 0x0C(r1)
+lwz       r30, 0x08(r1)
+lwz       r0, 0x14(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
 .GLE ENDADDRESS
 
 .GLE ADDRESS stageClear__9GameSceneFv +0x5C
 li r3, 0
 .GLE ENDADDRESS
 
-.GLE ADDRESS loadStaticResource__11AudSceneMgrFv +0x58
+.GLE ADDRESS loadStaticResource__11AudSceneMgrFv +0x68
 b .AudSceneMgr_LoadStaticContinue
 .GLE ENDADDRESS
 
 .GLE ADDRESS loadStaticResource__11AudSceneMgrFv +0x88
 .AudSceneMgr_LoadStaticContinue:
-.GLE ENDADDRESS
-
-
-
-.GLE ADDRESS sub_8008A430 +0x24
-nop
 .GLE ENDADDRESS

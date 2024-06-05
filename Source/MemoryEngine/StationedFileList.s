@@ -1,7 +1,7 @@
 #This is a list of files that are always loaded.
 #Want to add an entry? make sure you add it at the bottom of the list
 #====Entry format====
-#.int Heap Type
+#.int Heap Type (0 = NAPA, 1 = GDDR3)
 #.int Load Time Type
 #.int String Label (Filename)
 
