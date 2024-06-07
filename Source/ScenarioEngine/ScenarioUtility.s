@@ -222,7 +222,7 @@ bl .GLE_GetGalaxyAndScenarioFromString
 addi      r3, r1, 0x58
 lwz r4, 0x54(r1)
 cmpwi r4, -1
-ble .RequireScenarioName_CheckForAll
+bgt .RequireScenarioName_CheckForAll
 
 #Check if you have any star from this galaxy
 bl getPowerStarNumOwnedInStage__2MRFPCc
