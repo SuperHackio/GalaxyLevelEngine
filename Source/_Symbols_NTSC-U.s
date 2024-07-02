@@ -474,6 +474,8 @@
 .set TicoCoin, 0x806B6E5C
 
 
+.set TogepinScorer_StartNerve, 0x803249A0
+
 #Symbols used to reference where string tables are placed
 .set ScenarioSelectStringTable, 0x806F6C68
 .set ScenarioEngineStringTable, 0x80702320

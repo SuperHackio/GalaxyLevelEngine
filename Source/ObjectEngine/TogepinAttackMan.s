@@ -49,3 +49,8 @@ lwz r5, 0xA8(r26)
 .GLE ADDRESS updateHighScore__13TogepinScorerFv +0x50
 bl .TogepinSetScore
 .GLE ENDADDRESS
+
+#Use GLE's new Minigame Music system
+.GLE ADDRESS TogepinScorer_StartNerve +0x2C
+bl startMinigameBGM__2MRFv
+.GLE ENDADDRESS

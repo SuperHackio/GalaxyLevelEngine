@@ -334,6 +334,7 @@
 .set MiniComet_NerveLoc, 0x807DB560
 .set MiniComet_Data, 0x80706630
 .set TicoCoin, 0x806BC55C
+.set TogepinScorer_StartNerve, 0x803249A0
 .set ScenarioSelectStringTable, 0x806FC368
 .set ScenarioEngineStringTable, 0x80707A20
 .set SceneChangeEngineStringTable, 0x80706DC0
