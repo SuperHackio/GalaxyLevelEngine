@@ -62,3 +62,8 @@ bl .getGalaxyHighScoreOnCurrentScenario
 .GLE ADDRESS updateHighScore__18ScoreAttackCounterFv +0x40
 bl .setGalaxyHighScoreOnCurrentScenario
 .GLE ENDADDRESS
+
+#Use GLE's new Minigame Music system
+.GLE ADDRESS eventFunc__14ScoreAttackManFUl +0x134
+bl startMinigameBGM__2MRFv
+.GLE ENDADDRESS
