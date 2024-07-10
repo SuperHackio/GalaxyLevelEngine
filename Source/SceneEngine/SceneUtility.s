@@ -841,7 +841,7 @@ li r6, 0 #default to byte
 #r3 = Setting Name
 #r4 = Scenario ID
 #r5 = Reverse
-#r6 = Type, 0 = Byte, 1 = Float, 2 = String
+#r6 = Type, 0 = Byte, 1 = Float, 2 = String, 3 = Int32
 stwu      r1, -0x100(r1)
 mflr      r0
 stw       r0, 0x104(r1)
@@ -938,6 +938,13 @@ cmpwi r21, 0
 beq .__readByte
 cmpwi r21, 1
 beq .__readFloat
+cmpwi r21, 2
+beq .__readString
+
+__readInt32:
+bl getCsvDataS32__2MRFPlPC8JMapInfoPCcl
+lwz r3, 0x08(r1)
+b .MR_GetScenarioSetting_Return
 
 .__readString:
 bl getCsvDataStrOrNULL__2MRFPPCcPC8JMapInfoPCcl

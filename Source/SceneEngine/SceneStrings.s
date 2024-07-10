@@ -99,6 +99,9 @@ NoWelcome:
 NoScenarioTitle:
     .string "NoScenarioTitle"
     
+StarPieceFollowGroupLimit:
+    .string "StarPieceFollowGroupLimit"
+    
 PeachStarGet:
     .string "PeachStarGet"
     

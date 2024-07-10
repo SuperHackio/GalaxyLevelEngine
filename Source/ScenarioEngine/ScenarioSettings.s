@@ -60,6 +60,18 @@ lis r3, NoWelcome@ha
 addi r3, r3, NoWelcome@l
 li r4, 0
 b .MR_GetCurrentScenarioSetting
+
+
+# May as well use this space
+
+.GLE_getStageStarPieceFollowGroupLimit:
+lis r3, StarPieceFollowGroupLimit@ha
+addi r3, r3, StarPieceFollowGroupLimit@l
+li r4, 0  # Do not reverse
+li r5, 3  # mode 3 is Int32
+b .MR_GetCurrentScenarioSetting_Type
+
+
 .GLE ENDADDRESS
 
 #Not making a whole new file for these!
