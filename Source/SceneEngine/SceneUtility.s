@@ -2588,6 +2588,28 @@ blr
 
 
 
+# Little thing to fix going between multiple Celestial Areas
+.GLE ADDRESS update__8MarioFooFv +0xA74
+b .MarioFoo_AreaFix
+.MarioFoo_AreaFix_Return:
+bne .MarioFoo_AreaFix_JumpLoc
+.GLE ENDADDRESS
+
+.GLE ADDRESS update__8MarioFooFv +0xAD0
+.MarioFoo_AreaFix_JumpLoc:
+.GLE ENDADDRESS
+
+.MarioFoo_AreaFix:
+cmplw r3, r4
+beq .MarioFoo_AreaFix_NoBreak
+# The two pointers are not equal. If the new pointer is Zero, then we can kill the flight
+cmpwi r3, 0
+b .MarioFoo_AreaFix_Return
+
+.MarioFoo_AreaFix_NoBreak:
+b .MarioFoo_AreaFix_JumpLoc
+
+
 
 .GLE PRINTMESSAGE EndWorldmapCode
 .GLE PRINTADDRESS
