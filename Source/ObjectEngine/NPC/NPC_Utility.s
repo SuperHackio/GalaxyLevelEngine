@@ -609,6 +609,12 @@ blr
 
 #----------------------------------------------------------------------------------
 
+.GLE SYMBOL START
+.GLE SYMBOL NAME registerGlobalBranchFunc__3GLEFP8NPCActor
+.GLE SYMBOL DESC #Sets the NPC's BranchFunc to be GLE's Global Branch Function
+.GLE SYMBOL PARA 0 pNpc #The NPCActor to assign the function to
+.GLE SYMBOL CRSH #DSI Exception if pNpc is NULL
+.GLE SYMBOL END
 
 .MR_RegisterGlobalBranchFunc:
 #r3 = NPCActor*
@@ -623,6 +629,12 @@ mr r5, r4
 li r4, 0
 b .MR_RegisterNPCFunc
 
+.GLE SYMBOL START
+.GLE SYMBOL NAME registerGlobalEventFunc__3GLEFP8NPCActor
+.GLE SYMBOL DESC #Sets the NPC's EventFunc to be GLE's Global Event Function
+.GLE SYMBOL PARA 0 pNpc #The NPCActor to assign the function to
+.GLE SYMBOL CRSH #DSI Exception if pNpc is NULL
+.GLE SYMBOL END
 
 .MR_RegisterGlobalEventFunc:
 #r3 = NPCActor*
@@ -637,6 +649,13 @@ mr r5, r4
 li r4, 1
 b .MR_RegisterNPCFunc
 
+.GLE SYMBOL START
+.GLE SYMBOL NAME registerGlobalAnimeFunc__3GLEFP8NPCActor
+.GLE SYMBOL DESC #Sets the NPC's AnimeFunc to be GLE's Global NPC Animtion Function (A)
+.GLE SYMBOL DESC #This allows animations to be played via MSBF in tandem with the Galaxy's ZoneInfo.arc/NPCAnimeFunc.bcsv
+.GLE SYMBOL PARA 0 pNpc #The NPCActor to assign the function to
+.GLE SYMBOL CRSH #DSI Exception if pNpc is NULL
+.GLE SYMBOL END
 
 .MR_RegisterGlobalAnimeFunc:
 #r3 = NPCActor*
@@ -651,6 +670,8 @@ mr r5, r4
 li r4, 2
 b .MR_RegisterNPCFunc
 
+
+# Since this does nothing, I won't assign a symbol to it
 
 .MR_RegisterGlobalKillFunc:
 #r3 = NPCActor*
@@ -709,6 +730,16 @@ blr
 #--------------------------------------------------------------------------------------
 
 .GLE ADDRESS __ct__15MarioFacePlanetFPCc
+
+.GLE SYMBOL START
+.GLE SYMBOL NAME registerAllGlobalFuncs__3GLEFP8NPCActor
+.GLE SYMBOL DESC #Calls the following functions (In order):
+.GLE SYMBOL DESC #GLE::registerGlobalBranchFunc
+.GLE SYMBOL DESC #GLE::registerGlobalEventFunc
+.GLE SYMBOL DESC #GLE::registerGlobalAnimeFunc
+.GLE SYMBOL PARA 0 pNpc #The NPCActor to use as the Parameter for the function calls.
+.GLE SYMBOL CRSH #DSI Exception if pNpc is NULL
+.GLE SYMBOL END
 
 #MR::RegisterAllGlobalFuncs((LiveActor *))
 .MR_RegisterAllGlobalFuncs:
