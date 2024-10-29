@@ -82,6 +82,8 @@
 .set getSettingInfo__14AudBgmSettingsFl, 0x80083890
 .set setBgmStateYoshi, 0x80220B80
 .set setBgmStateSlowdownTime, 0x80220C40
+.set getBgmState__16AudStageBgmTableFPCcl, 0x8008A1A0
+.set numStreamChannels__9AudParams, 0x807DCAF8
 .set updateStarPane__9PauseMenuFv, 0x804872E0
 .set createStarString__2MRFPwiPCcbb, 0x80041D60
 .set hasPowerStarAsBronze__20GalaxyStatusAccessorCFl, 0x804D1DD0
@@ -546,4 +548,12 @@
 .set sub_8008A390, 0x8008A390
 .set GalaxyName_FileSelect, 0x80671670
 .set UseResource_SoundScenario1, 0x8067167C
+.set cMuteSettingInfo__13AudBgmSetting, 0x80645F8C
+.set AudMultiBgm_FloatConversion, 0x80645D98
+.set AudMultiBgm_1_0, 0x807DCC68
+.set AudMultiBgm_254_0, 0x807DCC70
+.set AudSingleBgm_0_0, 0x807DCC6C
+.set AudSingleBgm_FloatConversion, 0x80645D98
+.set sub_80081CC0, 0x80081CC0
+.set sub_80081280, 0x80081280
 .GLE REGION END

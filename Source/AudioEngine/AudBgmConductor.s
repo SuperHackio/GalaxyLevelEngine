@@ -85,6 +85,14 @@ mr        r29, r3
 b .AudBgmConductor_Movement_UpdateValues
 
 
+# Keeping it simple. You'll want all the entries for this one...
+# 0 = Normal
+# 1 = Yoshi Drums
+# 2 = Dash Yoshi
+# 3 = Blimp Yoshi
+# 4 = Koopa Shell in water (Camera Above Water)
+# 5 = Underwater
+# 6 = Koopa Shell in water (Camera Underwater)
 .WaterMusic:
 lwz       r3, 0x18(r30)
 rlwinm.   r0, r3, 0,30,30
@@ -98,7 +106,7 @@ beq       .WaterMusic_Underwater
 li        r4, 0x14
 stw       r4, 0x08(r1)
 li        r29, 6
-b .ChangeBgmState
+b .AddBgmState
 
 .WaterMusic_AboveWater:
 rlwinm.   r0, r3, 0,29,29
@@ -110,11 +118,11 @@ beq .YoshiNormal
 li        r4, 0x14
 stw       r4, 0x08(r1)
 li        r29, 4
-b .ChangeBgmState
+b .AddBgmState
 
 .WaterMusic_Underwater:
 li r29, 5
-b .ChangeBgmState
+b .AddBgmState
 
 
 .SlowdownSwitch:
@@ -122,24 +130,29 @@ b .ChangeBgmState
 #hardcoded to stone cyclone to use slowdown switch with that one song galaxy22
 #Now, if the slowdown switch is active, it will prioritize that and the yoshi drums
 #will likely shut off. They should resume when the slowdown effect stops.
-rlwinm.   r0, r5, 0,25,25
-bne .YoshiNormal
+
 lwz       r4, 0x1C(r30)
 addi      r3, r1, 0x08
 lwz       r5, 0x18(r30)
 bl        setBgmStateSlowdownTime
+
+rlwinm.   r0, r5, 0,25,25
+beq .YoshiNormal
+
 mr        r29, r3
 b .AudBgmConductor_Movement_UpdateValues
 
+
+# GLE-V4: This is a non-additive type
 .DashYoshi:
 #This case is specifically for Hightail falls music. Could technically apply to any sequenced track maybe?
 lwz       r3, 0x18(r30)
-rlwinm.   r0, r3, 0,27,27
+rlwinm.   r0, r3, 0,27,27 # Dash Yoshi
 beq       loc_80221080
 li        r4, 0x14
 stw       r4, 0x08(r1)
 lfs       f31, DashBgmTempoUp_flt - STATIC_R2(r2)
-li        r29, 9
+li        r29, 2
 b         loc_802210AC
 
 loc_80221080:
@@ -148,7 +161,7 @@ beq       loc_8022109C
 li        r4, 0x14
 stw       r4, 0x08(r1)
 lfs       f31, DashBgmTempo_flt - STATIC_R2(r2)
-li        r29, 8
+li        r29, 1
 b         loc_802210AC
 
 loc_8022109C:
@@ -174,6 +187,7 @@ bctrl     # Changes Tempo
 b         .AudBgmConductor_Movement_UpdateValues
 
 
+# GLE-V4: This is a non-additive type.
 .FireFlower:
 lwz       r0, 0x18(r30)
 lfs       f31, Boss04Tempo_flt - STATIC_R2(r2)
@@ -181,7 +195,7 @@ rlwinm.   r0, r0, 0,26,26
 beq       loc_80221104
 li        r4, 6
 stw       r4, 0x08(r1)
-li        r29, 2
+li        r29, 1
 b         loc_80221110
 
 loc_80221104:
@@ -246,6 +260,15 @@ mr        r3, r29
 bl        setStageBGMState__2MRFlUl
 b .AudBgmConductor_Movement_UpdateValues
 
+.AddBgmState:
+lwz       r0, 0x1C(r30)
+cmpw      r29, r0
+beq       .AudBgmConductor_Movement_UpdateValues
+mr        r3, r29
+lwz r4, 0x08(r1)
+bl        .GLE_addStageBGMState
+b .AudBgmConductor_Movement_UpdateValues
+
 
 .AudBgmConductor_Movement_Cancel:
 li r29, 0
@@ -267,4 +290,29 @@ mtlr      r0
 addi      r1, r1, 0x30
 blr
 .GLE ASSERT movement__15AudBgmConductorFv +0x4F4
+.GLE ENDADDRESS
+
+
+
+.GLE ADDRESS setBgmStateYoshi +0x28
+li        r31, 3    # Blimp Fruit
+.GLE ENDADDRESS
+.GLE ADDRESS setBgmStateYoshi +0x40
+li        r31, 2    # Dash Pepper
+.GLE ENDADDRESS
+.GLE ADDRESS setBgmStateYoshi +0x58
+li        r31, 1    # Normal Yoshi
+.GLE ENDADDRESS
+
+.GLE ADDRESS setBgmStateYoshi +0x7C
+bl .GLE_addStageBGMState
+.GLE ENDADDRESS
+
+
+
+.GLE ADDRESS setBgmStateSlowdownTime +0x20
+li r31, 4
+.GLE ENDADDRESS
+.GLE ADDRESS setBgmStateSlowdownTime +0x30
+li r31, 0
 .GLE ENDADDRESS
