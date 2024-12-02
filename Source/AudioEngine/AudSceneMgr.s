@@ -101,3 +101,10 @@ b .AudSceneMgr_LoadStaticContinue
 .GLE ADDRESS loadStaticResource__11AudSceneMgrFv +0x88
 .AudSceneMgr_LoadStaticContinue:
 .GLE ENDADDRESS
+
+# This is an experimental thing where we move part of SMR.szs(?) into the stationed heap since we have some memory open there.
+.GLE ADDRESS init_JAS_JAI___23@unnamed@AudSystem_cpp@FP12JKRSolidHeap +0x134
+bl getStationedHeapNapa__2MRFv
+.GLE ENDADDRESS
+
+
