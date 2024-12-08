@@ -2,7 +2,7 @@
 
 #3 ints.
 .set TrackEntrySize, 4 * 0x04
-#11 bytes, 1 padding byte, 1 float
+#8 bytes, 3 bytes, 1 padding byte, 1 float
 .set MuteDefinitionSize, 12 * 0x01 + 1 * 0x04
 
 .GLE ADDRESS numStreamChannels__9AudParams
@@ -316,8 +316,8 @@ fmr       f29, f3
 stw       r31, 0x0C(r1)
 stw       r30, 0x08(r1)
 mr        r30, r3
-mr        r31, r3
 bl        OSDisableInterrupts
+mr        r31, r3
 
 #Here's where I become optimize prime *Transformer noises*
 #Yeah that's right, there's no r3. CRY ABOUT IT
@@ -547,6 +547,8 @@ b .AudSingleBgm_ChangeSpeed
 
 .AudSingleBgm_ChangeSpeed:
 mr        r3, r31
+cmpwi r27, 0
+beq .AudSingleBgm_ChangeSpeed_End
 lfs f1, 0x0C(r27)
 lwz r0, 0x0C(r27)
 andi. r0, r0, 1
