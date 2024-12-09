@@ -3,12 +3,26 @@
 .GLE ADDRESS .HUBWORLD_STATE_CONNECTOR
 
 #BCSV Get shortcuts
+.GLE SYMBOL START
+.GLE SYMBOL NAME getChangeSceneListInfoFromZone__3GLEFl
+.GLE SYMBOL DESC #Attempts to get the ChangeSceneListInfo of the zone belonging to the provided ID
+.GLE SYMBOL PARA 0 zoneId #The ID of the zone to access.
+.GLE SYMBOL PARA 0 zoneId #0 will always refer to the main galaxy zone. (IslandFleetGalaxy, for example)
+.GLE SYMBOL RETN JMapInfo* #A pointer to the ChangeSceneListInfo. NULL if not found.
+.GLE SYMBOL END
 .StageDataHolder_GetSceneChangeList:
 #StageDataHolder::getSceneChangeList
 lis r4, ChangeSceneListInfo@ha
 addi r4, r4, ChangeSceneListInfo@l
 b .StageDataHolder_GetListJMapInfo
 
+.GLE SYMBOL START
+.GLE SYMBOL NAME getStageInfoFromZone__3GLEFl
+.GLE SYMBOL DESC #Attempts to get the StageInfo of the zone belonging to the provided ID
+.GLE SYMBOL PARA 0 zoneId #The ID of the zone to access.
+.GLE SYMBOL PARA 0 zoneId #0 will always refer to the main galaxy zone. (IslandFleetGalaxy, for example)
+.GLE SYMBOL RETN JMapInfo* #A pointer to the StageInfo. NULL if not found.
+.GLE SYMBOL END
 .StageDataHolder_GetStageInfo:
 #StageDataHolder::getStageInfo
 lis r4, StageInfo@ha
@@ -16,6 +30,14 @@ addi r4, r4, StageInfo@l
 b .StageDataHolder_GetListJMapInfo
 
 
+.GLE SYMBOL START
+.GLE SYMBOL NAME getListCsvFromZone__3GLEFlPCc
+.GLE SYMBOL DESC #Attempts to get a BCSV with the provided name from the "List" folder of the zone belonging to the provided ID
+.GLE SYMBOL PARA 0 zoneId #The ID of the zone to access.
+.GLE SYMBOL PARA 0 zoneId #0 will always refer to the main galaxy zone. (IslandFleetGalaxy, for example)
+.GLE SYMBOL PARA 1 pFilename #The name of the file to get from the Zone's List folder
+.GLE SYMBOL RETN JMapInfo* #A pointer to the BCSV. NULL if not found.
+.GLE SYMBOL END
 .StageDataHolder_GetListJMapInfo:
 #StageDataHolder::getListJMapInfo
 #r3 = ZoneID
@@ -48,6 +70,13 @@ addi      r1, r1, 0x10
 blr
 
 
+.GLE SYMBOL START
+.GLE SYMBOL NAME requestMoveStageFromJMapInfo__3GLEFPC8JMapInfol
+.GLE SYMBOL DESC #Uses the provided BCSV to attempt a scene change. The input BCSV must follow GLE's BCSV Scene Changing protocol
+.GLE SYMBOL DESC #https://github.com/SuperHackio/GalaxyLevelEngine/wiki/Scene-Changing
+.GLE SYMBOL PARA 0 pJMapInfo #Pointer to the BCSV to use for changing scenes
+.GLE SYMBOL PARA 1 index #The index of the BCSV row to use
+.GLE SYMBOL END
 .GLE PRINTMESSAGE == GLE::RequestMoveStageFromJMapInfo ==
 .GLE PRINTADDRESS
 #Note for Aurum or someone with symbol map access, address 0x8004C860 is the wrong function. It should be "getValue_Ul___8JMapInfoCFiPCcPl_Cb"
@@ -158,9 +187,28 @@ mtlr      r0
 addi      r1, r1, 0x60
 blr
 
+
+.GLE SYMBOL START
+.GLE SYMBOL NAME requestMoveStage__3GLEFPCclPCcll
+.GLE SYMBOL DESC #Uses the provided information to attempt a manual scene change.
+.GLE SYMBOL PARA 0 pStageName #The internal name of the stage you want to go to
+.GLE SYMBOL PARA 1 destScenario #The scenario to load
+.GLE SYMBOL PARA 1 destScenario #-1 will activate the Scenario Select
+.GLE SYMBOL PARA 2 pZoneName #The internal name of the Zone you want to spawn in.
+.GLE SYMBOL PARA 2 pZoneName #Set to NULL to use the Main Galaxy zone (IslandFleetGalaxy, for example)
+.GLE SYMBOL PARA 3 destMarioNo #The spawn point to spawn at (relative to the Zone selected by pZoneName)
+.GLE SYMBOL PARA 4 playerChange #Allows changing between Mario & Luigi
+.GLE SYMBOL PARA 4 playerChange #-1 = Do not change
+.GLE SYMBOL PARA 4 playerChange # 0 = Force Mario
+.GLE SYMBOL PARA 4 playerChange # 1 = Force Luigi
+.GLE SYMBOL PARA 4 playerChange # 2 = Swap brothers (Mario becomes Luigi, Luigi becomes Mario)
+.GLE SYMBOL END
+#This symbol version of the method will auto set the static update to false, since that is not supposed to be exposed to users. It's for internal engine use only.
+.MR_RequestMoveStage_SymbolVersion:
+li r8, 0
+
 .GLE PRINTMESSAGE == GLE::RequestMoveStage ==
 .GLE PRINTADDRESS
-.MR_RequestMoveStage:
 #Makes the game start the level change process
 #r3 = Destination Stage Name
 #r4 = Destination Scenario. Leave as -1 to go to the Scenario Select
@@ -168,7 +216,7 @@ blr
 #r6 = Destination MarioNo
 #r7 = Character Change (-1 = Do not change Player, 0 = Mario, 1 = Luigi, 2 = Swap. This lets the same area switch between both characters)
 #r8 = Don't update Statics (Never give users control over this because the statics are meant to always be automatic)
-
+.MR_RequestMoveStage:
 stwu      r1, -0x50(r1)
 mflr      r0
 stw       r0, 0x54(r1)
