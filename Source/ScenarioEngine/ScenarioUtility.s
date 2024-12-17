@@ -2127,6 +2127,41 @@ addi      r1, r1, 0x70
 blr
 
 
+.GLE ADDRESS isCompleteAllScenario__20GalaxyStatusAccessorCFv +0x38
+bl .GalaxyStatusAccessor_isCompleteAllScenario_EX
+.GLE ENDADDRESS
+# r3 = const char* Galaxy Name
+.GalaxyStatusAccessor_isCompleteAllScenario_EX:
+stwu      r1, -0x20(r1)
+mflr      r0
+stw       r0, 0x24(r1)
+addi      r11, r1, 0x20
+bl        _savegpr_29
+
+mr r31, r3
+bl isOnGalaxyFlagTicoCoin__16GameDataFunctionFPCc
+
+cmpwi r3, 0
+beq .GalaxyStatusAccessor_isCompleteAllScenario_EX_ReturnFalse
+
+mr r3, r31
+.GLE HOOK START
+.GLE HOOK NAME IsGalaxyAllComplete__3GLEFPCc
+.GLE HOOK DESC #Using this hook will allow one to add additional criteria to the game which determines if a galaxy is complete or not.
+.GLE HOOK PARA 0 pStageName #The name of the stage that we're checking the completion of.
+.GLE HOOK RETN bool #true means the external Syati checks succeed
+.GLE HOOK TYPE boolean_and
+.GLE HOOK KAMK kmCall
+.GLE HOOK END
+li r3, 1  #This line will be overwritten by the hook. By default it's TRUE because it's representing the fact that there's by default nothing that could make it false since there's no other checks.
+
+.GalaxyStatusAccessor_isCompleteAllScenario_EX_ReturnFalse:
+addi      r11, r1, 0x20
+bl        _restgpr_29
+lwz       r0, 0x24(r1)
+mtlr      r0
+addi      r1, r1, 0x20
+blr
 
 
 
