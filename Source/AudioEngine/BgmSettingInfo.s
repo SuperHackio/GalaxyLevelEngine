@@ -525,19 +525,45 @@ fmr       f1, f30
 fmr       f2, f31
 bl setStreamVolume__11AudMultiBgmFff
 
-li r3, 0
-lis r4, AudMultiBgm_1_0@ha
-lfs f1, AudMultiBgm_1_0@l(r4)
-bl .GLE_setAudioSpeed
 
-li r3, 0
-li r4, 0
-bl .GLE_addStageBGMState
+bl .GLE_ResetAudioComponents
+
 
 b .AudMultiBgm_PrepareExt_Return
 
 
 
+.GLE ADDRESS start__12AudSingleBgmFUlb +0x134
+b .AudSingleBgm_Start_Ext_Reset
+.AudSingleBgm_Start_Ext_Reset_Return:
+.GLE ENDADDRESS
+
+.AudSingleBgm_Start_Ext_Reset:
+bl .GLE_ResetAudioComponents
+
+addi      r11, r1, 0x30
+b .AudSingleBgm_Start_Ext_Reset_Return
+
+
+.GLE_ResetAudioComponents:
+stwu r1, -0x10(r1)
+mflr r0
+stw r0, 0x14(r1)
+
+li r3, 0
+li r4, 0
+bl .GLE_addStageBGMState
+
+li r3, 1
+lis r4, AudMultiBgm_1_0@ha
+lfs f1, AudMultiBgm_1_0@l(r4)
+bl .GLE_setAudioSpeed
+
+
+lwz r0, 0x14(r1)
+mtlr r0
+addi r1, r1, 0x10
+blr
 
 
 .GLE ADDRESS changeTrackMuteState__12AudSingleBgmFll +0xC4
@@ -764,9 +790,12 @@ addi r5, r5, Static_AdditiveBgmState@l
 stw r3, 0x00(r5)
 
 bl getStageBgm__7AudWrapFv
+cmpwi r3, 0
+beq .GLE_addStageBGMState_NoBgmActive
 lwz r3, 0x18(r3)
 bl setStageBGMState__2MRFlUl
 
+.GLE_addStageBGMState_NoBgmActive:
 # We only need the value to be set during this function.
 lis r5, Static_AdditiveBgmState@ha
 addi r5, r5, Static_AdditiveBgmState@l
