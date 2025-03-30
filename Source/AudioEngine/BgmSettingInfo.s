@@ -633,6 +633,19 @@ b        set__8AudFaderFfl
 .changeTrackMuteStateStm_JumpLoc:
 .GLE ENDADDRESS
 
+# This removes the ability for different chords to be used based on mute group selection
+# Why remove it? Because A, nobody knows how to use it, and B, NINTENDO DIDN'T USE IT IN EITHER GAME
+# Like, I can see what they were going for. They just.....didn't... And it causes issues for me so away it goes
+.GLE ADDRESS changeTrackMuteState__11AudMultiBgmFll +0x134
+b changeTrackMuteState__11AudMultiBgmFll_SkipExtraChords
+.GLE ENDADDRESS
+
+.GLE ADDRESS changeTrackMuteState__11AudMultiBgmFll +0x16C
+changeTrackMuteState__11AudMultiBgmFll_SkipExtraChords:
+.GLE ENDADDRESS
+
+
+
 # Not using r3 because IT'S LESS CODE YAAAAAAAAA
 # r0 = MuteType (TrackControl.bcsv)
 # r5 = MuteState (The actual game mute state value lol)

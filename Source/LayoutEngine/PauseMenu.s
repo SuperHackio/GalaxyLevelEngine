@@ -100,5 +100,22 @@ bl isOnGalaxyFlagTicoCoin__16GameDataFunctionFPCc
 xori r3, r3, 1
 b .TicoCoin_PauseMenuFix_Return
 
+
+
+.GLE ADDRESS exeConfirm__9PauseMenuFv +0x8C
+b .PauseMenu_ConfirmLeave_MusicFix
+.PauseMenu_ConfirmLeave_MusicFix_Return:
+.GLE ENDADDRESS
+
+.PauseMenu_ConfirmLeave_MusicFix:
+bl startSystemWipeCircleWithCaptureScreen__2MRFl
+
+bl getSystem__7AudWrapFv
+bl exitPauseMenu__9AudSystemFv
+
+b .PauseMenu_ConfirmLeave_MusicFix_Return
+
+
+
 .PAUSE_MENU_CONNECTOR:
 .GLE ENDADDRESS
