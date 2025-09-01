@@ -786,4 +786,6 @@
 .set sub_80081CC0, 0x80081CC0
 .set sub_80081280, 0x80081280
 
+.set WarpPod_ColorTable, 0x806B15E8
+
 .GLE REGION END

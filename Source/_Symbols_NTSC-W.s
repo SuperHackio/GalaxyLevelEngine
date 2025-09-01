@@ -556,4 +556,5 @@
 .set AudSingleBgm_FloatConversion, 0x80646318
 .set sub_80081CC0, 0x80081CC0
 .set sub_80081280, 0x80081280
+.set WarpPod_ColorTable, 0x806B1888
 .GLE REGION END

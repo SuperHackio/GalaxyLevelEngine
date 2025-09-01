@@ -1,6 +1,6 @@
 #Moving forwards by 4 because of the DEAD_STATIC
 
-.GLE ADDRESS .TOGEPIN_ATTACK_MAN_CONNECTOR
+.GLE ADDRESS .WARPPOD_CONNECTOR
 #This file contains utilities relating to Scenarios
 #========================================================================================
 
