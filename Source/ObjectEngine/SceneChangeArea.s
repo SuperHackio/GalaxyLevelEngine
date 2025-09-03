@@ -166,11 +166,34 @@ bl startGameOverWipe__2MRFv
 #Check to see if we're capturing the screen or not
 lwz r3, 0x24(r31)
 cmpwi r3, -1
-bne .SceneChangeArea_Movement_Invalidate
+bne .SceneChangeArea_Movement_KillMusic
 lwz       r3, sInstance__29SingletonHolder_10GameSystem_ - STATIC_R13(r13)
 lwz       r3, 0x30(r3)
 bl startGameScreenCapture__16SystemWipeHolderFv
 bl offPlayerControl__2MRFv
+
+
+.SceneChangeArea_Movement_KillMusic:
+lwz r4, 0x3C(r31)
+cmpwi r4, -1
+bne .SceneChangeArea_Movement_Invalidate
+
+#Cut the music
+lwz r3, 0x38(r31)
+cmpwi r3, -1
+bne .SceneChangeArea_StopSubBGM
+lwz r3, 0x2C(r31)
+.SceneChangeArea_StopSubBGM:
+bl stopSubBGM__2MRFUl
+
+lwz r3, 0x38(r31)
+cmpwi r3, -1
+bne .SceneChangeArea_StopBGM
+lwz r3, 0x2C(r31)
+.SceneChangeArea_StopBGM:
+bl stopStageBGM__2MRFUl
+
+
 b .SceneChangeArea_Movement_Invalidate
 
 #/////////////////////////////////////
@@ -195,24 +218,6 @@ bl forceCloseSystemWipeCircle__2MRFv
 bl .MR_SystemCircleWipeToCenter
 
 .SkipForceCloseCircle:
-
-lwz r4, 0x3C(r31)
-cmpwi r4, -1
-bne .SceneChangeArea_Movement_Invalidate
-#Cut the music
-lwz r3, 0x38(r31)
-cmpwi r3, -1
-bne .SceneChangeArea_StopSubBGM
-lwz r3, 0x2C(r31)
-.SceneChangeArea_StopSubBGM:
-bl stopSubBGM__2MRFUl
-
-lwz r3, 0x38(r31)
-cmpwi r3, -1
-bne .SceneChangeArea_StopBGM
-lwz r3, 0x2C(r31)
-.SceneChangeArea_StopBGM:
-bl stopStageBGM__2MRFUl
 
 #Set the used flag to true
 .SceneChangeArea_Movement_Invalidate:
