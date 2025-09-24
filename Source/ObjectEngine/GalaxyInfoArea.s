@@ -415,7 +415,7 @@ mr        r3, r27
 addi      r4, r30, GalaxySelectInfo_TxtMedal - GalaxySelectInfo_WorldMapGalaxyInformation
 bl        hidePaneRecursive__2MRFP11LayoutActorPCc
 
-.loc_804A9678_2:
+loc_804A9678_2:
 mr r3, r27
 mr r4, r28
 .GLE HOOK START
