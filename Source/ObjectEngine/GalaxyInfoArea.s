@@ -289,7 +289,6 @@ b __ct__16GalaxySelectInfoFl
 #r6 tells us if we need to skip the galaxy details
 #Used if we only want to load the banner and message
 
-#TODO: Add a binding SOMEWHERE so people can make changes to the layout if they want.
 .GLE PRINTMESSAGE -- GalaxySelectInfo::show(const char* GalaxyName, long, bool SkipDetails) --
 .GLE PRINTADDRESS
 .GalaxySelectInfo_show:
@@ -340,9 +339,6 @@ lwz       r3, 0x3C(r27)
 bl        getGalaxyNameOnCurrentLanguage__2MRFPCc
 mr        r5, r3
 mr        r3, r27
-#Leaving this here so I don't have to find it again when I inevidable get asked for it
-.GLE PRINTMESSAGE == GalaxyInfoBanner Temp hook Position ==
-.GLE PRINTADDRESS
 addi      r4, r30, GalaxySelectInfo_GalaxyName - GalaxySelectInfo_WorldMapGalaxyInformation
 bl        setTextBoxMessageRecursive__2MRFP11LayoutActorPCcPCw
 
@@ -357,6 +353,19 @@ mr        r3, r27
 lis r4, GalaxyInfoArea_Medal@ha
 addi r4, r4, GalaxyInfoArea_Medal@l
 bl hidePaneRecursive__2MRFP11LayoutActorPCc
+
+mr r3, r27
+mr r4, r28
+.GLE HOOK START
+.GLE HOOK NAME onHideGalaxyInfoBanner__3GLEFP12SimpleLayoutPCc
+.GLE HOOK DESC #Using this hook will allow one to add additional functionality for when the GalaxyInfoBanner isn't unlocked yet
+.GLE HOOK PARA 0 pGalaxySelectInfo #The current GalaxySelectInfo instance. This is the actual LayoutActor that you can do things with
+.GLE HOOK PARA 1 pGalaxyName #The name of the current Galaxy that is being processed.
+.GLE HOOK TYPE Void
+.GLE HOOK KAMK kmCall
+.GLE HOOK END
+nop
+
 b loc_804A9678
 
 .GalaxySelectInfo_ShowGalaxy:
@@ -399,12 +408,25 @@ beq       loc_804A966C
 mr        r3, r27
 addi      r4, r30, GalaxySelectInfo_TxtMedal - GalaxySelectInfo_WorldMapGalaxyInformation
 bl        showPaneRecursive__2MRFP11LayoutActorPCc
-b         loc_804A9678
+b         loc_804A9678_2
 
 loc_804A966C:
 mr        r3, r27
 addi      r4, r30, GalaxySelectInfo_TxtMedal - GalaxySelectInfo_WorldMapGalaxyInformation
 bl        hidePaneRecursive__2MRFP11LayoutActorPCc
+
+.loc_804A9678_2:
+mr r3, r27
+mr r4, r28
+.GLE HOOK START
+.GLE HOOK NAME onShowGalaxyInfoBanner__3GLEFP12SimpleLayoutPCc
+.GLE HOOK DESC #Using this hook will allow one to add additional functionality for when the GalaxyInfoBanner is unlocked.
+.GLE HOOK PARA 0 pGalaxySelectInfo #The current GalaxySelectInfo instance. This is the actual LayoutActor that you can do things with.
+.GLE HOOK PARA 1 pGalaxyName #The name of the current Galaxy that is being processed.
+.GLE HOOK TYPE Void
+.GLE HOOK KAMK kmCall
+.GLE HOOK END
+nop
 
 
 loc_804A9678:
