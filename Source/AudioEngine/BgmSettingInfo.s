@@ -850,7 +850,6 @@ blr
 .GLE ADDRESS getSettingInfo__14AudBgmSettingsFl
 lis       r5, cBgmSettingInfo__13AudBgmSetting@ha
 lwz r0, cBgmSettingInfo__13AudBgmSetting@l + 0x04(r5)
-#addi      r5, r5, AudBgmSetting::cBgmSettingInfo(void)@l
 lwz r5, cBgmSettingInfo__13AudBgmSetting@l(r5)
 li        r4, 0
 mtctr     r0

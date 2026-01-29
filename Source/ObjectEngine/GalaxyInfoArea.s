@@ -361,6 +361,7 @@ mr r4, r28
 .GLE HOOK DESC #Using this hook will allow one to add additional functionality for when the GalaxyInfoBanner isn't unlocked yet
 .GLE HOOK PARA 0 pGalaxySelectInfo #The current GalaxySelectInfo instance. This is the actual LayoutActor that you can do things with
 .GLE HOOK PARA 1 pGalaxyName #The name of the current Galaxy that is being processed.
+.GLE HOOK RETN void #
 .GLE HOOK TYPE Void
 .GLE HOOK KAMK kmCall
 .GLE HOOK END
@@ -423,6 +424,7 @@ mr r4, r28
 .GLE HOOK DESC #Using this hook will allow one to add additional functionality for when the GalaxyInfoBanner is unlocked.
 .GLE HOOK PARA 0 pGalaxySelectInfo #The current GalaxySelectInfo instance. This is the actual LayoutActor that you can do things with.
 .GLE HOOK PARA 1 pGalaxyName #The name of the current Galaxy that is being processed.
+.GLE HOOK RETN void #
 .GLE HOOK TYPE Void
 .GLE HOOK KAMK kmCall
 .GLE HOOK END

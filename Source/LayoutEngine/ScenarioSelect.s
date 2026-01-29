@@ -140,36 +140,36 @@ addi r27, r27, ScenarioSelectLayout@l
 
 #Hack to not load r3 because r3 already has our LayoutActor
 addi r4, r27, ScenarioSelect - ScenarioSelectLayout
-li r5, 1
+li r5, 2
 bl initLayoutManager__11LayoutActorFPCcUl
 
 mr r3, r31
 addi r4, r27, ScenarioSelect - ScenarioSelectLayout
-li r5, 1
+li r5, 2
 bl createAndAddPaneCtrl__2MRFP11LayoutActorPCcUl
 mr r3, r31
 addi r4, r27, ScenarioFrame - ScenarioSelectLayout
-li r5, 1
+li r5, 2
 bl createAndAddPaneCtrl__2MRFP11LayoutActorPCcUl
 mr r3, r31
 addi r4, r27, Scenario - ScenarioSelectLayout
-li r5, 1
+li r5, 2
 bl createAndAddPaneCtrl__2MRFP11LayoutActorPCcUl
 mr r3, r31
 addi r4, r27, StarTop - ScenarioSelectLayout
-li r5, 1
+li r5, 2
 bl createAndAddPaneCtrl__2MRFP11LayoutActorPCcUl
 mr r3, r31
 addi r4, r27, StarDown - ScenarioSelectLayout
-li r5, 1
+li r5, 2
 bl createAndAddPaneCtrl__2MRFP11LayoutActorPCcUl
 mr r3, r31
 addi r4, r27, BestTime - ScenarioSelectLayout
-li r5, 1
+li r5, 2
 bl createAndAddPaneCtrl__2MRFP11LayoutActorPCcUl
 mr r3, r31
 addi r4, r27, RaceTime - ScenarioSelectLayout
-li r5, 1
+li r5, 2
 bl createAndAddPaneCtrl__2MRFP11LayoutActorPCcUl
 
 #Loop for the bubble pane controls
@@ -181,7 +181,7 @@ addi r4, r28, 1
 bl makeNewBubblePaneName
 mr r3, r31
 addi r4, r1, 0x10
-li r5, 1
+li r5, 2
 bl createAndAddPaneCtrl__2MRFP11LayoutActorPCcUl
 lwz r30, 0x78(r31)
 mulli r5, r28, 8
@@ -195,7 +195,7 @@ addi r4, r28, 1
 bl makeHiddenBubblePaneName
 mr r3, r31
 addi r4, r1, 0x10
-li r5, 1
+li r5, 2
 bl createAndAddPaneCtrl__2MRFP11LayoutActorPCcUl
 lwz r30, 0x7C(r31)
 mulli r5, r28, 8
@@ -209,7 +209,7 @@ addi r4, r28, 1
 bl makeCometBubblePaneName
 mr r3, r31
 addi r4, r1, 0x10
-li r5, 1
+li r5, 2
 bl createAndAddPaneCtrl__2MRFP11LayoutActorPCcUl
 lwz r30, 0x80(r31)
 mulli r5, r28, 8
@@ -225,7 +225,7 @@ blt BubblePaneLoop
 #Continue assigning pane controls
 mr r3, r31
 addi r4, r27, Mario - ScenarioSelectLayout
-li r5, 1
+li r5, 2
 bl createAndAddPaneCtrl__2MRFP11LayoutActorPCcUl
 mr r3, r31
 addi r4, r27, CometAppear - ScenarioSelectLayout
@@ -356,6 +356,16 @@ bl initNerve__11LayoutActorFPC5Nerve
 mr        r3, r31
 bl .ScenarioSelect_InitBackButton
 
+mr        r3, r31
+.GLE HOOK START
+.GLE HOOK NAME onScenarioSelectInit__3GLEFP11LayoutActor
+.GLE HOOK DESC #Using this hook will allow one to add additional functionality for when the ScenarioSelect is initializing (such as making new pane controllers)
+.GLE HOOK PARA 0 pScenarioSelectLayout #The current ScenarioSelectLayout instance. This is the actual LayoutActor that you can do things with.
+.GLE HOOK RETN void #
+.GLE HOOK TYPE Void
+.GLE HOOK KAMK kmCall
+.GLE HOOK END
+nop
 
 addi      r11, r1, 0x50
 psq_l     f31, 0x58(r1), 0, 0
@@ -601,6 +611,17 @@ li r0, 1
 stb       r0, 0xDC(r31)
 
 mr        r3, r31
+.GLE HOOK START
+.GLE HOOK NAME onScenarioSelectAppear__3GLEFP11LayoutActor
+.GLE HOOK DESC #Using this hook will allow one to add additional functionality for when the ScenarioSelect is appearing
+.GLE HOOK PARA 0 pScenarioSelectLayout #The current ScenarioSelectLayout instance. This is the actual LayoutActor that you can do things with.
+.GLE HOOK RETN void #
+.GLE HOOK TYPE Void
+.GLE HOOK KAMK kmCall
+.GLE HOOK END
+nop
+
+mr        r3, r31
 addi      r4, r13, sInstance__Q223NrvScenarioSelectLayout33ScenarioSelectLayoutNrvAppearStar - STATIC_R13
 bl setNerve__11LayoutActorCFPC5Nerve
 
@@ -741,25 +762,6 @@ bl        _restgpr_29
 lwz       r0, 0x24(r1)
 mtlr      r0
 addi      r1, r1, 0x20
-blr
-
-#ScenarioSelectLayout::draw(const(void))
-ScenarioSelectLayout_Draw:
-stwu      r1, -0x10(r1)
-mflr      r0
-stw       r0, 0x14(r1)
-stw       r31, 0x0C(r1)
-mr        r31, r3
-bl        draw__11LayoutActorCFv
-lwz       r3, 0xD8(r31)
-lwz       r12, 0(r3)
-lwz       r12, 0x18(r12)
-mtctr     r12
-bctrl
-lwz       r0, 0x14(r1)
-lwz       r31, 0x0C(r1)
-mtlr      r0
-addi      r1, r1, 0x10
 blr
 .GLE ASSERT calcViewAndEntryStarModel__20ScenarioSelectLayoutFv
 
@@ -2151,6 +2153,25 @@ li r3, BackFadeTime
 
 
 .GLE ADDRESS .PAUSE_MENU_CONNECTOR
+#ScenarioSelectLayout::draw(const(void))
+ScenarioSelectLayout_Draw:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+stw       r31, 0x0C(r1)
+mr        r31, r3
+bl        draw__11LayoutActorCFv
+lwz       r3, 0xD8(r31)
+lwz       r12, 0(r3)
+lwz       r12, 0x18(r12)
+mtctr     r12
+bctrl
+lwz       r0, 0x14(r1)
+lwz       r31, 0x0C(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
+
 #Refer to LoadIcon.s
 .ScenarioSelect_LoadingIcon_Addition:
 li r3, 0
