@@ -1625,13 +1625,20 @@ li        r4, 0xB4
 bl isStep__2MRFPC11LayoutActorl
 cmpwi     r3, 0
 beq       .loc_8048F498
-#Normally there's code to stop the music here, but because loading times
-#can get a little long, we will stop the bgm after the load finishes
-li        r3, 0x1F
-bl closeSystemWipeWhiteFade__2MRFl
 b .ScenarioSelect_LoadingIcon_Addition
 
 .loc_8048F498:
+mr        r3, r30
+.GLE HOOK START
+.GLE HOOK NAME exeAfterScenarioSelected__3GLEFP11LayoutActor
+.GLE HOOK DESC #WRITEME
+.GLE HOOK PARA 0 pScenarioSelectLayout #The current ScenarioSelectLayout instance. This is the actual LayoutActor that you can do things with.
+.GLE HOOK RETN void #
+.GLE HOOK TYPE Void
+.GLE HOOK KAMK kmCall
+.GLE HOOK END
+nop
+
 lwz       r0, 0x34(r1)
 psq_l     f31, 0x28(r1), 0, 0
 lfd       f31, 0x20(r1)
@@ -2174,6 +2181,11 @@ blr
 
 #Refer to LoadIcon.s
 .ScenarioSelect_LoadingIcon_Addition:
+#Normally there's code to stop the music here, but because loading times
+#can get a little long, we will stop the bgm after the load finishes
+li        r3, 0x1F
+bl closeSystemWipeWhiteFade__2MRFl
+
 li r3, 0
 stw r3, 0xE8(r30)
 
