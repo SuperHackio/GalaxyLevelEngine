@@ -741,9 +741,22 @@ blr
 # == Repeatable fields ==
 #This section is for optimizing the reading of repeatable fields
 
+.GLE STRUCT START
+.GLE STRUCT NAME GLE::RepeatableIter
+# TODO: Add struct description?
+.GLE STRUCT MEMB 0 public s32 mValue #The iteration value that the iter is currently at
+.GLE STRUCT MEMB 1 public const$char* mFormat #The string format to use
+.GLE STRUCT END
 
 #r3 = (pointer to) 0x08 bytes stack memory
 #r4 = const char* Repeatable Field Format
+.GLE SYMBOL START
+.GLE SYMBOL NAME createRepeatableIter__3GLEFRQ23GLE14RepeatableIterPCc
+.GLE SYMBOL DESC #initializes a RepeatableIter
+.GLE SYMBOL PARA 0 rIter #The iter variable to initialize
+.GLE SYMBOL PARA 1 format #The string format of the iter. does not change after being set.
+.GLE SYMBOL CRSH #DSI Exception if rIter is NULL
+.GLE SYMBOL END
 .GLE_createRepeatableIter:
 li r5, 0
 stw r5, 0x00(r3) #s32
@@ -758,6 +771,16 @@ blr
 #returns:
 #  r3 = 0 or 1 if it exists
 #  the Destination value will be filled in with the formatted string
+.GLE SYMBOL START
+.GLE SYMBOL NAME goNextRepeatableIter__3GLEFRQ23GLE14RepeatableIterPvlPC8JMapInfo
+.GLE SYMBOL DESC #Advances the iter to the next one, and returns the values
+.GLE SYMBOL PARA 0 rIter #The iter variable to initialize
+.GLE SYMBOL PARA 1 pDest #Result formatted string
+.GLE SYMBOL PARA 2 destLen #length of dest buffer
+.GLE SYMBOL PARA 3 pBCSV #BCSV
+.GLE SYMBOL CRSH #DSI Exception if rIter is NULL
+.GLE SYMBOL RETN bool #TRUE if the next field exists, FALSE otherwise
+.GLE SYMBOL END
 .GLE_repeatableIter_GoNext:
 lwz r8, 0x00(r3)
 addi r8, r8, 1
@@ -773,6 +796,16 @@ stw r8, 0x00(r3)
 #returns:
 #  r3 = 0 or 1 if it exists
 #  the Destination value will be filled in with the formatted string
+.GLE SYMBOL START
+.GLE SYMBOL NAME getNameRepeatableIter__3GLEFRQ23GLE14RepeatableIterPvlPC8JMapInfo
+.GLE SYMBOL DESC #Will only get the current value and won't increment
+.GLE SYMBOL PARA 0 rIter #The iter variable to initialize
+.GLE SYMBOL PARA 1 pDest #Result formatted string
+.GLE SYMBOL PARA 2 destLen #length of dest buffer
+.GLE SYMBOL PARA 3 pBCSV #BCSV
+.GLE SYMBOL CRSH #DSI Exception if rIter is NULL
+.GLE SYMBOL RETN bool #TRUE if the next field exists, FALSE otherwise
+.GLE SYMBOL END
 .GLE_repeatableIter_GetName:
 stwu r1, -0x20(r1)
 mflr      r0

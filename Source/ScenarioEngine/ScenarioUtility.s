@@ -4,14 +4,23 @@
 #This file contains utilities relating to Scenarios
 #========================================================================================
 
-#TODO: Add a GLE Binding
 #bool GLE::isJMapEntryProgressComplete(JMapInfo* bcsv, s32 entryid)
 #This function will scan a BCSV Entry to see if all checks pass
 #r3 = JMapInfo
 #r4 = Index
 
 #will retirn true if none of the BCSV fields are present
-.GLE PRINTADDRESS
+.GLE SYMBOL START
+.GLE SYMBOL NAME isJMapEntryProgressComplete__3GLEFPC8JMapInfol
+.GLE SYMBOL DESC #This function checks the provided BCSV row to see if GLE's progress checks pass.
+.GLE SYMBOL DESC #This will also take into account any hooks that have been added by other modules.
+.GLE SYMBOL DESC #https://github.com/SuperHackio/GalaxyLevelEngine/wiki/Progress-Checking
+.GLE SYMBOL PARA 0 pBCSV #The BCSV to check
+.GLE SYMBOL PARA 1 row #The row in the BCSV to check
+.GLE SYMBOL CRSH #possible DSI Exception if pBCSV is NULL
+.GLE SYMBOL CRSH #possible DSI Exception if row is Index-Out-Of-Range to pBCSV
+.GLE SYMBOL RETN bool #TRUE if the checks succeed.
+.GLE SYMBOL END
 isJMapEntryProgressComplete:
 stwu      r1, -0x140(r1)
 mflr      r0
@@ -254,6 +263,17 @@ bl .GLE_repeatableIter_GoNext
 cmpwi r3, 0
 bne .BCSVRequireScenarioNameLoop
 
+mr r3, r31 #JMapInfo
+mr r4, r30 #Index
+.GLE HOOK START
+.GLE HOOK NAME isJMapEntryProgressComplete__3GLEFPC8JMapInfol
+.GLE HOOK DESC #Using this hook will allow one to add additional BCSV headers that can be checked when all of GLE's checks succeed
+.GLE HOOK PARA 0 pCsv #The BCSV currently being checked
+.GLE HOOK PARA 1 pRow #The row of the BCSV currently being checked
+.GLE HOOK RETN bool #true means the external Syati checks succeed
+.GLE HOOK TYPE boolean_and
+.GLE HOOK KAMK kmCall
+.GLE HOOK END
 li r3, 1
 b .BCSVCheckReturn
 
