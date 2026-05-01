@@ -129,6 +129,18 @@ lwz       r3, 0x48(r31)
 bl setRestartMarioNo__2MRFRC10JMapIdInfo
 bl sub_804D8210
 
+# New to GLE-V4
+# If ObjArg7 is greater than 0, the scene init will also be set
+
+lwz r3, 0x3C(r31)
+cmpwi r3, 0
+ble .RestartArea_Movement_Return
+lwz       r3, sInstance__29SingletonHolder_10GameSystem_ - STATIC_R13(r13)
+lwz       r3, 0x24(r3)
+addi      r3, r3, 0x8C
+lwz       r4, 0x48(r31)
+bl setStartIdInfo__16SceneControlInfoFRC10JMapIdInfo
+
 .RestartArea_Movement_Return:
 lwz       r31, 0x0C(r1)
 lwz       r0, 0x14(r1)
