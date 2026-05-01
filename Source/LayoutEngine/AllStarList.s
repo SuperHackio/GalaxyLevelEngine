@@ -450,6 +450,7 @@ cmpwi r4, 0
 beq .ScenarioMode_Continue #Stage has no comet medal!
 addi r5, r1, 0x14C
 bl setTextBoxMessageRecursive__2MRFP11LayoutActorPCcPCw
+li r7, 1
 b .ScenarioMode_Continue
 
 .ScenarioMode_HideScenario:
@@ -457,6 +458,7 @@ mr r3, r30
 lwz r4, 0x0C(r1)
 addi r5, r31, HideGalaxyText - AllStarList_NewString
 bl setTextBoxGameMessageRecursive__2MRFP11LayoutActorPCcPCc
+li r7, 0
 
 .ScenarioMode_Continue:
 b .loadGalaxyNames_Loop_Continue
@@ -1178,7 +1180,7 @@ bl getCsvDataS32__2MRFPlPC8JMapInfoPCcl
 
 lwz r3, 0x08(r1)
 cmpw r3, r29
-bne .loadGalaxyNames_Loop_Continue #Entry is for the wrong page, Skip!
+bne .loadGalaxyNames_Loop_Continue_SkipHook #Entry is for the wrong page, Skip!
 
 addi r3, r1, 0x1C
 mr r4, r28
@@ -1192,7 +1194,7 @@ lis r4, NULLSTRING@ha
 addi r4, r4, NULLSTRING@l
 bl isEqualString__2MRFPCcPCc
 cmpwi r3, 1
-beq .loadGalaxyNames_Loop_Continue #No Galaxy Defined, meaning this entry is likely a page unlock entry
+beq .loadGalaxyNames_Loop_Continue_SkipHook #No Galaxy Defined, meaning this entry is likely a page unlock entry
 
 
 
@@ -1340,6 +1342,7 @@ cmpwi r4, 0
 beq .loadGalaxyNames_Loop_Continue #Stage has no comet medal!
 addi r5, r1, 0x14C
 bl setTextBoxMessageRecursive__2MRFP11LayoutActorPCcPCw
+li r7, 1
 b .loadGalaxyNames_Loop_Continue #Continue!
 
 .loadGalaxyNames_HideGalaxy:
@@ -1347,12 +1350,36 @@ mr r3, r30
 lwz r4, 0x0C(r1)
 addi r5, r31, HideGalaxyText - AllStarList_NewString
 bl setTextBoxGameMessageRecursive__2MRFP11LayoutActorPCcPCc
+li r7, 0
 
 .loadGalaxyNames_ShowEmpty:
 #Do nothing because the panes should already be empty
 #Lol
 
 .loadGalaxyNames_Loop_Continue:
+
+# This hook allows developers to add custom handling of the AllStarList
+mr r3, r30 # AllStarList LayoutActor*
+mr r4, r28 # GalaxyOrderList.bcsv
+mr r5, r26 # Index
+mr r6, r29 # Current Page number
+.GLE HOOK START
+.GLE HOOK NAME onAllStarListGalaxyLoad__3GLEFP11LayoutActorPC8JMapInfollb
+.GLE HOOK DESC #Using this hook will allow one to add additional functionality for when the AllStarList is reading the GalaxyOrderList
+.GLE HOOK PARA 0 pAllStarListLayout #The current ScenarioSelectLayout instance. This is the actual LayoutActor that you can do things with.
+.GLE HOOK PARA 1 pCsv #The GalaxyOrderList bcsv
+.GLE HOOK PARA 2 index #The currently being processed bcsv index
+.GLE HOOK PARA 3 pageNum #The current page number
+.GLE HOOK PARA 4 isShown #If true, then GLE has decided to show this row on the AllStarList
+.GLE HOOK RETN void #
+.GLE HOOK TYPE Void
+.GLE HOOK KAMK kmCall
+.GLE HOOK END
+nop
+
+
+.loadGalaxyNames_Loop_Continue_SkipHook:
+
 addi r26, r26, 1
 .loadGalaxyNames_Loop_Start:
 cmpw r26, r27
