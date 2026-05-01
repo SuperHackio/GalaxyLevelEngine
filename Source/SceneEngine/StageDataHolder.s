@@ -152,6 +152,22 @@ nop
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ==== Archive Hotswapping ====
+
 .GLE ADDRESS sub_8045AA60 +0x1D8
 b .ArchiveHotswapping
 .ArchiveHotswapping_ReturnNoSwap:
@@ -159,7 +175,6 @@ b .ArchiveHotswapping
 .GLE ADDRESS sub_8045AA60 +0x208
 .ArchiveHotswapping_ReturnYesSwap:
 .GLE ENDADDRESS
-
 
 
 
@@ -242,16 +257,40 @@ bl getRequestFileInfoConst__10FileLoaderCFPCc
 lwz       r3, 0x8C(r3)
 bl waitReadDone__19FileHolderFileEntryFv
 
+# Sometimes the game misses the correct name when loading a hotswap
+# We can fix that by checking if the file is accessable or not
+lwz r3, sInstance__29SingletonHolder_10FileLoader_ - STATIC_R13(r13)
+lwz r3, 0x28(r3) #FileHolder
+lwz r4, 0x14(r1) # Name of the target hotswap
+bl findEntry__13ArchiveHolderCFPCc
+cmpwi r3, 0
+beq .ArchiveHotswapping_ReturnYesSwap_Success
+
+stw r3, 0x14(r1) # We don't need the hotswap name anymore at this point
+# EXTREMELY RARE USE OF DELETE?!?!?!?!?
+nop #lwz r3, 0x08(r3)
+nop #bl __dl__FPv
+
+mr r3, r30
+bl strlen
+addi r3, r3, 1
+stw r3, 0x18(r1)
+lwz r4, 0x14(r1)
+lwz r4, 0x04(r4) # Heap
+li r5, 0
+bl __nwa__FUlP7JKRHeapi
+lwz r4, 0x14(r1)
+stw r3, 0x08(r4)
+mr r4, r30
+lwz r5, 0x18(r1)
+bl copyString__2MRFPcPCcUl
+
+.ArchiveHotswapping_ReturnYesSwap_Success:
 b .ArchiveHotswapping_ReturnYesSwap
 
 .ArchiveHotswapping_NoSwap:
 cmpwi     r27, 0
 b .ArchiveHotswapping_ReturnNoSwap
-
-
-
-
-
 
 
 
