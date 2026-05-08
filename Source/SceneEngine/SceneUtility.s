@@ -2692,6 +2692,159 @@ b .MarioFoo_AreaFix_JumpLoc
 
 
 
+
+
+
+
+
+# Allows the required number of Purple Coins to be changed from 100!
+# Just gonna completely replace this function since it's unoptimized
+.GLE ADDRESS isPurpleCoinNum100__2MRFv
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+
+bl .GLE_GetPurpleCoinNumScenarioSetting
+mr r6, r3
+#r6 confirmed to not change in the following branch link
+bl getPurpleCoinNum__2MRFv
+cmpw r3, r6
+
+#I'll do it again just watch
+lwz       r0, 0x14(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+
+li r3, 0
+bltlr
+
+li r3, 1
+blr
+.GLE ENDADDRESS
+
+# Very simple hack to just recalculate the whole thing each purple coin increment
+.GLE ADDRESS incPurpleCoinNum__23PlayResultInStageHolderFv +0x0C
+b .GLE_IsCompletePurpleCoinsExact
+.GLE ENDADDRESS
+
+.GLE_IsCompletePurpleCoinsExact:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+
+bl .GLE_GetPurpleCoinNumScenarioSetting
+mr r6, r3
+bl getPurpleCoinNum__2MRFv
+cmpw r3, r6
+
+# DO IT AGAIN
+lwz       r0, 0x14(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+
+li r3, 1
+beqlr-
+
+li r3, 0
+blr
+
+
+.GLE SYMBOL START
+.GLE SYMBOL NAME getScenarioSetting_PurpleCoinNum__3GLEFv
+.GLE SYMBOL DESC #Returns the currently in-use amount of Purple Coins that the player needs to collect
+.GLE SYMBOL DESC #Defaults to 100, maxes out at 999
+.GLE SYMBOL RETN s32 #The number of Purple Coins the player needs to collect
+.GLE SYMBOL END
+
+.GLE_GetPurpleCoinNumScenarioSetting:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+
+lis r3, PurpleCoinNum_Str@ha
+addi r3, r3, PurpleCoinNum_Str@l
+li r4, 0
+li r5, 3
+bl .MR_GetCurrentScenarioSetting_Type
+
+# I'm not cursed, YOU'RE cursed!
+lwz       r0, 0x14(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+
+cmpwi r3, 999
+bgt .GLE_GetPurpleCoinNumScenarioSetting_HardLimit
+
+cmpwi r3, 0
+bgtlr
+
+li r3, 100  # Default to 100
+blr
+
+.GLE_GetPurpleCoinNumScenarioSetting_HardLimit:
+li r3, 999
+blr
+
+
+
+
+
+
+
+
+
+
+
+
+# Converts a string of number characters to their fullwidth counterparts
+# r3 = String Input
+# r4 = WString Output
+.GLE_ConvertNumberStringToFullWidth:
+li r5, 0
+b .GLE_ConvertNumberStringToFullWidth_LoopStart
+
+.GLE_ConvertNumberStringToFullWidth_Loop:
+lbzx r6, r3, r5
+subi r6, r6, 0x20
+ori r6, r6, 0xFF00
+slwi r7, r5, 1
+sthx r6, r4, r7
+
+.GLE_ConvertNumberStringToFullWidth_LoopContinue:
+addi r5, r5, 1
+.GLE_ConvertNumberStringToFullWidth_LoopStart:
+cmpwi r5, 4
+blt .GLE_ConvertNumberStringToFullWidth_Loop
+li r6, 0
+sthx r6, r4, r7
+
+.GLE_ConvertNumberStringToFullWidth_LoopBreak:
+blr
+
+
+
+
+
+
+
+
+
+
+
+
+.set IOS_VER, 0x80003140
+#Returns TRUE if the game is running under the correct IOS version, False if it's something older.
+.GLE_Check_IOS_Version:
+lis r3, IOS_VER@ha
+addi r3, r3, IOS_VER@l
+lhz r4, 0x00(r3)
+cmpwi r4, 54
+li r3, 0
+bltlr
+li r3, 1
+blr
+
+
 .GLE PRINTMESSAGE EndWorldmapCode
 .GLE PRINTADDRESS
 .SCENEUTILITY_CONNECTOR:

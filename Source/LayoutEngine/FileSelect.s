@@ -38,7 +38,7 @@ blr
 .GLE ASSERT __ct__Q217FileSelectInfoSub10SlideStateFP14FileSelectInfo
 .GLE ENDADDRESS
 
-.GLE ADDRESS .ALLSTARLIST_CONNECTOR
+.GLE ADDRESS .DESTROYCOUNTER_CONNECTOR
 
 .Message_Loop:
 #Iterate each BCSV Entry to find message entries

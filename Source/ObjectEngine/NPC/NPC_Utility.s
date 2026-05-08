@@ -64,7 +64,7 @@ rlwinm r30, r4, 0, 20, 31 #Get the parameter value
 #0x5 = Compare Stars
 #0x6 = Compare Powerup (use this if normal flows don't provide access to a given powerup)
 #0x7 = JMapProgress Index. For memory purposes, uses the same BCSV as ScenarioSwitch
-#0x8 = 
+#0x8 = Check IOS Version
 #0x9 = 
 #0xA = 
 #0xB = 
@@ -140,6 +140,8 @@ bl isJMapEntryProgressComplete
 b .BranchFunc_Return
 
 .BranchFunc_Case_8:
+bl .GLE_Check_IOS_Version
+b .BranchFunc_Return
 
 .BranchFunc_Case_9:
 

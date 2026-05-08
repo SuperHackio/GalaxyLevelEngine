@@ -67,6 +67,10 @@ RaceTutorial:
 #your purple coin information... I think.
 ManualPurpleCoin:
     .string "ManualPurpleCoin"
+
+# Allows the user to change the number of purple coins required to spawn a purple coin star. Range from 000 to 999 (setting 0 will default to 100)
+PurpleCoinNum_Str:
+    .string "PurpleCoinNum"
     
 #If enabled, the timer for comet stars will NOT stop when the star spawns. This also goes for purple coin comets
 NoStopClock:
@@ -94,6 +98,9 @@ StoryLayout:
 #Finally fixed this dang thing lol
 NoWelcome:
     .string "NoWelcome"
+    
+NoBackSelect:
+    .string "NoBackSelect"
     
 #Disables the ScenarioTitle from appearing inside the intro cutscene and fly-in
 NoScenarioTitle:

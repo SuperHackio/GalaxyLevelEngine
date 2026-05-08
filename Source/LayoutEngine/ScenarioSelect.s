@@ -2159,7 +2159,7 @@ li r3, BackFadeTime
 
 
 
-.GLE ADDRESS .PAUSE_MENU_CONNECTOR
+.GLE ADDRESS .PURPLE_COIN_COUNTER_CONNECTOR
 #ScenarioSelectLayout::draw(const(void))
 ScenarioSelectLayout_Draw:
 stwu      r1, -0x10(r1)
