@@ -734,12 +734,21 @@ PowerStar_getColorInDemo:
 li r6, 0
 li r7, 0
 
+.GLE SYMBOL START
+.GLE SYMBOL NAME getPowerStarColorInStage__3GLEFPC9LiveActorlPbPCcb
+.GLE SYMBOL DESC #Gets the Power Star Color frame of a Power Star.
+.GLE SYMBOL PARA 0 pPowerStar #A pointer to a Power Star. May be NULL.
+.GLE SYMBOL PARA 1 powerStarId #The ID of the Power Star to get the color of
+.GLE SYMBOL PARA 2 isEmpty #Pass in a boolean pointer to have it set to true or false based on if you have collected the power star or not. May be NULL.
+.GLE SYMBOL PARA 3 pGalaxyName #The name of the galaxy to access. If NULL, will use the current galaxy.
+.GLE SYMBOL PARA 4 isNeedResult #If true, will return the result star color. Intended for use with the star result sequence.
+.GLE SYMBOL RETN s32 #The Power Star Color frame ID for the requested star.
+.GLE SYMBOL END
 #r3 = LiveActor*
 #r4 = int Power Star ID
 #r5 = bool* Is Empty
 #r6 = char const* Galaxy Name
 #r7 = Is need Result Colour
-
 PowerStar_getColorInStage:
 stwu      r1, -0x70(r1)
 mflr      r0
