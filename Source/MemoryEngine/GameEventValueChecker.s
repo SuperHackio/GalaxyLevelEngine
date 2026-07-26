@@ -3,7 +3,7 @@
 
 
 #Most things here override WorldMapHolder
-.GLE ADDRESS .SCENARIO_SELECT_CONNECTOR
+.GLE ADDRESS .SUDDEN_DEATH_METER_CONNECTOR
 .GameEventValueChecker_Ctor:
 stwu      r1, -0x10(r1)
 mflr      r0

@@ -2110,6 +2110,21 @@ mtlr      r0
 addi      r1, r1, 0x20
 blr
 
+
+.GLE_GetMaxLife:
+lis r3, Str_MaxLife@ha
+addi r3, r3, Str_MaxLife@l
+li r4, 0
+b .MR_GetGameSetting
+
+.GLE_GetPowerupMaxLife:
+lis r3, Str_PowerMaxLife@ha
+addi r3, r3, Str_PowerMaxLife@l
+li r4, 0
+b .MR_GetGameSetting
+
+
+
 .GLE PRINTADDRESS
 #GLE::isEnableDebug()
 .GLE_IsEnableDebug:
@@ -2497,9 +2512,11 @@ bl .GLE_GetPlayResultInStageHolder
 bl getPlayerHealth__23PlayResultInStageHolderCFv
 mr r31, r3
 
-#If the health defined here is not equal to Max Health (3) then assume we use that instead
-#I've set it up this way in case it's decided to allow changing the max health. Currently the answer to that is a hard NO
-li r4, 3
+#If the health defined here is not equal to Max Health then assume we use that instead
+#An executive decision was made to allow setting the max health via GameSettings
+bl .GLE_GetMaxLife
+mr r4, r3
+
 cmpw r31, r4
 mr r3, r31
 bne .GLE_GetCurrentHealth_Return
@@ -2517,6 +2534,318 @@ addi      r1, r1, 0x60
 blr
 
 
+# Allow the new max health values to be used
+.GLE ADDRESS __ct__23PlayResultInStageHolderFv +0x24
+b .GLE_PlayResultInStageHolder_Ctor_Health_Ext
+lis r3, __vt__23PlayResultInStageHolder@ha
+addi r3, r3, __vt__23PlayResultInStageHolder@l
+li r5, 0
+li r30, -1
+li r4, 1
+.GLE_PlayResultInStageHolder_Ctor_Health_Ext_Return:
+.GLE ENDADDRESS
+
+.GLE_PlayResultInStageHolder_Ctor_Health_Ext:
+bl .GLE_GetMaxLife
+mr r0, r3
+b .GLE_PlayResultInStageHolder_Ctor_Health_Ext_Return
+
+
+.GLE ADDRESS reset__23PlayResultInStageHolderFv +0x94
+b .GLE_PlayResultInStageHolder_Reset_Health_Ext
+.GLE_PlayResultInStageHolder_Reset_Health_Ext_Return:
+.GLE ENDADDRESS
+
+.GLE_PlayResultInStageHolder_Reset_Health_Ext:
+bl .GLE_GetMaxLife
+mr r0, r3
+b .GLE_PlayResultInStageHolder_Reset_Health_Ext_Return
+
+
+.GLE ADDRESS getPlayerHealth__23PlayResultInStageHolderCFv +0x20
+bl .GLE_GetMaxLife
+.GLE ENDADDRESS
+
+
+
+
+.GLE ADDRESS __ct__10MarioActorFPCc +0x6C
+b .GLE_MarioActor_Ctor_HealthFix_Ext
+
+
+.GLE_MarioActor_Ctor_HealthFix_Ext_Return:
+lwz r4, 0x6B0(r30)
+cmplw r4, r3
+ble .GLE_MarioActor_Ctor_HealthFix
+bl .GLE_GetPowerupMaxLife
+.GLE_MarioActor_Ctor_HealthFix:
+stw       r3, 0x1AC(r30)
+.GLE ENDADDRESS
+
+.GLE_MarioActor_Ctor_HealthFix_Ext:
+stw       r3, 0x6B0(r30)
+bl .GLE_GetMaxLife
+b .GLE_MarioActor_Ctor_HealthFix_Ext_Return
+
+
+# This is an interesting one
+# I am going to just fully replace this function, because Nintendo has the same code in it twice for some reason
+# presumably this means at one point they were going to give Mario and Luigi
+# different health values. Crazy, but convinient for me 'cause it's free code space
+.GLE ADDRESS tryResetMaxLife__10MarioActorFv
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+
+stw r3, 0x08(r1)
+bl .GLE_GetMaxLife
+lwz r4, 0x08(r1)
+
+lwz       r0, 0x1AC(r4)
+cmplw    r0, r3
+beq .GLE_tryResetMaxLife_Return
+lwz       r0, 0x6B0(r4)
+cmplw    r0, r3
+bgt .GLE_tryResetMaxLife_Return
+stw       r3, 0x1AC(r4)
+
+.GLE_tryResetMaxLife_Return:
+lwz       r0, 0x14(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
+.GLE ASSERT tryResetMaxLife__10MarioActorFv +0x5C
+.GLE ENDADDRESS
+
+
+
+# Prevent the UI from bugging out with the new health values
+# Yes, this is written very weirdly. Cry about it.
+# Also rare occasion where saving r0 is important!
+.GLE ADDRESS setCount__11MeterLayoutFl +0x20
+b .GLE_MeterLayout_SetCount_Ext
+.GLE_MeterLayout_SetCount_Ext_Return:
+blt 0x14
+cmpw r4, r5
+bge 0x0C
+.GLE ENDADDRESS
+
+.GLE_MeterLayout_SetCount_Ext:
+stwu r1, -0x20(r1)
+stw r3, 0x08(r1)
+stw r4, 0x0C(r1)
+stw r0, 0x10(r1)
+
+mflr  r0
+stw r0, 0x24(r1)
+
+bl .GLE_GetMaxLife
+addi r5, r3, 1
+
+lwz r0, 0x24(r1)
+mtlr r0
+lwz r3, 0x08(r1)
+lwz r4, 0x0C(r1)
+lwz r0, 0x10(r1)
+addi r1, r1, 0x20
+
+cmpw r0, r5
+b .GLE_MeterLayout_SetCount_Ext_Return
+
+
+
+# Make the meter layout.... do something when the player moves/stops (probably hiding / showing)
+.GLE ADDRESS requestPlayerMoving__11MeterLayoutFv +0x24
+b .GLE_MeterLayout_RequestPlayerMoving_Ext
+.GLE_MeterLayout_RequestPlayerMoving_Ext_Return:
+cmpw r0, r3
+.GLE ENDADDRESS
+
+.GLE_MeterLayout_RequestPlayerMoving_Ext:
+bl .GLE_GetMaxLife
+lwz       r0, 0x50(r31)
+b .GLE_MeterLayout_RequestPlayerMoving_Ext_Return
+
+
+.GLE ADDRESS requestPlayerStopped__11MeterLayoutFv +0x24
+b .GLE_MeterLayout_RequestPlayerStopped_Ext
+.GLE_MeterLayout_RequestPlayerStopped_Ext_Return:
+cmpw r0, r3
+.GLE ENDADDRESS
+
+.GLE_MeterLayout_RequestPlayerStopped_Ext:
+bl .GLE_GetMaxLife
+lwz       r0, 0x50(r31)
+b .GLE_MeterLayout_RequestPlayerStopped_Ext_Return
+
+
+
+# Allows the counter to go past 6
+.GLE ADDRESS exePowerUp__11MeterLayoutFv +0xA8
+b .GLE_MeterLayout_ExePowerUp_HealthExt
+.GLE_MeterLayout_ExePowerUp_HealthExt_Return:
+cmpw     r0, r3
+.GLE ENDADDRESS
+.GLE_MeterLayout_ExePowerUp_HealthExt:
+bl .GLE_GetPowerupMaxLife
+lwz r0, 0x50(r30)
+b .GLE_MeterLayout_ExePowerUp_HealthExt_Return
+
+
+# Fixes the number from counting weirdly
+.GLE ADDRESS exePowerUp__11MeterLayoutFv +0xF0
+b .GLE_MeterLayout_ExePowerUp_HealthExt3
+.GLE_MeterLayout_ExePowerUp_HealthExt3_Return:
+cmpw r0, r3
+.GLE ENDADDRESS
+
+.GLE_MeterLayout_ExePowerUp_HealthExt3:
+bl .GLE_GetMaxLife
+mr r5, r3
+addi r3, r3, 1
+lwz r0, 0x50(r30)
+b .GLE_MeterLayout_ExePowerUp_HealthExt3_Return
+
+
+.GLE ADDRESS exePowerUp__11MeterLayoutFv +0x104
+nop
+.GLE ENDADDRESS
+
+
+# Jank code incoming
+.GLE ADDRESS exeCounterMove__11MeterLayoutFv +0x50
+nop
+li r4, 1
+bl .GLE_MeterLayout_ExeCounterMove_DoCounter
+mr r3, r31
+.GLE ENDADDRESS
+
+.GLE ADDRESS exeCounterMove__11MeterLayoutFv +0x78
+nop
+li r4, 2
+bl .GLE_MeterLayout_ExeCounterMove_DoCounter
+mr r3, r31
+.GLE ENDADDRESS
+
+.GLE ADDRESS exeCounterMove__11MeterLayoutFv +0xA0
+nop
+li r4, 3
+bl .GLE_MeterLayout_ExeCounterMove_DoCounter
+mr r3, r31
+.GLE ENDADDRESS
+
+
+.GLE PRINTADDRESS
+# Results in r4 and r5. Lol
+.GLE_MeterLayout_ExeCounterMove_DoCounter:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+
+stw r4, 0x08(r1)
+bl .GLE_GetPowerupMaxLife
+stw r3, 0x0C(r1)
+bl .GLE_GetMaxLife
+lwz r4, 0x0C(r1)
+mr r6, r3
+sub r3, r4, r3
+li r4, 3
+divw r3, r3, r4
+lwz r4, 0x08(r1)
+mullw r5, r3, r4
+add r5, r5, r6
+
+#Yes, I know this is the wrong string technically, but still
+lis r4, Str_SuddenDeathMeter_HitPointNumber@ha
+addi r4, r4, Str_SuddenDeathMeter_HitPointNumber@l
+
+lwz       r0, 0x14(r1)
+mtlr      r0
+addi      r1, r1, 0x10
+blr
+
+
+
+# Fixes the duration to last long enough to count fully
+# Math is (PowerMaxHealth * 5) * 2
+.GLE ADDRESS exePowerUp__11MeterLayoutFv +0x12C
+b .GLE_MeterLayout_ExePowerUp_HealthExt2
+.GLE_MeterLayout_ExePowerUp_HealthExt2_Return:
+mr        r3, r30
+.GLE ENDADDRESS
+
+.GLE_MeterLayout_ExePowerUp_HealthExt2:
+bl .GLE_GetPowerupMaxLife
+mulli r4, r3, 5
+slwi r4, r4, 1
+b .GLE_MeterLayout_ExePowerUp_HealthExt2_Return
+
+
+
+
+# Fixes the damage animation selector
+.GLE ADDRESS exeDamage__11MeterLayoutFv +0x20
+b .GLE_MeterLayout_ExeDamage_HealthExt
+.GLE_MeterLayout_ExeDamage_HealthExt_Return:
+cmpw     r0, r3
+.GLE ENDADDRESS
+
+.GLE_MeterLayout_ExeDamage_HealthExt:
+bl .GLE_GetMaxLife
+lwz r0, 0x50(r31)
+b .GLE_MeterLayout_ExeDamage_HealthExt_Return
+
+
+.GLE ADDRESS setAnimBase__11MeterLayoutFv +0x18
+b .GLE_MeterLayout_SetAnimBase_HealthExt
+.GLE_MeterLayout_SetAnimBase_HealthExt_Return:
+cmpw     r0, r3
+.GLE ENDADDRESS
+
+.GLE_MeterLayout_SetAnimBase_HealthExt:
+bl .GLE_GetMaxLife
+lwz r0, 0x50(r31)
+b .GLE_MeterLayout_SetAnimBase_HealthExt_Return
+
+
+
+
+
+# Fix the health detection on a life shroom if you already have one
+# This comes right after another piece of code, stored in SuddenDeathMeter.s
+.GLE ADDRESS changeItemStatus__11MarioAccessFl +0x178
+b .GLE_MarioAccess_ChangeItemState_OnLifeUp_FixNormalLife
+.GLE_MarioAccess_ChangeItemState_OnLifeUp_FixNormalLife_Return:
+cmplw r0, r4
+.GLE ENDADDRESS
+
+.GLE_MarioAccess_ChangeItemState_OnLifeUp_FixNormalLife:
+stw r3, 0x08(r1)
+bl .GLE_GetMaxLife
+mr r4, r3
+lwz r3, 0x08(r1)
+lwz       r0, 0x1AC(r3)
+b .GLE_MarioAccess_ChangeItemState_OnLifeUp_FixNormalLife_Return
+
+.GLE ADDRESS changeItemStatus__11MarioAccessFl +0x1A0
+bl .GLE_GetPowerupMaxLife
+stw r3, 0x08(r1)
+b .GLE_MarioAccess_ChangeItemState_OnLifeUp_FixPowerLife
+.GLE_MarioAccess_ChangeItemState_OnLifeUp_FixPowerLife_Return:
+.GLE ENDADDRESS
+
+.GLE_MarioAccess_ChangeItemState_OnLifeUp_FixPowerLife:
+bl getMarioHolder__2MRFv
+bl getMarioActor__11MarioHolderCFv
+lwz r4, 0x08(r1)
+b .GLE_MarioAccess_ChangeItemState_OnLifeUp_FixPowerLife_Return
+
+# Change the health value used by the Tip Network to equal the GLE Max health
+.GLE ADDRESS getMarioStartHealth__2MRFv +0x20
+bl .GLE_GetMaxLife
+.GLE ENDADDRESS
+
+# Change how the max health to use is located
 .GLE ADDRESS getMarioStartHealth__2MRFv +0x28
 bl .GLE_GetCurrentHealth
 nop
@@ -2534,7 +2863,7 @@ bl getPlayerLife__2MRFv
 cmpwi r3, 0
 bne .GLE_SaveCurrentHealth_Return
 
-li r3, 3 #cannot save Zero health
+bl .GLE_GetMaxLife # Cannot save Zero health, so we will save the default
 
 .GLE_SaveCurrentHealth_Return:
 lwz       r0, 0x14(r1)
@@ -2551,7 +2880,7 @@ mflr      r0
 stw       r0, 0x14(r1)
 
 #IF I ever add the ability to change the max health, that code goes HERE
-li r3, 3
+bl .GLE_GetMaxLife
 
 lwz       r0, 0x14(r1)
 mtlr      r0
@@ -2567,6 +2896,36 @@ addi r4, r4, Static_PlayerHealthStorage@l
 stw r3, 0x00(r4)
 blr
 
+
+# What a hack...
+.GLE ADDRESS clearAfterMiss__23PlayResultInStageHolderFv +0x10
+b .GLE_ClearAfterMiss_HealthExt
+.GLE_ClearAfterMiss_HealthEx_Return:
+.GLE ENDADDRESS
+
+.GLE ADDRESS clearAfterMiss__23PlayResultInStageHolderFv +0x18
+nop
+.GLE ENDADDRESS
+
+.GLE_ClearAfterMiss_HealthExt:
+stwu      r1, -0x10(r1)
+mflr      r0
+stw       r0, 0x14(r1)
+
+bl .GLE_GetMaxLife
+stw r3, 0x08(r1)
+bl .GLE_GetPlayResultInStageHolder
+lwz r4, 0x08(r1)
+
+lwz       r0, 0x14(r1)
+mtlr      r0
+
+lwz       r0, 0x84(r3)
+
+addi      r1, r1, 0x10
+b .GLE_ClearAfterMiss_HealthEx_Return
+
+#=======================================
 
 #Gets a SceneObj. Note this doesn't check to see if it exists first!
 #r3 = SceneObjID

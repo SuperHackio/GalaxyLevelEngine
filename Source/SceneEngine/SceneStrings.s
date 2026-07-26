@@ -200,6 +200,14 @@ ResourceMask_Str:
 KeepHealth_Str:
     .string "KeepHealth"
     
+# Allows the user to set the Max Health for when you do not have a Life Mushroom
+Str_MaxLife:
+    .string "MaxLife"
+
+# Allows the user to set the Max Health for when you have a Life Mushroom
+Str_PowerMaxLife:
+    .string "PowerMaxLife"
+    
 __GLE_DEBUG_MODE:
     .string "Debug" AUTO
     

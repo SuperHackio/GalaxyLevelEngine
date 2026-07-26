@@ -556,5 +556,14 @@
 .set AudSingleBgm_FloatConversion, 0x80645D98
 .set sub_80081CC0, 0x80081CC0
 .set sub_80081280, 0x80081280
+.set Str_HitPointMeter, 0x806FAD20
+.set Str_HitPointMeter_Break, 0x806FADC0
+.set Str_HitPointMeter_Break123, 0x806FADE0
+.set Str_HitPointMeter_Damage1, 0x806FADB0
+.set Str_SuddenDeathMeter_HitPointNumber, 0x806FAD30
+.set decideWalkAnimation__5MarioFv, 0x803ADCF0
+.set tryResetMaxLife__10MarioActorFv, 0x803D9740
+.set clearAfterMiss__23PlayResultInStageHolderFv, 0x804C9290
 .set WarpPod_ColorTable, 0x806B6CE8
+.set tryChangeMaxLife__10MarioActorFv, 0x803C1C60
 .GLE REGION END
